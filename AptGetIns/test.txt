@@ -1,0 +1,142 @@
+一. 环境变量设置
+
+1.设置jdk环境变量
+
+编译android源码只支持jdk 1.6，所以如果需要编译源码必须下载jdk 1.6，不能下载最新的jdk 1.7，如果不需要编译源码则可以下载1.7版本的。
+
+1.6版本jdk下载地址：http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html
+不要把环境变量配置在/etc/environment和/etc/profile文件中，这样配置的在有的ubuntu版本上会出现退出当前终端后不起作用的问题，在ubuntu12.04上我就遇到了此问题。
+把环境变量配置在用户目录.bashrc文件中是最好的选择。
+export JAVA_HOME=/home/abc/jdk1.6.0_45
+export PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin
+export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+
+然后执行source .bashrc使配置生效即可。
+
+由于ubuntu中可能会有默认的jdk，如openjdk。假如有openjdk的话，所以，为了使默认使用的是我们安装的jdk，还要进行如下工作。在终端充输入：
+
+sudo update-alternatives --install /usr/bin/java java ~/abc/jdk1.6.0_45/bin/java 300
+sudo update-alternatives --install /usr/bin/javac javac ~/abc/jdk1.6.0_45/bin/javac 300
+
+sudo update-alternatives --install /usr/bin/javac javap ~/abc/jdk1.6.0_45/bin/javap 300
+通过这一步将我们安装的jdk加入java选单。
+然后执行以下命令设置默认的java jdk
+sudo update-alternatives --config java
+例如：
+
+~/projects$ sudo update-alternatives --config java
+[sudo] password for abc: 
+有 4 个候选项可用于替换 java (提供 /usr/bin/java)。
+
+  选择       路径                                          优先级  状态
+------------------------------------------------------------
+  0            /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java   1061      自动模式
+* 1            /home/abc/jdk1.6.0_45/bin/java             300       手动模式
+  2            /usr/bin/gij-4.6                                 1046      手动模式
+  3            /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java   1061      手动模式
+  4            /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java   1051      手动模式
+
+要维持当前值[*]请按回车键，或者键入选择的编号：
+
+-------------------------------------------------
+2.增加别名
+alias b='cd ..'   #返回到上一级目录
+alias bb='cd ../..'
+alias bbb='cd ../../..'
+alias g='gedit' #打开文本编辑器
+
+二. eclise相关问题
+1.可以在终端顺利启动Eclipse，但是从文件夹鼠标双击，或者用起动器启动就会出现如下的内容：
+A Java RunTime Environment (JRE) or Java Development Kit (JDK) must be available in order to run Eclipse.No java virtual machine was found after searching the following locations:…
+
+
+解决方法：从终端进入你的eclipse目录，然后输入：
+则命令为：ln -s /home/abc/jdk1.6.0_45/jre jre
+
+或者
+
+解决办法是在终端进入你的eclipse目录，然后输入：
+mkdir jre
+cd jre
+
+ln -s 你的JDK目录/bin bin
+
+2. 找不到adb
+Android --- 64bit Ubuntu 系统下 搭建JDK和SDK环境后，出现adb:error =12错误 
+Failed to get the adb version: Cannot run program"/home/xxxx/android/android-sdk/platform-tools/adb": error=2,没有那个文件或目录
+错误提示：android-sdk-linux/platform-tools/adb: 没有那个文件或目录。
+
+解决方案：由于是64bit的系统，而Androidsdk只有32bit的程序，需要安装ia32-libs，才能使用。
+开启终端：sudo apt-get install ia32-libs 
+
+3.安装ADT(Android Development Tools).
+启动Eclipse,在导航菜单中选择Help->Install New Softwares->点击Add按钮->在弹出框Add Repository中输入Name：Android（随便填写），
+Location：填写地址 https://dl-ssl.google.com/android/eclipse/。点击ok，根据需要选择，然后安装。安装完毕后，重启Eclipse。
+
+4.在Eclipse里配置SDK路径
+选择Windows->Preferences->Android，选择Android SDK的位置。我的是解压在D:Program Filesandroid-sdk-windows这里的，选择这里就行了
+
+
+三. 编译android源码
+编译过程遇到的问题：
+/bin/bash: bison: 未找到命令  
+sudo apt-get install bison  
+
+/bin/bash: xsltproc: 未找到命令
+sudo apt-get install xsltproc
+
+external/clearsilver/cgi/cgi.c:22:18: fatal error: zlib.h: 没有那个文件或目录  
+sudo apt-get install zlib1g-dev  
+  
+/bin/bash: flex: 未找到命令  
+sudo apt-get install flex  
+  
+prebuilt/linux-x86/sdl/include/SDL/SDL_syswm.h:55:22: fatal error: X11/Xlib.h: 没有那个文件或目录  
+sudo apt-get install libx11-dev   
+  
+/usr/bin/ld: cannot find -lncurses  
+sudo apt-get install libncurses5-dev
+sudo apt-get install gperf
+
+gcc: error trying to exec 'cc1plus': execvp: 没有那个文件或目录
+sudo apt-get install build-essential
+参考：http://www.cnblogs.com/skyme/archive/2011/01/19/1939606.html
+
+/bin/bash: xmllint: 未找到命令
+解决
+sudo apt-get install xsltproc
+sudo apt-get  install libxml2-utils
+
+javac: 目标发行版 1.5 与默认的源发行版 1.7 冲突
+原因：在ubuntu软件中心安装eclipse导致jdk变成了默认的openjdk
+~$ java -version
+java version "1.7.0_21"
+OpenJDK Runtime Environment (IcedTea 2.3.9) (7u21-2.3.9-1ubuntu1)
+OpenJDK 64-Bit Server VM (build 23.7-b01, mixed mode)
+修改方法：卸载ubutnu软件中心安装的eclipse，重新下载安装eclipse和sun jdk1.6。
+sudo apt-get remove openjdk*
+此命令会卸载所有依赖openjdk的软件，包括从ubuntu软件中心安装的eclipse。
+
+/usr/include/stdc-predef.h:30:26: fatal error: bits/predefs.h: No such file or directory
+compilation terminated.
+sudo apt-get install gcc-multilib
+
+错误：
+build/core/java.mk:9: *** bin: Target java module does not define any source or resource files. Stop.
+解决：
+      删除源码根目录下的bin文件夹，这个文件夹是导入eclipse时创建的。
+
+abc@ab-Precision-T1650:~$ sudo update-alternatives --config java
+update-alternatives: 错误: no alternatives for java
+
+http://source.android.com/source/initializing.html#configuring-usb-access
+Initializing a Build Environment
+在12.04，12.10，13.04版本上需要安装以下库
+$ sudo apt-get install git gnupg flex bison gperf build-essential \
+  zip curl libc6-dev libncurses5-dev:i386 x11proto-core-dev \
+  libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 \
+  libgl1-mesa-dev g++-multilib mingw32 tofrodos \
+  python-markdown libxml2-utils xsltproc zlib1g-dev:i386
+$ sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/libGL.so
+但本人的机器上安装上以上lib后还是编译不过，后来发现是因为以前编译使导致了current.txt文件有改变，因此api接口与实际不符，所以编译报错找不到android自带的api。
+把current.txt恢复后即可编译通过。
