@@ -14,7 +14,7 @@ def getUrlList(urlPath):
 def getMagnet(urlPath):
 	response = urllib2.urlopen(urlPath)
 	html = response.read()
-	pattern = re.compile(r'(magnet:\?xt=urn:btih:.+)" class=')
+	pattern = re.compile(r'(magnet:\?xt=urn:btih:[^"\']+)" class=')
 	patFind = pattern.search(html)
 	if (patFind):
 		print patFind.group(1)
@@ -22,8 +22,17 @@ def getMagnet(urlPath):
 
 def getAllMagnet(code):
 	List = getUrlList('http://www.btspread.com/search/' + code)
+	listFlag = []
 	if (List != None):
 		for url in List:
+			sameFlag = 0
+			for i in listFlag:
+				if (url == i):
+					sameFlag = 1
+					break;
+			if (sameFlag == 1):
+				continue
+			listFlag.append(url)
 			getMagnet(url)
 
 if (len(sys.argv) == 2):
