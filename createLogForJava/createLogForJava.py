@@ -78,7 +78,7 @@ def AddLogByFuncName(fileName, tagName):
 	os.rename(fileName + '.new', fileName)
 
 def listyoudir(level, path, tagName): 
-	pattern = re.compile(r'.+.java')
+	pattern = re.compile(r'.+.java$')
 	for i in os.listdir(path): 
 		if os.path.isdir(path + '/' + i):
 			listyoudir(level+1, path + '/' + i, tagName)

@@ -22,6 +22,12 @@ def AddLogByDef(fileName, tagName):
 	for line in fileRead:
 		strFind = pattern.search(line)
 		if (strFind):
+			if (flag != -1):
+				strSpace = patSpace.search(line)
+				if (strSpace):
+					print(strSpace.group(1) + strWrite)
+					count = count + 1
+					fileWrite.writelines(strSpace.group(1) + strWrite + '\n')
 			strWrite = 'print(\'' + fileName + ':' + strFind.group(2) + ' ' + str(count) + '\')'
 			print(line)
 			flag = countBrackets(line)
