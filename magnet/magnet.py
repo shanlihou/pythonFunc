@@ -22,8 +22,17 @@ def getMagnet(urlPath):
 
 def getAllMagnet(code):
 	List = getUrlList('http://www.btspread.com/search/' + code)
+	listFlag = []
 	if (List != None):
 		for url in List:
+			sameFlag = 0
+			for i in listFlag:
+				if (url == i):
+					sameFlag = 1
+					break;
+			if (sameFlag == 1):
+				continue
+			listFlag.append(url)
 			getMagnet(url)
 
 if (len(sys.argv) == 2):
