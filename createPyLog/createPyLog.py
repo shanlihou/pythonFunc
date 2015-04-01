@@ -51,6 +51,9 @@ def AddLogByDef(fileName, tagName):
 
 def listyoudir(level, path, tagName): 
 	pattern = re.compile(r'.+.py$')
+	if (not os.path.isdir(path)):
+		AddLogByDef(path, tagName)
+		return
 	for i in os.listdir(path): 
 		if os.path.isdir(path + '/' + i):
 			listyoudir(level+1, path + '/' + i, tagName)
