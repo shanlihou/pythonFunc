@@ -14,7 +14,7 @@ def getUrlList(urlPath):
 def getMagnet(urlPath):
 	response = urllib2.urlopen(urlPath)
 	html = response.read()
-	pattern = re.compile(r'(magnet:\?xt=urn:btih:.+)" class=')
+	pattern = re.compile(r'(magnet:\?xt=urn:btih:[^"\']+)" class=')
 	patFind = pattern.search(html)
 	if (patFind):
 		print patFind.group(1)
