@@ -18,10 +18,13 @@ def findLine(fileName, pat):
 def findInner(fileName, inner):
 	pattern = re.compile(inner)
 	fileRead = open(fileName, 'r')
+	count = 0
 	for line in fileRead:
+		count = count + 1
 		strFind = pattern.search(line)
 		if(strFind):
-			return True
+			print(fileName + ':' + str(count))
+			print(line)
 	return False
 
 def listyoudir(level, path, inner, lineFile): 
@@ -37,10 +40,14 @@ def listyoudir(level, path, inner, lineFile):
 				findLine(lineFile, path + '/' + i)
 
 def findYourDir(level, path, inner):
+	filetype = re.compile(r'.py$')
 	for i in os.listdir(path):
 		if os.path.isdir(path + '/' + i):
 			findYourDir(level + 1, path + '/' + i, inner)
 		else:
+			fileFind = filetype.search(i)
+			if (not fileFind):
+				continue
 			if(findInner(path + '/' + i, inner)):
 				print(path + '/' + i)
 
