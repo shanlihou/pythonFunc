@@ -39,15 +39,16 @@ def listyoudir(level, path, inner, lineFile):
 				print(path + '/' + i)
 				findLine(lineFile, path + '/' + i)
 
-def findYourDir(level, path, inner):
+def findYourDir(level, path, inner, code):
 	filetype = re.compile(r'.py$')
 	for i in os.listdir(path):
 		if os.path.isdir(path + '/' + i):
-			findYourDir(level + 1, path + '/' + i, inner)
+			findYourDir(level + 1, path + '/' + i, inner, code)
 		else:
-			fileFind = filetype.search(i)
-			if (not fileFind):
-				continue
+			if (code == 'p'):
+				fileFind = filetype.search(i)
+				if (not fileFind):
+					continue
 			if(findInner(path + '/' + i, inner)):
 				print(path + '/' + i)
 
@@ -55,9 +56,13 @@ if (len(sys.argv) == 2 and sys.argv[1] == '-h'):
 	print('the first argv is path')
 	print('the second argv is inner which you want to search')
 elif (len(sys.argv) == 4):
-	listyoudir(0, sys.argv[1], sys.argv[2], sys.argv[3])
+	if (sys.argv[3] == '-a'):
+		findYourDir(0, sys.argv[1], sys.argv[2], 'a')
+	else:
+		listyoudir(0, sys.argv[1], sys.argv[2], sys.argv[3])
+
 elif (len(sys.argv) == 3):
-	findYourDir(0, sys.argv[1], sys.argv[2])
+	findYourDir(0, sys.argv[1], sys.argv[2], 'p')
 
 
 
