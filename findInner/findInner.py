@@ -16,7 +16,7 @@ def findLine(fileName, pat):
 		
 
 def findInner(fileName, inner):
-	pattern = re.compile(inner)
+	pattern = re.compile(inner, re.I)
 	fileRead = open(fileName, 'r')
 	count = 0
 	for line in fileRead:
@@ -40,7 +40,7 @@ def listyoudir(level, path, inner, lineFile):
 				findLine(lineFile, path + '/' + i)
 
 def findYourDir(level, path, inner, code):
-	filetype = re.compile(r'.py$')
+	filetype = re.compile(r'(\.py|\.java)$')
 	for i in os.listdir(path):
 		if os.path.isdir(path + '/' + i):
 			findYourDir(level + 1, path + '/' + i, inner, code)
