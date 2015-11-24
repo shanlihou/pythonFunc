@@ -1,6 +1,9 @@
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5
+import traceback
+import urllib.request
 import sys 
+import http
 def createPem():
 	key = RSA.generate(1024)
 	print(key.publickey().exportKey('PEM'))
@@ -26,4 +29,21 @@ def decrypt(secret):
 	priN = PKCS1_v1_5.new(pri)
 	mess = priN.decrypt(secret, None)
 	print(mess)
-createPem()
+def post(url, data):
+	header = {}
+	header["X-Bmob-Application-Id"] = "f959535a39bb9dec9ac4dab32e5961c5"
+	header["X-Bmob-REST-API-Key"] = "17342bb32e2df845778bb70391b1c4a6"
+	header["Content-Type"] = "application/json"
+	print(header)
+
+	opener = urllib.request.build_opener()
+	opener.addheaders =  [(k, v) for k,v in header.items()]
+	req = ''
+	try:
+		req = opener.open(url)
+		print(req.read())
+	except OSError:
+		print(traceback.format_exc())
+post('https://api.bmob.cn/1/classes/pubkey', '{"pubkey":"1235215355"}'.encode())
+post('https://www.baidu.com', '{"pubkey":"1235215355"}'.encode())
+	
