@@ -52,6 +52,10 @@ def addPubKey(pubkey):
 def createPem():
 	key = RSA.generate(1024)
 	print(key.publickey().exportKey('PEM').decode().replace('\n', ''))
+	ret = get("https://api.bmob.cn/1/classes/userInfo")
+	jsonRet = json.loads(ret)
+	print(jsonRet["results"])
+	results = jsonRet["results"]
 	ret = addPubKey(key.publickey().exportKey('PEM').decode())
 	jsonRet = json.loads(ret)
 	print('ret')
@@ -89,6 +93,15 @@ def getData():
 	for i in results:
 		decrypt(i['name'], i['key'])
 		decrypt(i['pass'], i['key'])
+def getSearch():
+	ret = get("https://api.bmob.cn/1/classes/search")
+	jsonRet = json.loads(ret)
+	print(jsonRet["results"])
+	results = jsonRet["results"]
+	for i in results:
+		decrypt(i['name'], i['key'])
+		decrypt(i['code'], i['key'])
+
 if (len(sys.argv) == 2):
 	if (sys.argv[1] == '-c'):
 		createPem()
@@ -96,6 +109,8 @@ if (len(sys.argv) == 2):
 		post("https://api.bmob.cn/1/classes/userInfo", '{"score":1337,"playerName":"Sean Plott","cheatMode":false}'.encode())
 	elif(sys.argv[1] == '-g'):
 		getData()
+	elif(sys.argv[1] == '-s'):
+		getSearch()
 elif(len(sys.argv) == 4):
 	if (sys.argv[1] == '-d'):
 		decrypt(sys.argv[2], sys.argv[3])
