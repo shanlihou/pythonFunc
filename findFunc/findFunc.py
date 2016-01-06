@@ -4,7 +4,8 @@ import sys
 import re
 funcSet = set()
 def findFunc(fileName, inner):
-	pattern = re.compile('\w*' + inner + '\w*', re.I)
+	pattern = re.compile('L[\w/]*' + inner + '[\w/]*', re.I)
+	pattern = re.compile('Lcom/tencent/mobileqq/activity/[\w/]*' + inner + '[\w/]*', re.I)
 	global funcSet
 	fileRead = open(fileName, 'r')
 	for line in fileRead:
