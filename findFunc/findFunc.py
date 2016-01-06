@@ -4,13 +4,15 @@ import sys
 import re
 funcSet = set()
 def findFunc(fileName, inner):
-	pattern = re.compile('L[\w/]*' + inner + '[\w/]*', re.I)
+#	pattern = re.compile('L[\w/]*' + inner + '[\w/]*', re.I)
 	pattern = re.compile('Lcom/tencent/mobileqq/activity/[\w/]*' + inner + '[\w/]*', re.I)
 	global funcSet
 	fileRead = open(fileName, 'r')
 	for line in fileRead:
 		strFind = pattern.search(line)
 		if (strFind):
+			if ('.class' in line):
+				print(line)
 			funcSet.add(strFind.group())
 		
 
@@ -30,8 +32,10 @@ def findYourDir(level, path, inner, code):
 
 def printSet():
 	global funcSet
-	print(len(funcSet))
-	for i in funcSet:
+	a = list(funcSet)
+	a.sort()
+	print(len(a))
+	for i in a:
 		print(i)
 
 if (len(sys.argv) == 2 and sys.argv[1] == '-h'):
