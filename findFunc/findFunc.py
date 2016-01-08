@@ -14,7 +14,7 @@ def findFunc(fileName, inner):
 		strFind = pattern.search(line)
 		if (strFind):
 			if ('.class' in line):
-				funcList.append(line + fileName + '\n')
+				funcList.append(fileName)
 			funcSet.add(strFind.group())
 		
 
@@ -37,11 +37,7 @@ def printSet():
 	global funcList
 	a = list(funcSet)
 	a.sort()
-	print(len(a))
-	for i in a:
-		print(i)
 	funcList.sort()
-	print(len(funcList))
 	for i in funcList:
 		print(i)
 
