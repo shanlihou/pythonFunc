@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import string
+import platform
 def createSmaliLog(fileName):
 	reLocal = re.compile(r'.locals (\d+)')
 	fileName = fileName[:-1]
@@ -10,6 +11,7 @@ def createSmaliLog(fileName):
 	fileWrite = open(fileName + '.new', 'w')
 	nLocal = 0
 	count = 0
+	fileName = dealFileName(fileName)
 	for line in fileRead:
 		localFind = reLocal.search(line)
 		if (localFind):
@@ -26,7 +28,13 @@ def createSmaliLog(fileName):
 			count = count + 1
 	fileRead.close()
 	fileWrite.close()
+	os.remove(fileName)
 	os.rename(fileName + '.new', fileName)
+def dealFileName(fileName):
+	if 'Linux' in platform.system():
+		return fileName
+	return fileName.replace('\\', '\\\\')
+		
 def openAllFile(fileName):
 	fileRead = open(fileName, 'r')
 	for line in fileRead:
