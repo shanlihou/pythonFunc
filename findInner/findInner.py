@@ -2,6 +2,11 @@
 import os 
 import sys
 import re
+import platform
+syst = 0#linux
+if 'Windows' in platform.system():
+	syst = 1
+fileSet = set()
 def findLine(fileName, pat):
 	pattern = re.compile('nginx-1.6.0/(.+)$')
 	strPat = pattern.search(pat)
@@ -16,41 +21,62 @@ def findLine(fileName, pat):
 		
 
 def findInner(fileName, inner):
-	pattern = re.compile(inner, re.I)
+#	pattern = re.compile(inner, re.I)
+	global fileSet
 	fileRead = open(fileName, 'r')
 	count = 0
 	for line in fileRead:
 		count = count + 1
-		strFind = pattern.search(line)
-		if(strFind):
+#		strFind = pattern.search(line)
+		if(inner in line):
+			if fileName not in fileSet:
+				fileSet.add(fileName)
 			print(fileName + ':' + str(count))
 			print(line)
 	return False
+	
+def qqCrackPrint():
+	global fileSet
+	fileWrite = open('qq.activity', 'w')
+	for i in fileSet:
+		print i
+		fileWrite.writelines(i + '\n')
 
 def listyoudir(level, path, inner, lineFile): 
 	pattern = re.compile(inner)
 	for i in os.listdir(path): 
 #		print ('     '*(level+1) + i)
-		if os.path.isdir(path + '/' + i):
-#			print ('     '*(level+1) + i)
-			listyoudir(level+1, path + '/' + i, inner, lineFile)
+		fileName = ''
+		if (syst == 0):
+			fileName = path + '/' + i
 		else:
-			if (findInner(path + '/' + i, inner)):
-				print(path + '/' + i)
-				findLine(lineFile, path + '/' + i)
+			fileName = path + '\\' + i
+		if os.path.isdir(fileName):
+#			print ('     '*(level+1) + i)
+			listyoudir(level+1, fileName, inner, lineFile)
+		else:
+			if (findInner(fileName)):
+				print(fileName)
+				findLine(lineFile, fileName)
 
 def findYourDir(level, path, inner, code):
-	filetype = re.compile(r'(\.py|\.java)$')
+	filetype = re.compile(r'(\.py|\.java|\.smali)$')
 	for i in os.listdir(path):
-		if os.path.isdir(path + '/' + i):
-			findYourDir(level + 1, path + '/' + i, inner, code)
+		fileName = ''
+		if (syst == 0):
+			fileName = path + '/' + i
+		else:
+			fileName = path + '\\' + i
+	
+		if os.path.isdir(fileName):
+			findYourDir(level + 1, fileName, inner, code)
 		else:
 			if (code == 'p'):
 				fileFind = filetype.search(i)
 				if (not fileFind):
 					continue
-			if(findInner(path + '/' + i, inner)):
-				print(path + '/' + i)
+			if(findInner(fileName, inner)):
+				print(fileName)
 
 if (len(sys.argv) == 2 and sys.argv[1] == '-h'):
 	print('the first argv is path')
@@ -63,6 +89,7 @@ elif (len(sys.argv) == 4):
 
 elif (len(sys.argv) == 3):
 	findYourDir(0, sys.argv[1], sys.argv[2], 'p')
+	qqCrackPrint()
 
 
 
