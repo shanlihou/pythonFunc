@@ -15,6 +15,8 @@ def post(url, data):
 
 	opener = urllib.request.build_opener()
 	opener.addheaders = [(k, v) for k,v in header.items()]
+	print(url)
+	print(data)
 	print(opener.addheaders)
 	req = ''
 	print(type(opener))
@@ -103,13 +105,13 @@ def getSearch():
 		decrypt(i['code'], i['key'])
 
 if (len(sys.argv) == 2):
-	if (sys.argv[1] == '-c'):
+	if (sys.argv[1] == '-c'):#create pem
 		createPem()
 	elif(sys.argv[1] == '-p'):
 		post("https://api.bmob.cn/1/classes/userInfo", '{"score":1337,"playerName":"Sean Plott","cheatMode":false}'.encode())
-	elif(sys.argv[1] == '-g'):
+	elif(sys.argv[1] == '-g'):#get login
 		getData()
-	elif(sys.argv[1] == '-s'):
+	elif(sys.argv[1] == '-s'):#get search
 		getSearch()
 elif(len(sys.argv) == 4):
 	if (sys.argv[1] == '-d'):
