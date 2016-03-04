@@ -1,5 +1,16 @@
 *.o
 *.swp
 test_rb
-proxy
 *.log
+core
+*.IAB
+*.IAD
+*.IMB
+*.IMD
+*.PO
+*.PRI
+*.PFI
+*.SearchResults
+*.WK3
+*.PR
+*.PS
