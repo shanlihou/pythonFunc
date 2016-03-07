@@ -1,13 +1,13 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "session.h"
 #include "rb_tree.h"
-#include "str.h"
-#include <stdlib.h>
 
 rb_node *sess_head = NULL;
 
 int sess_add(session *sess)
 {
-	rb_ndoe *node;
+	rb_node *node;
 	if (sess == NULL)
 	{
 		printf("null sess \n");
@@ -46,12 +46,21 @@ session *sess_new()
 		return NULL;
 	}
 	sess->fd = -1;
+	sess->p_send = NULL;
+	sess->send_len = 0;
+	sess->next_sess = NULL;
 	return sess;
 }
 
-int (*sess_free)(void *sess)
+int sess_free(void *sess)
 {
-	free((session *)sess);
+	session *temp = (session *)sess;
+	if (sess == NULL)
+	{
+		return -1;
+	}
+	str_free(temp->p_send);
+	free((session *)temp);
 	return 0;
 }
 

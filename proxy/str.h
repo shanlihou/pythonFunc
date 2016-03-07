@@ -9,5 +9,7 @@ typedef struct
 
 int str_assign(st_str **str, const char *buf);
 int str_add(st_str** str, const char* buf);
+int str_nadd(st_str** str, const char* buf, int len);
+
 int str_free(st_str* str);
 #endif

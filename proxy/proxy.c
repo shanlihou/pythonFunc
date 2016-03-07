@@ -32,7 +32,7 @@ int set_non_block(int fd)
 }
 int findHostPort()
 {
-
+	return 0;
 }
 int main()
 {
@@ -140,10 +140,14 @@ int main()
 					}
 				}
 			}
-			else 
-			{
+			else if (events[i].events == EPOLLIN)
+			{//message in 
 				int done = 0;
 				session *sess = sess_get(events[i].data.fd);
+				if (sess == NULL)
+				{
+					printf("null sess get\n");
+				}
 				while(1)
 				{
 					ssize_t count;
@@ -164,6 +168,7 @@ int main()
 						done = 1;
 						break;
 					}
+					str_nadd(sess->p_send, buf, count);
 					ret = write(1, buf, count);
 					if (ret == -1)
 					{

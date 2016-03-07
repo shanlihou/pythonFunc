@@ -1,4 +1,7 @@
-#include <str.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "str.h"
 
 int str_assign(st_str** str, const char *buf)
 {
@@ -77,12 +80,9 @@ int str_add(st_str** str, const char* buf)
 	}
 	buf_len = strlen(buf);
 
-	if (*str == NULL)
+	if (*str == NULL || (*str)->p == NULL)
 	{
 		return str_assign(str, buf);
-	}else if ((*str)->p == NULL)
-	{
-		return str_assgin(str, buf);
 	}else
 	{
 		new_use = (*str)->cur_use_size + buf_len;
@@ -103,6 +103,40 @@ int str_add(st_str** str, const char* buf)
 	}
 	return 0;
 }
+int str_nadd(st_str** str, const char* buf, int len)
+{
+	int new_use;
+	char *p_temp;
+	if (buf == NULL)
+	{
+		printf("buf is null\n");
+		return -1;
+	}
+
+	if (*str == NULL || (*str)->p == NULL)
+	{
+		return str_assign(str, buf);
+	}else
+	{
+		new_use = (*str)->cur_use_size + len;
+		if ((*str)->max_size <= new_use)
+		{
+			(*str)->max_size = (new_use / 1024 + 1) * 1024;
+			p_temp = (*str)->p;
+			(*str)->p = (char*)realloc(p_temp, sizeof(char) * (*str)->max_size);
+			if ((*str)->p == NULL)
+			{
+				printf("*str p realloc failed\n");
+				return -1;
+			}
+		}
+		strncat((*str)->p + (*str)->cur_use_size, buf, len);
+		(*str)->p[new_use] = 0;
+		(*str)->cur_use_size = new_use;
+	}
+	return 0;
+}
+
 int str_free(st_str* str)
 {
 	if (str == NULL)
@@ -117,7 +151,7 @@ int str_free(st_str* str)
 		return -1;
 	}
 	free(str->p);
-	str->p = -1;
+	str->p = NULL;
 	free(str);
 	return 0;
 }
