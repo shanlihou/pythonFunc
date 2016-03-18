@@ -129,7 +129,10 @@ def FindHostPort(datas):
                 port = 80
             first_seg = datas.find("\r\n")
             first_line = datas[0:first_seg]
+            print("\nfirst line chaged:")
+            print(first_line)
             first_line = first_line.replace(" http://%s" % host_str, " ")
+            print(first_line)
             datas = first_line + datas[first_seg:]
     else:
         first_seg = datas.find("\r\n")

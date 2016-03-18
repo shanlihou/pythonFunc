@@ -1,1 +1,3 @@
-make proxy;./proxy
+make
+rm core
+./proxy
