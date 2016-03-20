@@ -1,3 +1,3 @@
-make
 rm core
+make &&\
 ./proxy

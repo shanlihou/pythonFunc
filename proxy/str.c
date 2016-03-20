@@ -80,6 +80,7 @@ int str_assign(st_str** str, const char *buf)
 int str_nassign(st_str** str, const char *buf, int buf_len)
 {
 	char *p_temp;
+	st_str *test;
 	if (str == NULL || buf == NULL || buf_len <= 0)
 	{
 		printf("null pointer!\n");
@@ -87,7 +88,9 @@ int str_nassign(st_str** str, const char *buf, int buf_len)
 	}
 	if (*str == NULL)
 	{
-		*str = (st_str *)malloc(sizeof(st_str));
+		LOGW("malloc :%d\n", sizeof(st_str));
+		test = (st_str *)calloc(1, sizeof(st_str));
+		*str = test;
 		if(*str == NULL)
 		{
 			printf("str malloc failed\n");
@@ -203,7 +206,7 @@ int str_nadd(st_str** str, const char* buf, int len)
 				return -1;
 			}
 		}
-		strncat((*str)->p + (*str)->cur_use_size, buf, len);
+		strncpy((*str)->p + (*str)->cur_use_size, buf, len);
 		(*str)->p[new_use] = 0;
 		(*str)->cur_use_size = new_use;
 	}
@@ -283,6 +286,7 @@ st_str *str_replace(st_str *str, const char *org, int org_len, const char *buf, 
 			temp += start + org_len;
 		}
 	}while(temp_len > 0);
+	kmp_free(org_pat);
 	return ret;
 }
 

@@ -366,6 +366,7 @@ def run_main(listen_fd):
             else:
                 continue
         #check time out
+		'''
         if cur_time - last_min_time > 20:
             last_min_time = cur_time
             objs = params.items()
@@ -376,7 +377,7 @@ def run_main(listen_fd):
                     clearfd(epoll_fd,params,key_fd)
                 elif fd_time < last_min_time:
                     last_min_time = fd_time
- 
+ '''
  
 if __name__ == "__main__":
     reload(sys)

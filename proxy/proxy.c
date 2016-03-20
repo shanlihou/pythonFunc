@@ -65,7 +65,7 @@ void *connect_sess(void *arg)
 	if (host == NULL)
 	{
 		herror("");
-		return NULL;
+		goto failed;
 	}
 	inet_ntop(AF_INET, (void *)host->h_addr_list[0], IPc, 16);
 	LOGD("host ip is :%s\n", IPc);
@@ -78,12 +78,13 @@ void *connect_sess(void *arg)
 	if (ret == -1)
 	{
 		perror("");
-		return NULL;
+		goto failed;
 	}
 	ret = set_non_block(next_sess->fd);
 	if (ret == -1)
 	{
 		LOGE("set non block failed\n");
+		goto failed;
 	}
 	sess->next_sess = next_sess;
 	next_sess->p_send = sess->p_read;
@@ -93,12 +94,18 @@ void *connect_sess(void *arg)
 	if (ret == -1)
 	{
 		LOGE("add sess failed\n");
+		goto failed;
 	}
 	LOGD("add fd:%d\n", next_sess->fd);
 
 	event.data.fd = next_sess->fd;
 	event.events = EPOLLIN | EPOLLET | EPOLLOUT;
 	ret = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, next_sess->fd, &event);
+	return NULL;
+failed:
+	sess_free(next_sess);
+	sess->next_sess = NULL;
+	clear_session(sess);
 	return NULL;
 }
 void my_handler(int s){
@@ -254,23 +261,8 @@ int main()
 		for (i = 0; i < n; i++)
 		{
 			LOGD("has fd:%d, evnets:%d\n", events[i].data.fd, events[i].events);
-			if((events[i].events & EPOLLERR)
-				|| (events[i].events & EPOLLHUP)
-				|| ((!(events[i].events & EPOLLIN)) && (!(events[i].events & EPOLLOUT))))
-			{
-				LOGE("events error\n");
-				sess = sess_get(events[i].data.fd);
-				if (sess != NULL)
-				{
-					clear_session(sess);
-				}else
-				{
-					LOGE("not find sess\n");
-					close(events[i].data.fd);
-				}
-				continue;
-			}
-			else if(server_fd == events[i].data.fd)
+			
+			if(server_fd == events[i].data.fd)
 			{
 				while(1)
 				{
@@ -355,7 +347,7 @@ int main()
 					}
 					else if (count == 0)
 					{
-						done = 1;
+						done = 2;
 						LOGW("count == 0\n");
 						break;
 					}
@@ -363,11 +355,31 @@ int main()
 //					ret = write(1, buf, count);
 					printf("finish read \n");
 				}
-				if (done)
+				if (done == 1)
 				{
 					process_data(sess);
+				}else if(done == 2)
+				{
+					clear_session(sess);
 				}
-			}else if (events[i].events == EPOLLOUT)
+			}
+			else if((events[i].events & EPOLLERR)
+				|| (events[i].events & EPOLLHUP)
+				|| (!(events[i].events & EPOLLOUT)))
+			{
+				LOGE("events error\n");
+				sess = sess_get(events[i].data.fd);
+				if (sess != NULL)
+				{
+					clear_session(sess);
+				}else
+				{
+					LOGE("not find sess\n");
+					close(events[i].data.fd);
+				}
+				continue;
+			}
+			else if (events[i].events == EPOLLOUT)
 			{
 				int cur = 0, count;
 				st_str *send;
@@ -389,7 +401,8 @@ int main()
 					count = write(sess->fd, send->p + cur, send->cur_use_size - cur);
 					if (count == -1)
 					{
-						break;;
+						LOGE("write error\n");
+						break;
 					}else if (count == send->cur_use_size - cur)
 					{
 						str_free(send);

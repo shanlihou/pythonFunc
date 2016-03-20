@@ -26,6 +26,7 @@ int sess_add(session *sess)
 	node->key = sess->fd;
 	node->data = (void*)sess;
 	tree_insert(&sess_head, node);
+	display_tree(sess_head);
 	return 0;
 }
 session *sess_get(int key)
@@ -135,7 +136,7 @@ int find_host_port(session *sess)
 		}
 		start += kmp_table[KMP_HOST]->length;
 		end = kmp(str_search->p + start, str_search->cur_use_size - start, kmp_table[KMP_ENTER]);
-		LOGD("kmp end find:%d\n", end);
+		LOGW("kmp end find:%d\n", end);
 		str_nassign(&(sess->host), str_search->p + start, end);
 		sess_get_port(sess);
 		str_delete_space(sess->host);

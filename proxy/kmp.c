@@ -43,7 +43,7 @@ st_kmp *init_kmp(const char *str)
 	strncpy(ret->pattern, str, len);
 	ret->pattern[len] = '\0';
 	ret->length = len;
-	ret->next = (unsigned int *)malloc(sizeof(int) * (len + 2));
+	ret->next = (unsigned int *)malloc(sizeof(unsigned int) * (len + 3));
 	if (ret->next == NULL)
 	{
 		free(ret->pattern);
