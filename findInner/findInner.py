@@ -89,7 +89,7 @@ elif (len(sys.argv) == 4):
 
 elif (len(sys.argv) == 3):
 	findYourDir(0, sys.argv[1], sys.argv[2], 'p')
-	qqCrackPrint()
+#	qqCrackPrint()
 
 
 
