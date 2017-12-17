@@ -16,6 +16,7 @@ core
 *.PS
 .project
 .pydevproject
+decrypt
 *.txt
 *.pkl
 
