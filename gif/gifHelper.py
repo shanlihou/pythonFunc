@@ -309,3 +309,5 @@ class gifHelper(object):
             self.insertFrame(i, 50)
         self.fileWrite.write(';')
         self.fileWrite.close()
+if __name__ == '__main__':
+    pass

@@ -19,4 +19,8 @@ core
 decrypt
 *.txt
 *.pkl
-
+*.gif
+*.pyc
+.settings
+*.pdf
+*.png
