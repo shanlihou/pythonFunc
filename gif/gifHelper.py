@@ -71,34 +71,57 @@ class gifHelper(object):
                     print self.get2(ord(i))
                 return tmp
     def parseF9(self, fRead):
-        print 'parseF9-----------------------------------------------------------'
+        tell = fRead.tell()
         block_size = ord(fRead.read(1))
-        print block_size
-        tmp = fRead.read(block_size)
-        print self.get2(ord(tmp[0]))
-        print ord(tmp[1]) + ord(tmp[2]) * 256
-        print ord(tmp[3])
-        tmp = fRead.read(1)
-        print ord(tmp)
-        return fRead.read(1)
-    def parseImage(self, fRead):
-        print 'parseImage-----------------------------------------------------------'
-        tmp = fRead.read(9)    
-        print ord(tmp[0]) + ord(tmp[1]) * 256
-        print ord(tmp[2]) + ord(tmp[3]) * 256
-        print ord(tmp[4]) + ord(tmp[5]) * 256
-        print ord(tmp[6]) + ord(tmp[7]) * 256
-        print self.get2(ord(tmp[8]))
+        self.formatPrint(tell, tell + 1, block_size, 'block size')
+        tell += 1
         
-        pixel = ord(tmp[8]) & 0x7
+        tmp = fRead.read(block_size)
+        self.formatPrint(tell, tell + 1, self.get2(ord(tmp[0])), 'res3:method3:i1:t1')
+        tell += 1
+        
+        self.formatPrint(tell, tell + 2, ord(tmp[1]) + ord(tmp[2]) * 256, 'delay time') 
+        tell += 2
+        
+        self.formatPrint(tell, tell + 1, ord(tmp[3]), 'transparent')
+        tell += 1
+        
+        tmp = fRead.read(1)
+        self.formatPrint(tell, tell + 1, ord(tmp), 'transparent')
+        print '_' * 60
+        return fRead.read(1)
+    def getBytes2Num(self, fRead):
+        return ord(fRead.read(1)) + ord(fRead.read(1)) * 256
+        
+    def parseImage(self, fRead):
+        tell = fRead.tell()
+        self.formatPrint(tell, tell + 2, self.getBytes2Num(fRead), 'x offset')
+        tell += 2
+        
+        self.formatPrint(tell, tell + 2, self.getBytes2Num(fRead), 'y offset')
+        tell += 2
+        
+        self.formatPrint(tell, tell + 2, self.getBytes2Num(fRead), 'width')
+        tell += 2
+        
+        self.formatPrint(tell, tell + 2, self.getBytes2Num(fRead), 'height')
+        tell += 2
+        
+        tmp = fRead.read(1)  
+        self.formatPrint(tell, tell + 1, self.get2(ord(tmp)), 'm1:i1:s1:r2:pix3')
+        tell += 1
+          
+        
+        pixel = ord(tmp) & 0x7
         pixel_size = int(math.pow(2, pixel + 1))
-        m = ord(tmp[8]) & 0x80
-        print 'pixel', pixel_size
+        m = ord(tmp) & 0x80
         if m == 0x80:
             tmp = fRead.read(3 * pixel_size)
              
         self.bit = 0
         BitsPerPixel = ord(fRead.read(1))
+        self.formatPrint(tell, tell + 1, BitsPerPixel, 'bits per pixel')
+        tell + 1
         ClearCode = int(math.pow(2, BitsPerPixel))
         EOFCode = ClearCode + 1
         RunningCode = EOFCode + 1
@@ -117,6 +140,7 @@ class gifHelper(object):
         print 'size:', size
         #output = dictCode[cur]
         output = ''
+        print fRead.tell()
         cur = self.fFetch(fRead, RunningBits)
         while cur != EOFCode:
             if cur == ClearCode:
@@ -133,6 +157,10 @@ class gifHelper(object):
                 #print dictCode
                 #print dictCode[cur]
                 #print pre, cur, RunningCode, RunningBits
+                print 'cur:', cur
+                print dictCode[cur]
+                print RunningCode
+                print fRead.tell()
                 dictCode[RunningCode - 1] = pre + dictCode[cur][0]
             pre = dictCode[cur]
             #print pre, cur, RunningCode, RunningBits
@@ -160,16 +188,20 @@ class gifHelper(object):
     def parseFlag(self, fRead):
         flag = fRead.read(1)
         while 1:
-            print flag
-            print len(flag)
-            print '%x' % ord(flag)
+            print '_' * 60
+            tell = fRead.tell()
             if flag == '!':
+                self.formatPrint(tell - 1, tell, '%02x' % ord(flag), 'flag')
+                tell += 1
+                
                 flag = fRead.read(1)
+                self.formatPrint(tell - 1, tell, '%02x' % ord(flag), 'flag')
                 if ord(flag) == 0xff:
                     flag = self.parseFF(fRead)
                 if ord(flag) == 0xf9:
                     flag = self.parseF9(fRead)
             elif flag == ',':
+                self.formatPrint(tell - 1, tell, '%02x' % ord(flag), 'image')
                 flag = self.parseImage(fRead)
             elif flag == '\0':
                 flag = fRead.read(1)
@@ -178,27 +210,32 @@ class gifHelper(object):
                 break
             else:
                 break
-                
+    def formatPrint(self, s, e, content, comment=''):
+        if not isinstance(content, str):
+            content = str(content)
+        print '%8d-%8d|%20s|%20s|' % (s, e, content, comment)
     def parseGif(self, fileName):
         fileRead = open(fileName, 'rb')
         tmp = fileRead.read(6)
-        print 'parse gif-------------------------------------------'
-        print tmp   
-        self.count += 6
-        print 'count:', '%x' % self.count
+        print 'parse header-------------------------------------------'
+        print '_' * 60   
+        self.formatPrint(0, 6, tmp, 'ver')
+        
         tmp = fileRead.read(7)
-        print ord(tmp[0]) + ord(tmp[1]) * 256
-        print ord(tmp[2]) + ord(tmp[3]) * 256
-        for i in tmp[4:]:
-            print self.get2(ord(i))
+        self.formatPrint(6, 8, ord(tmp[0]) + ord(tmp[1]) * 256, 'width')
+        self.formatPrint(8, 10, ord(tmp[2]) + ord(tmp[3]) * 256, 'height')
+        
+        comment = ['m1:cr3:s1:pixel3', 'bgColor', 'W:H']
+        for i in xrange(3):
+            self.formatPrint(i + 10, i + 11, self.get2(ord(tmp[i + 4])), comment[i])
         pixel = ord(tmp[4]) & 0x7
         pixel_size = int(math.pow(2, pixel + 1))
         m = ord(tmp[4]) & 0x80
-        print 'pixel', pixel_size
-        self.count += 7
-        print 'count:', '%x' % self.count
+        #print 'pixel', pixel_size
         if m == 0x80:
+            tell = fileRead.tell()
             tmp = fileRead.read(3 * pixel_size)
+            
             index_ = tmp.find(',')
             while index_ != -1:
                 print 'index:', index_
@@ -206,9 +243,8 @@ class gifHelper(object):
                 if index_tmp == -1:
                     break
                 index_ += 1 + index_tmp
-            self.count += 3 * pixel_size
-            print 'count:', '%x' % self.count
-            print fileRead.tell()
+            self.formatPrint(tell, tell + 3 * pixel_size, 'rgb * %d' % pixel_size, 'pixel_table')
+        print '_' * 60
         self.parseFlag(fileRead)
     
     def insertFrame(self, data, delayTime):
@@ -310,4 +346,5 @@ class gifHelper(object):
         self.fileWrite.write(';')
         self.fileWrite.close()
 if __name__ == '__main__':
-    pass
+    gif = gifHelper()
+    gif.parseGif('box.gif')
