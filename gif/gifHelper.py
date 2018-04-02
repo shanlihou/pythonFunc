@@ -33,7 +33,15 @@ class gifHelper(object):
         ret = 0
         while use < num:
             if self.bit == 0:
-                self.curByte = ord(fRead.read(1))
+                if not self.fSize:
+                    self.fSize = ord(fRead.read(1))
+                    print 'read size:', self.fSize
+                    print fRead.tell()
+                cur = fRead.read(1)
+                if not cur:
+                    print 'fSize:', self.fSize, num
+                self.curByte = ord(cur)
+                self.fSize -= 1
             right = self.bit
             mid = 8 - right
             left = 0
@@ -87,7 +95,7 @@ class gifHelper(object):
         tell += 1
         
         tmp = fRead.read(1)
-        self.formatPrint(tell, tell + 1, ord(tmp), 'transparent')
+        self.formatPrint(tell, tell + 1, ord(tmp), 'terminator')
         print '_' * 60
         return fRead.read(1)
     def getBytes2Num(self, fRead):
@@ -136,8 +144,8 @@ class gifHelper(object):
         for i in range(ClearCode):
             dictCode[i] = chr(i)
         size = ord(fRead.read(1))
-        tell1 = fRead.tell()
         print 'size:', size
+        self.fSize = size
         #output = dictCode[cur]
         output = ''
         print fRead.tell()
@@ -154,24 +162,14 @@ class gifHelper(object):
             elif cur == RunningCode - 1:
                 dictCode[RunningCode - 1] = pre + pre[0]
             else:
-                #print dictCode
-                #print dictCode[cur]
-                #print pre, cur, RunningCode, RunningBits
-                print 'cur:', cur
-                print dictCode[cur]
-                print RunningCode
-                print fRead.tell()
                 dictCode[RunningCode - 1] = pre + dictCode[cur][0]
             pre = dictCode[cur]
-            #print pre, cur, RunningCode, RunningBits
             output += pre
             RunningCode += 1
             cur = self.fFetch(fRead, RunningBits)
             if RunningCode == (1 << RunningBits):
                 RunningBits += 1
         print 'out len:', len(output)
-        tell2 = fRead.tell()
-        print 'tell:', tell1, tell2, tell2 - tell1
 
         strPrint = ''
         for i in output:
@@ -179,7 +177,7 @@ class gifHelper(object):
                 strPrint += '%d, ' % 0
             else:
                 strPrint += '%d, ' % 1
-        print strPrint
+        #print strPrint
         #test start
         #enc = lzw(5, output)
         #enc.encode()
@@ -217,7 +215,6 @@ class gifHelper(object):
     def parseGif(self, fileName):
         fileRead = open(fileName, 'rb')
         tmp = fileRead.read(6)
-        print 'parse header-------------------------------------------'
         print '_' * 60   
         self.formatPrint(0, 6, tmp, 'ver')
         
@@ -235,14 +232,6 @@ class gifHelper(object):
         if m == 0x80:
             tell = fileRead.tell()
             tmp = fileRead.read(3 * pixel_size)
-            
-            index_ = tmp.find(',')
-            while index_ != -1:
-                print 'index:', index_
-                index_tmp = tmp[index_+1:].find(',')
-                if index_tmp == -1:
-                    break
-                index_ += 1 + index_tmp
             self.formatPrint(tell, tell + 3 * pixel_size, 'rgb * %d' % pixel_size, 'pixel_table')
         print '_' * 60
         self.parseFlag(fileRead)
@@ -304,7 +293,7 @@ class gifHelper(object):
         strWrite += chr(width / 256)
         strWrite += chr(height % 256)
         strWrite += chr(height / 256)
-        strWrite += chr(0xa2)
+        strWrite += chr(0xf2)
         strWrite += chr(0)
         strWrite += chr(0)
         self.fileWrite.write(strWrite)

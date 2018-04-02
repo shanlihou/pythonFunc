@@ -15,13 +15,12 @@ class lzw(object):
             num = tmp
             bit /= 2
         return strRet
-    def putBit(self, bit, code):
-        #print 'put code start-----------------------:', bit, code
+    def putBit(self, bit, code=-1):
+        if bit == -1:
+            if self.wbit:
+                self.retData += chr(self.single)
+            return
         while bit:
-            #print 'first:'
-            #print self.get2(self.single)
-            #print self.get2(code)
-            #print bit, self.wbit
             if self.wbit == 0:
                 if bit >= 8:
                     self.single = self.masks[8] & code
@@ -45,14 +44,9 @@ class lzw(object):
                     left = 8 - wholeBit
                     bit = 0
                     self.wbit = wholeBit
-                #print 'second:'
-                #print self.get2(self.single)
-                #print self.get2(code)
-                #print mid, right
                 self.single += (code & self.masks[mid]) << right
                 code = code >> mid
                 if self.wbit == 0:
-                    ##print self.single
                     self.retData += chr(self.single)
         if self.wbit == 8:
             self.wbit = 0
@@ -85,9 +79,10 @@ class lzw(object):
         runCode += 1
         if runCode > 1 << runBits:
             runBits += 1      
-        self.putBit(runBits, endCode) 
+        self.putBit(runBits, endCode)
+        self.putBit(-1) 
+        '''
         strPrint = ''
-        #print len(self.retData)
         count = 0
         for i in self.retData:
             strPrint += '%x ' % ord(i)
@@ -95,6 +90,5 @@ class lzw(object):
             if count == 16:
                 count = 0
                 strPrint += '\n'
-        #print strPrint
-        #print '%x' % ord(pre)
+                '''
         return self.retData
