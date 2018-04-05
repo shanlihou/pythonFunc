@@ -51,9 +51,13 @@ class lzw(object):
         if self.wbit == 8:
             self.wbit = 0
     def encode(self):
+        #encode table
         dictCode = {}
+        #clear code
         clearCode = 1 << self.bit
+        #initial running bits
         runBits = self.bit + 1
+        #end code
         endCode = clearCode + 1
         runCode = endCode + 1
         for i in range(clearCode):
