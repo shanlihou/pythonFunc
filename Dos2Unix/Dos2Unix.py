@@ -1,22 +1,13 @@
-#listdir.py
-import os 
 import sys
-import re
-import platform
-
-def listyourdir(path): 
-	pattern = re.compile(r'\.sh$')
-	for i in os.listdir(path): 
-		fileName = path + '/' + i
-		if os.path.isdir(fileName):
-#			print ('     '*(level+1) + i)
-			listyourdir(fileName)
-		else:
-			find = pattern.search(fileName)
-			if (find):
-				print(fileName)
-				os.system('dos2unix ' + fileName)
-
-listyourdir(sys.argv[1])
-
-
+def dos2unix(fileName):
+	print(fileName)
+	fileRead = open(fileName, 'rb')
+	fileWrite = open(fileName + '.new', 'wb')
+	count = 0
+	for i in fileRead.read():
+		if (ord(i) == 13):
+			count = count + 1
+			continue
+		fileWrite.write(i)
+	print(count)
+dos2unix(sys.argv[1])
