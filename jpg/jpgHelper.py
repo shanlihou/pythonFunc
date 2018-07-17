@@ -2,7 +2,8 @@
 
 from math import *
 from display import display
-#@memoize
+from memoize import memoize
+@memoize
 def C(x):
     if x==0:
         return 1.0/sqrt(2.0)
