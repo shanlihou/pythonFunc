@@ -2,7 +2,7 @@
 #coding:utf-8 
 from jpgHelper import jpgHelper
 from display import display
-jpg = jpgHelper('D:\\mie.jpg')
+jpg = jpgHelper('box2.jpg')
 jpg.parser()
 jpg.test()
 display().display()

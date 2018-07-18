@@ -717,7 +717,7 @@ def display_image(data):
     mainloop()
 
 
-input_filename= sys.argv[1]
+input_filename= 'box2.jpg'
 input_file= open(input_filename, "rb")
 in_char= input_file.read(1)
 
@@ -784,14 +784,14 @@ display().displayData(data, 0)
 print "inverse discrete cosine transform"
 data= [for_each_du_in_mcu(mcu, idct) for mcu in data]
 
-
-jpg = jpgHelper('D:\\mie.jpg')
+'''
+jpg = jpgHelper('box2.jpg')
 jpg.parser()
 jpg.test()
 display().displayData(data, 2)
 display().display()
 display().test()
-
+'''
 print "combine mcu"
 data= map(combine_mcu, data)
 
