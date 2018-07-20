@@ -41,7 +41,7 @@ if __name__ == '__main__':
     elif len(sys.argv) == 4:
         listDir(sys.argv[1], sys.argv[2], 0, '-a')
     else:
-        listDir(r'E:\shgithub\cpp\kbengine',
-                '2.0.0', 0, '-a')
+        listDir(r'E:\svn\Dev\Client',
+                '61000089', 0, '-a')
         #listDir(r'E:\svn\Dev\Server\kbeWin\kbengine',
         print('end')
