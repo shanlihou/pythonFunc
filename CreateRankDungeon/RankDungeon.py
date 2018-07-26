@@ -4,10 +4,11 @@ import random
 import sys
 
 import TMX
-import mapDisplay
+#import mapDisplay
+
 
 class RankDungeon(object):
-    def __init__(self, root, startID, endID, count):
+    def __init__(self, root, startID, endID, count, everyMonCount):
         self.startID = startID
         self.endID = endID
         self.count = count
@@ -16,6 +17,7 @@ class RankDungeon(object):
         self.cards = []
         self.monsters = []
         self.boss = -1
+        self.everyMonCount = everyMonCount
         self.tmxList = {}
         self.oppoDoorDir = [2, 3, 0, 1]
         self.addPos = [(-32, 0), (0, -32), (32, 0), (0, 32)]
@@ -61,24 +63,20 @@ class RankDungeon(object):
             self.tmxList[id] = fullpath
 
     def randomMonster(self):
-        count = (self.count - 1) * 4 - 1
+        monCount = (self.count - 1) * self.everyMonCount
         monIds = list(map(lambda x: x['ID'], filter(
             lambda x: x['isOpen'], self.HDBD.values())))
         monsters = []
-        while count:
-            mons = random.sample(monIds, count)
-            for mon in mons:
-                if mon in monsters:
-                    continue
+        while monCount:
+            mon = random.choice(monIds)
+            monInfo = self.HDBD[mon]
+            if monInfo['type'] == 1:
+                if self.boss == -1:
+                    self.boss = mon
+                continue
 
-                monInfo = self.HDBD[mon]
-                if monInfo['type'] == 1:
-                    if self.boss == -1:
-                        self.boss = mon
-
-                    continue
-                monsters.append(mon)
-                count -= 1
+            monsters.append(mon)
+            monCount -= 1
 
         while self.boss == -1:
             mon = random.choice(monIds)
@@ -89,7 +87,7 @@ class RankDungeon(object):
             self.boss = mon
 
         for i in range(self.count - 1):
-            self.monsters.append(monsters[i * 4:i * 4 + 4])
+            self.monsters.append(monsters[i * self.everyMonCount:(i + 1) * self.everyMonCount])
 
     def randomCards(self):
         cards = []
@@ -233,11 +231,19 @@ class RankDungeon(object):
         tmx.test()
         print(self.cards)
 
-        mapDisp = mapDisplay.MapDisplay(self.mapCards,  self.monInfos)
-        mapDisp.test()
+        #mapDisp = mapDisplay.MapDisplay(self.mapCards,  self.monInfos)
+        # mapDisp.test()
 
 
 if __name__ == '__main__':
-    rank = RankDungeon(
-        r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 5)
-    rank.test()
+    if len(sys.argv) == 6:
+        path = sys.argv[1]
+        startId = int(sys.argv[2])
+        endId = int(sys.argv[3])
+        count = int(sys.argv[4])
+        everyMonCount = int(sys.argv[5])
+        rank = RankDungeon(path, startId, endId, count, everyMonCount)
+    else:
+        rank = RankDungeon(
+            r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 5, 3)
+        rank.test()
