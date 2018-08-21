@@ -62,9 +62,11 @@ if __name__ == '__main__':
         cp('e:\\')
         print '-' * 60
         deleteEmpty('E:\\889914')
-    else:
+    elif opt == 1:
         if len(sys.argv) == 3:
             if sys.argv[1] == 'cp':
                 cp(sys.argv[2])
             elif (sys.argv[1]) == 'del':
                 deleteEmpty(sys.argv[2])
+    elif opt == 2:
+        pass
