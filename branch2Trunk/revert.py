@@ -14,10 +14,13 @@ class Revert(object):
             if len(files) < 2:
                 continue
 
-            if files[0] == 'M' or files[0] == '!':
+            if files[0] == 'M' or files[0] == '!' or files[0] == 'C':
                 revertList.append(files[1])
             elif files[0] == 'D':
                 revertList.append(files[2])
+            elif files[0] == 'R':
+                revertList.append(files[3])
+
 
         for i in revertList:
             svnStr = 'svn revert %s' % i
@@ -49,5 +52,5 @@ if __name__ == '__main__':
         rev.test()
     elif opt == 1:
 
-        rev = Revert('E:\client2')
+        rev = Revert(r'E:\svn\Dev\Client')
         rev.show()

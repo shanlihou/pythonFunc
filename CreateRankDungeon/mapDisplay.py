@@ -4,10 +4,11 @@ from jpg import display
 
 
 class MapDisplay(object):
-    def __init__(self, cards, mons):
+    def __init__(self, cards, mons, crystals):
         self.width = 2
         self.cards = cards
         self.mons = mons
+        self.crystals = crystals
 
     def drawPoint(self, x, y, color):
         y = 150 - y
@@ -48,6 +49,12 @@ class MapDisplay(object):
             x, y = info['pos']
             print(x, y, info['name'])
             self.drawMons(x, y, info['area'])
+            
+        for crystal in self.crystals:
+            x, y = crystal.pos
+            y += 32
+            print('crystal:', x, y, crystal.oriPos)
+            self.drawPoint(x, y, 0xff8302)
 
     def test(self):
         display.display()
