@@ -6,7 +6,7 @@ import sys
 import math
 
 import TMX
-#import mapDisplay
+# import mapDisplay
 from _operator import pos
 
 
@@ -16,9 +16,10 @@ class Crystal(object):
         self.pos = pos
         self.group = group
         self.oriPos = pos
-        
+
     def getCrystalStr(self):
-        self.cryStr = '|'.join([str(self.id), '%.2f,%.2f' % self.pos, '0', '2', '0'])
+        self.cryStr = '|'.join(
+            [str(self.id), '%.2f,%.2f' % self.pos, '0', '2', '0'])
 
 
 class RankDungeon(object):
@@ -256,8 +257,8 @@ class RankDungeon(object):
 
             group += 1
 
-        monInfo = self.placeOneMonster(self.boss, self.mapCards[-1], group - 1)
-        monsterInfos.append(monInfo)
+        self.bossInfo = self.placeOneMonster(self.boss, self.mapCards[-1], group - 1)
+        # monsterInfos.append(monInfo)
         self.monInfos = monsterInfos
 
     def makeUpString(self):
@@ -267,6 +268,7 @@ class RankDungeon(object):
             map(lambda x: x['monStr'], self.monInfos))
         cryStr = '#'.join(map(lambda x: x.cryStr, self.crystals))
         strDict['Monster'] = strDict['Monster'] + '#' + cryStr
+        strDict['Boss'] = self.bossInfo['monStr']
         finalStr = json.dumps(strDict).replace(' ', '')
         print(finalStr)
         print('$createhome ' + finalStr)
@@ -303,6 +305,7 @@ class RankDungeon(object):
         tmx.test()
         print(self.cards)
         self.turnCrystal((9, 7), 45)
+        '''
         print('parse1')
         self.parseDungeonString('{"cards":"62000004|(-16,-16)|0#62000005|(-16,16)|0#62000007|(-48,-16)|0#62000006|(-48,16)|180","Monster":"61000102|(4.31,5.04)|186.63|2|2#61000074|(-23.14,-33.79)|85.58|2|3#61000078|(-26.35,-3.23)|137.52|2|4","Crystal":"6592054069488451585|(-30.2,-32)|0|2|3#6592054069488451591|(-27.8,4.22)|180|2|4"}')
         print('parse2')
@@ -311,12 +314,15 @@ class RankDungeon(object):
         self.parseDungeonString('{"cards":"62000004|(-16,-16)|0#62000005|(-16,16)|0#62000007|(-48,-16)|0#62000006|(-48,16)|180","Monster":"61000102|(4.31,5.04)|186.63|2|2#61000074|(-23.14,-33.79)|85.58|2|3#61000078|(-26.35,-3.23)|137.52|2|4","Crystal":"6592054060898516993|(-30.2,-32)|0|2|3#6592054065193484293|(-27.8,4.22)|180|2|4"}')
         print('parse4')
         self.parseDungeonString('{"cards":"62000004|(-16,-16)|0#62000005|(-16,16)|0#62000007|(-48,-16)|0#62000006|(-48,16)|180","Monster":"61000102|(4.31,5.04)|186.64|2|2#61000074|(-23.14,-33.79)|85.58|2|3#61000078|(-26.35,-3.23)|137.51|2|4#30040001|(-30.2,-32)|0|2|3","Crystal":"6592054065193484289|(-30.2,-32)|0|2|3#6592054065193484293|(-27.8,4.22)|0|2|4#6592054069488451589|(-27.8,4.22)|0|2|4"}')
-        # display
         '''
+        print('parse:')
+        self.parseDungeonString("{\"Monster\":\"61000135|(-4,27)|180.0|2|2#61000134|(10,14)|180.0|2|2#61000130|(-2,2)|180.0|2|2#61000135|(37,27)|180.0|2|3#61000130|(40,24)|180.0|2|3#61000131|(23,24)|180.0|2|3#61000134|(21,-17)|180.0|2|4#61000135|(19,-23)|180.0|2|4#61000133|(26,-26)|180.0|2|4#61000128|(30,-30)|180.0|2|4#30040001|1.80,16.00|0|2|0#30040001|36.22,11.80|0|2|0\",\"cards\":\"62000004|(-16,0)|90#62000007|(-16,32)|0#62000006|(16,32)|270#62000005|(16,0)|90\"}")
+        # display
+'''
         mapDisp = mapDisplay.MapDisplay(
             self.mapCards,  self.monInfos, self.crystals)
-        mapDisp.test()
-'''
+        mapDisp.test()'''
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 6:

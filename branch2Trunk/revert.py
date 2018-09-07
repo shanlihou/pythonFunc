@@ -15,16 +15,22 @@ class Revert(object):
                 continue
 
             if files[0] == 'M' or files[0] == '!' or files[0] == 'C':
-                revertList.append(files[1])
+                if files[1] == '+':
+                    fileName = ' '.join(files[2:])
+                else:
+                    fileName = ' '.join(files[1:])
+
+                revertList.append((fileName, line))
+
             elif files[0] == 'D':
-                revertList.append(files[2])
+                revertList.append((files[2], line))
             elif files[0] == 'R':
-                revertList.append(files[3])
+                revertList.append((files[3], line))
 
-
-        for i in revertList:
+        for i, line in revertList:
             svnStr = 'svn revert %s' % i
             print('revert:', svnStr)
+            print('origin:', line)
             os.system(svnStr)
 
         os.system('svn up')

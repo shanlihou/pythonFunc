@@ -1,6 +1,7 @@
 import math
 
 from jpg import display
+from jpg.display import displayInstance
 
 
 class MapDisplay(object):
@@ -49,12 +50,26 @@ class MapDisplay(object):
             x, y = info['pos']
             print(x, y, info['name'])
             self.drawMons(x, y, info['area'])
-            
+
         for crystal in self.crystals:
             x, y = crystal.pos
             y += 32
             print('crystal:', x, y, crystal.oriPos)
             self.drawPoint(x, y, 0xff8302)
+
+    @staticmethod
+    def getMapXY(x, y):
+        x /= 2
+        y /= 2
+        x -= 200
+        y = 118 - y
+        return x, y
+
+    @staticmethod
+    @displayInstance.callBack
+    def mouseMotion(x, y):
+        x, y = MapDisplay.getMapXY(x, y)
+        display.display().displayText('%d, %d' % (x, y), 0, 0)
 
     def test(self):
         display.display()

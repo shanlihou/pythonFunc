@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # coding:utf-8
 import threading
-
 import pygame
 from pygame.locals import *
 Lock = threading.Lock()
@@ -29,6 +28,8 @@ class display(object):
         self.num = num
         num += 1
         self.drawBack((255, 255, 255))
+        self.callbackDict = {}
+        self.font = pygame.font.SysFont('arial', 16)
 
     def drawBack(self, backColor):
         self.screen.fill(backColor)
@@ -100,11 +101,24 @@ class display(object):
                 # print red
                 display().drawPoint(offsetX + x * step, offsetY + y * step, red, step)
 
+    def callBack(self, func):
+        self.callbackDict[func.__name__] = func
+        return func
+
+    def displayText(self, text, x, y):
+        pygame.draw.rect(self.screen, (0xff, 0xff, 0xff), (0, 0, 100, 100))
+        self.screen.blit(self.font.render(text, True, (0, 0, 0)), (x, y))
+        pygame.display.update()
+
     def test(self):
         while True:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     exit()
+                elif event.type == MOUSEMOTION:
+                    if 'mouseMotion' in self.callbackDict:
+                        func = self.callbackDict['mouseMotion']
+                        func(*event.pos)
 
 
 if __name__ == '__main__':
@@ -112,6 +126,8 @@ if __name__ == '__main__':
     tester.drawPoint(15,  15, 0x889914, 9)
     tester.display()
     tester.test()
+
+displayInstance = display()
 '''
 while True:
     for event in pygame.event.get():

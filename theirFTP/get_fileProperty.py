@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # --*--codig: utf8 --*--
-import grp
-import pwd
+#import grp
+#import pwd
 import time
 import os
 import stat
@@ -22,7 +22,7 @@ def fileProperty(filepath):
         fullmode = ''
         fullmode += os.path.isdir(filepath) and 'd' or '-'
 
-        for i in xrange(9):
+        for i in range(9):
             fullmode += bool(mode & modes[i]) and 'rwxrwxrwx'[i] or '-'
         return fullmode
 
@@ -30,10 +30,12 @@ def fileProperty(filepath):
         return str(st.st_nlink)
 
     def _getUser( ):
-        return pwd.getpwuid(st.st_uid).pw_name
+        #return pwd.getpwuid(st.st_uid).pw_name
+        return ''
 
     def _getGroup( ):
-        return grp.getgrgid(st.st_gid).gr_name
+        #return grp.getgrgid(st.st_gid).gr_name
+        return ''
 
     def _getSize( ):
         return str(st.st_size)

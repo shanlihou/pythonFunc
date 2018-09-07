@@ -61,7 +61,7 @@ class TMX(object):
                 if self.mapList[pos[0]][pos[1]] == '1':
                     count1 += 1
 
-            door.append(True if count1 > 8 else False)
+            door.append(True if count1 >= 8 else False)
         self.door = door
 
     def parseXml(self):
