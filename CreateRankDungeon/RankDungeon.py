@@ -4,6 +4,7 @@ import os
 import random
 import sys
 import math
+import re
 
 import TMX
 # import mapDisplay
@@ -28,10 +29,7 @@ class RankDungeon(object):
         self.endID = endID
         self.count = count
         self.root = root
-        self.startPos = (-16, 0)
-        self.cards = []
-        self.monsters = []
-        self.boss = -1
+        self.startPos = (64, -64)
         self.everyMonCount = everyMonCount
         self.tmxList = {}
         self.oppoDoorDir = [2, 3, 0, 1]
@@ -40,6 +38,12 @@ class RankDungeon(object):
         self.card2Crystal = {62000006: (-4.2, -4.22),
                              62000007: (1.8, 0),
                              62000012: (6.94, -3.74)}
+        self.init()
+
+    def init(self):
+        self.cards = []
+        self.monsters = []
+        self.boss = -1
 
     def loadRank(self):
         dataPath = os.path.join(self.root, 'scripts\\data')
@@ -57,7 +61,7 @@ class RankDungeon(object):
         self.IWDDD = IWDDD.datas
         self.HDCD = HDCD.datas
         #self.CBD = CBD.datas
-        self.parseDungeonString(self.IWDDD[51000010]['dungeonString'])
+        # self.parseDungeonString(self.IWDDD[51000010]['dungeonString'])
 
     def loadTmx(self):
         tmxPath = os.path.join(self.root, r'res\spaces\field')
@@ -80,36 +84,31 @@ class RankDungeon(object):
             print(id, fb['isOpen'])
             if not fb['isOpen']:
                 continue
-
             self.tmxList[id] = fullpath
 
     def randomMonster(self):
         monCount = (self.count - 1) * self.everyMonCount
         monIds = list(map(lambda x: x['ID'], filter(
             lambda x: x['isOpen'], self.HDBD.values())))
+        commonMons = list(filter(lambda x: self.HDBD[x]['type'] != 1, monIds))
+        bossMons = list(filter(lambda x: self.HDBD[x]['type'] == 1, monIds))
         monsters = []
         while monCount:
-            mon = random.choice(monIds)
-            monInfo = self.HDBD[mon]
-            if monInfo['type'] == 1:
-                if self.boss == -1:
-                    self.boss = mon
-                continue
-
+            mon = random.choice(commonMons)
             monsters.append(mon)
             monCount -= 1
 
         while self.boss == -1:
-            mon = random.choice(monIds)
-            monInfo = self.HDBD[mon]
-            if monInfo['type'] != 1:
-                continue
-
+            mon = random.choice(bossMons)
             self.boss = mon
 
         for i in range(self.count - 1):
-            self.monsters.append(
-                monsters[i * self.everyMonCount:(i + 1) * self.everyMonCount])
+            monAdds = monsters[i *
+                               self.everyMonCount:(i + 1) * self.everyMonCount]
+            if i:
+                monAdds.append(random.choice(bossMons))
+
+            self.monsters.append(monAdds)
 
     def cardFilt(self, cardId):
         return cardId in self.cardFilter
@@ -136,19 +135,49 @@ class RankDungeon(object):
         return int((door - angle + 4) % 4)
 
     def getChoiceDoor(self, door, useDoor):
-        Door = list(filter(lambda x: door[x] and x != useDoor, range(4)))
+        Door = list(filter(lambda x: door[x] and x not in useDoor, range(4)))
         return random.choice(Door)
 
     def getTurnAngle(self, oppoDoor, curDoor):
         return ((curDoor + 4 - oppoDoor) % 4) * 90
 
-    def getNewCardInfo(self, info, card):
+    def getCouldUseDoor(self, useDict, fDoor, bDoor, useDoor):
+        retList = []
+        for fIndex, fd in enumerate(fDoor):
+            if not fd:
+                continue
+
+            if fIndex == useDoor:
+                continue
+
+            if fIndex in useDict:
+                bList = useDict[fIndex]
+                for bIndex, bd in enumerate(bDoor):
+                    if not bd:
+                        continue
+
+                    if bIndex in bList:
+                        continue
+
+                    retList.append(fIndex)
+                    break
+            else:
+                retList.append(fIndex)
+        return retList
+
+    def getNewCardInfo(self, info, card, useDict):
         newInfo = {}
-        print(info['id'], info['card'].door, info['useDoor'])
-        door = self.getChoiceDoor(info['card'].door, info['useDoor'])
+        print(info['id'], info['card'].door,
+              info['useDoor'], card[1].door, useDict)
+        couldUseDoorList = self.getCouldUseDoor(
+            useDict, info['card'].door, card[1].door, info['useDoor'])
+        if not couldUseDoorList:
+            return None, useDict
+        # door = self.getChoiceDoor(info['card'].door, info['useDoor'])
+        door = random.choice(couldUseDoorList)
         doorDir = self.getDoorDir(door, info['angle'])
         oppoDoor = self.oppoDoorDir[doorDir]
-        curDoor = self.getChoiceDoor(card[1].door, -1)
+        curDoor = self.getChoiceDoor(card[1].door, useDict.get(door, []))
         newPos = (info['pos'][0] + self.addPos[doorDir][0],
                   info['pos'][1] + self.addPos[doorDir][1])
 
@@ -160,7 +189,9 @@ class RankDungeon(object):
         newInfo['id'] = card[0]
         newInfo['useDoor'] = curDoor
         newInfo['cardStr'] = self.getCardStr(newInfo)
-        return newInfo
+        useDict.setdefault(door, [])
+        useDict[door].append(curDoor)
+        return newInfo, useDict
 
     def getCardStr(self, info):
         return '|'.join([str(info['id']), str(info['pos']), str(info['angle'])])
@@ -168,24 +199,63 @@ class RankDungeon(object):
     def placeCards(self):
         mapCards = []
         info = {}
-        info['pos'] = self.startPos
-        info['id'] = self.cards[0][0]
-        info['card'] = self.cards[0][1]
-        info['angle'] = 90
+        # fix end card
+        info['pos'] = (64, -48)
+        info['id'] = self.cards[1][0]
+        info['card'] = self.cards[1][1]
+        info['angle'] = 0
         info['useDoor'] = -1
-        info['cardStr'] = self.getCardStr(info)
         mapCards.append(info)
-        for card in self.cards[2:]:
-            info = self.getNewCardInfo(info, card)
-            mapCards.append(info)
-
-        info = self.getNewCardInfo(info, self.cards[1])
-        mapCards.append(info)
+        cards = self.cards[2:]
+        cards.append(self.cards[0])
+        self.cards = cards
+        self.recPlaceCard(mapCards, 0)
+        mapCards[0]['pos'] = self.startPos
+        mapCards[0]['cardStr'] = self.getCardStr(mapCards[0])
 
         for card in mapCards:
             print(card)
             print(card['card'].door)
         self.mapCards = mapCards
+
+    def isValidCardPos(self, mapCards, pos):
+        for index, mapCard in enumerate(mapCards):
+            cPos = mapCard['pos']
+            if not index:
+                cPos = self.startPos
+
+            w = mapCard['card'].w
+            h = mapCard['card'].h
+            for x, y in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+                x, y = pos[0] + 32 * x, pos[1] + 32 * y
+                if cPos[0] < x < cPos[0] + w and cPos[1] < y < cPos[1] + h:
+                    return False
+
+        return True
+
+    def recPlaceCard(self, mapCards, deep):
+        print('recP', mapCards, deep)
+        card = self.cards[deep]
+        useDict = {}
+        while 1:
+            info, useDict = self.getNewCardInfo(mapCards[-1], card, useDict)
+            if not info:
+                break
+
+            if not self.isValidCardPos(mapCards, info['pos']):
+                continue
+
+            mapCards.append(info)
+            if deep == len(self.cards) - 1:
+                return True
+
+            ret = self.recPlaceCard(mapCards, deep + 1)
+            if ret:
+                return True
+
+            del mapCards[-1]
+
+        return False
 
     def turnCrystal(self, pos, angle):
         angle = 360 - angle
@@ -198,7 +268,7 @@ class RankDungeon(object):
 
     def getCrystalPos(self, cryPos, cardPos):
         x = cryPos[0] + cardPos[0] + 16
-        y = cryPos[1] + cardPos[1] - 16
+        y = cryPos[1] + cardPos[1] + 16
         return x, y
 
     def randomCrystals(self):
@@ -239,7 +309,7 @@ class RankDungeon(object):
         monInfo['id'] = monID
         monInfo['area'] = areaRange
         monInfo['pos'] = (info['pos'][0] + pos[0],
-                          info['pos'][1] + pos[1] - 32)
+                          info['pos'][1] + pos[1])
         monInfo['name'] = self.HDBD[monID]['name']
         monInfo['monStr'] = self.getMonStr(monID, monInfo['pos'], group)
         print(monInfo['monStr'])
@@ -247,9 +317,9 @@ class RankDungeon(object):
 
     def placeMonster(self):
         monsterInfos = []
-        self.mapCards[0]['card'].getTurnMap(90)
+        # self.mapCards[0]['card'].getTurnMap(90)
         group = 2
-        for index, info in enumerate(self.mapCards[1:]):
+        for index, info in enumerate(self.mapCards[0: -1]):
             monsters = self.monsters[index]
             for monID in monsters:
                 monInfo = self.placeOneMonster(monID, info, group)
@@ -257,8 +327,10 @@ class RankDungeon(object):
 
             group += 1
 
-        self.bossInfo = self.placeOneMonster(self.boss, self.mapCards[-1], group - 1)
+        self.bossInfo = self.placeOneMonster(
+            self.boss, self.mapCards[0], 2)
         # monsterInfos.append(monInfo)
+        self.mapCards[-1]['card'].getTurnMap(self.mapCards[-1]['angle'])
         self.monInfos = monsterInfos
 
     def makeUpString(self):
@@ -270,6 +342,7 @@ class RankDungeon(object):
         strDict['Monster'] = strDict['Monster'] + '#' + cryStr
         strDict['Boss'] = self.bossInfo['monStr']
         finalStr = json.dumps(strDict).replace(' ', '')
+        self.finalStr = finalStr
         print(finalStr)
         print('$createhome ' + finalStr)
         self.parseDungeonString(finalStr)
@@ -297,11 +370,17 @@ class RankDungeon(object):
         tmx.parseAllInfo()
         return tmx
 
+    def getDungeonStr(self):
+        self.loadRank()
+        self.loadTmx()
+        self.generate()
+        return self.finalStr
+
     def test(self):
         self.loadRank()
         self.loadTmx()
         self.generate()
-        tmx = TMX.TMX(self.tmxList[62000011])
+        tmx = TMX.TMX(self.tmxList[62000012])
         tmx.test()
         print(self.cards)
         self.turnCrystal((9, 7), 45)
@@ -316,12 +395,54 @@ class RankDungeon(object):
         self.parseDungeonString('{"cards":"62000004|(-16,-16)|0#62000005|(-16,16)|0#62000007|(-48,-16)|0#62000006|(-48,16)|180","Monster":"61000102|(4.31,5.04)|186.64|2|2#61000074|(-23.14,-33.79)|85.58|2|3#61000078|(-26.35,-3.23)|137.51|2|4#30040001|(-30.2,-32)|0|2|3","Crystal":"6592054065193484289|(-30.2,-32)|0|2|3#6592054065193484293|(-27.8,4.22)|0|2|4#6592054069488451589|(-27.8,4.22)|0|2|4"}')
         '''
         print('parse:')
-        self.parseDungeonString("{\"Monster\":\"61000135|(-4,27)|180.0|2|2#61000134|(10,14)|180.0|2|2#61000130|(-2,2)|180.0|2|2#61000135|(37,27)|180.0|2|3#61000130|(40,24)|180.0|2|3#61000131|(23,24)|180.0|2|3#61000134|(21,-17)|180.0|2|4#61000135|(19,-23)|180.0|2|4#61000133|(26,-26)|180.0|2|4#61000128|(30,-30)|180.0|2|4#30040001|1.80,16.00|0|2|0#30040001|36.22,11.80|0|2|0\",\"cards\":\"62000004|(-16,0)|90#62000007|(-16,32)|0#62000006|(16,32)|270#62000005|(16,0)|90\"}")
+        self.parseDungeonString(
+            '{"cards":"62000004|(32,-80)|0#62000005|(64,-64)|0#62000007|(32,-48)|90#62000012|(0,-48)|180","Boss":"61000610|(73.4,-24.73)|212.89|2|2","Monster":"30040001|(48,-33.8)|0|2|3#30040001|(9.06,-28.26)|180|2|4"}')
+
         # display
-'''
+
         mapDisp = mapDisplay.MapDisplay(
             self.mapCards,  self.monInfos, self.crystals)
-        mapDisp.test()'''
+        mapDisp.test()
+
+
+class Generator(object):
+    def __init__(self, root, startID, endID, count, everyMonCount):
+        self.root = root
+        self.startId = startID
+        self.endId = endID
+        self.count = count
+        self.everyMonCount = everyMonCount
+        self.rank = RankDungeon(self.root, self.startId,
+                                self.endId, self.count, self.everyMonCount)
+        self.rank.loadRank()
+        self.rank.loadTmx()
+
+    def generator(self):
+        finalStrs = []
+        for i in range(10):
+            rank.init()
+            rank.generate()
+            print(rank.finalStr)
+            finalStrs.append(rank.finalStr)
+        print(finalStrs)
+
+    def createNewFile(self):
+        import innerWorldDungeon_rankDungeonInfo as IWDRID
+        fileName = self.root + '\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
+        pattern = re.compile(r'("dungeonString": )(.+)(,$)')
+        with open(fileName) as fr:
+            fw = open(fileName + '.new.py', 'w')
+            for line in fr:
+                find = pattern.search(line)
+                if find:
+                    self.rank.init()
+                    self.rank.generate()
+                    print(find.group(1))
+                    newLine = pattern.sub(
+                        r"\1'" + self.rank.finalStr + r"'\3", line)
+                    fw.write(newLine)
+                    continue
+                fw.write(line)
 
 
 if __name__ == '__main__':
@@ -333,6 +454,12 @@ if __name__ == '__main__':
         everyMonCount = int(sys.argv[5])
         rank = RankDungeon(path, startId, endId, count, everyMonCount)
     else:
-        rank = RankDungeon(
-            r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 4, 3)
-        rank.test()
+        opt = 1
+        if opt == 0:
+            rank = RankDungeon(
+                r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 4, 3)
+            rank.test()
+        else:
+            gen = Generator(
+                r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 4, 3)
+            gen.createNewFile()

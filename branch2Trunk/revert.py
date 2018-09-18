@@ -28,7 +28,7 @@ class Revert(object):
                 revertList.append((files[3], line))
 
         for i, line in revertList:
-            svnStr = 'svn revert %s' % i
+            svnStr = 'svn revert "%s"' % i
             print('revert:', svnStr)
             print('origin:', line)
             os.system(svnStr)

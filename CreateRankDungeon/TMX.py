@@ -61,10 +61,10 @@ class TMX(object):
                 if self.mapList[pos[0]][pos[1]] == '1':
                     count1 += 1
 
-            door.append(True if count1 >= 8 else False)
+            door.append(True if count1 >= 4 else False)
         self.door = door
 
-    def parseXml(self):
+    def parseXml_old(self):
         parser = xml.sax.make_parser()
         parser.setFeature(xml.sax.handler.feature_namespaces, 0)
         handler = TmxHandler()
@@ -73,6 +73,18 @@ class TMX(object):
         self.w = int(handler.mapInfo['width'])
         self.h = int(handler.mapInfo['height'])
         print(self.w, self.h)
+
+    def parseMap(self):
+        with open(self.path) as fr:
+            w, h = fr.readline().split()
+            self.w = int(w)
+            self.h = int(h)
+
+            mapStr = fr.readlines()
+            mapList = map(lambda x: x.replace('\n', '').split(), mapStr)
+            mapList = list(filter(lambda x: x, mapList))
+            print(mapList)
+            self.mapList = mapList
 
     def displayMap(self):
         x = 0
@@ -91,7 +103,7 @@ class TMX(object):
 
     def drawPoint(self, x, y, color):
         pass
-        #display.display().drawPoint(x * self.width, y * self.width, color, self.width)
+        # display.display().drawPoint(x * self.width, y * self.width, color, self.width)
 
     def x2y(self):
         newMap = []
@@ -129,7 +141,7 @@ class TMX(object):
 
     def printTurnMap(self):
         for line in self.turnMap:
-            print(line)
+            print(' '.join(line))
 
     def checkPosValid(self, pos, w, h):
         for x in range(w):
@@ -157,13 +169,19 @@ class TMX(object):
     def placeMonster(self, point, angle):
         self.getTurnMap(angle)
         point = list(map(lambda x: float(x), point.split(',')))
-        w, h, z = point
+        w, z, h = point
         w = math.ceil(w)
         h = math.ceil(h)
         xCheckList = []
         yCheckList = []
         markSet = set()
+        count = 0
         while 1:
+            count += 1
+            if count == 1000:
+                print(markSet)
+                self.printTurnMap()
+                print(w, h)
             x = random.randint(0, 31)
             y = random.randint(0, 31)
             if (x, y) in markSet:
@@ -175,8 +193,8 @@ class TMX(object):
                 return x, y
 
     def parseAllInfo(self):
-        self.parseXml()
-        self.getMap()
+        self.parseMap()
+        # self.getMap()
         self.getDoor()
 
     def test(self):

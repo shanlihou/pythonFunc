@@ -24,7 +24,7 @@ class MapDisplay(object):
             for yy, mark in enumerate(line):
                 if mark == '1':
                     color = 0x889914
-                elif mark == '9':
+                elif mark == '0':
                     color = 0x123456
                 elif mark == '2':
                     #color = 0x149988
@@ -33,7 +33,6 @@ class MapDisplay(object):
                 self.drawPoint(x + xx, y + yy, color)
 
     def drawMons(self, x, y, area):
-        y += 32
         w, h, z = eval(area)
         w = math.ceil(w)
         h = math.ceil(h)
@@ -53,7 +52,7 @@ class MapDisplay(object):
 
         for crystal in self.crystals:
             x, y = crystal.pos
-            y += 32
+            y
             print('crystal:', x, y, crystal.oriPos)
             self.drawPoint(x, y, 0xff8302)
 

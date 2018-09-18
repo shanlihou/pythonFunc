@@ -87,7 +87,7 @@ class WebTest(ui.View):
         self.testButton = button
 
     def testAction(self, sender):
-        ret = self.view.evaluate_javascript('alert("hello");')
+        ret = self.view.evaluate_javascript('alert("hello");1;')
         print('ret is:', ret)
 
     def layout(self):
