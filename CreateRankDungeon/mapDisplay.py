@@ -33,7 +33,7 @@ class MapDisplay(object):
                 self.drawPoint(x + xx, y + yy, color)
 
     def drawMons(self, x, y, area):
-        w, h, z = eval(area)
+        w, z, h = eval(area)
         w = math.ceil(w)
         h = math.ceil(h)
         for xx in range(w):

@@ -401,7 +401,7 @@ class RankDungeon(object):
             '{"cards":"62000004|(32,-80)|0#62000005|(64,-64)|0#62000007|(32,-48)|90#62000012|(0,-48)|180","Boss":"61000610|(73.4,-24.73)|212.89|2|2","Monster":"30040001|(48,-33.8)|0|2|3#30040001|(9.06,-28.26)|180|2|4"}')
 
         # display
-
+        import mapDisplay
         mapDisp = mapDisplay.MapDisplay(
             self.mapCards,  self.monInfos, self.crystals)
         mapDisp.test()
