@@ -434,16 +434,23 @@ class Generator(object):
             r'\Dev\Server\kbeWin\kbengine\assets\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
         fileNew = fileName + time.strftime('.%Y-%m-%H-%M-%S')
         pattern = re.compile(r'("dungeonString": )(.+)(,*$)')
+
+        def rep(m):
+            self.rank.init()
+            self.rank.generate()
+            retStr = m.group(1).title() + "'" + self.rank.finalStr + "'"
+            if m.group(2).title().endswith(','):
+                retStr += ','
+            retStr += m.group(3).title()
+            return retStr
+
         with open(fileName) as fr:
             fw = open(fileNew, 'w')
             for line in fr:
                 find = pattern.search(line)
                 if find:
-                    self.rank.init()
-                    self.rank.generate()
-                    print(find.group(1))
-                    newLine = pattern.sub(
-                        r"\1'" + self.rank.finalStr + r"'\3", line)
+                    # newLine = pattern.sub(r"\1'" + self.rank.finalStr + r"'\3", line)
+                    newLine = pattern.sub(rep, line)
                     fw.write(newLine)
                     continue
                 fw.write(line)
@@ -454,6 +461,7 @@ class Generator(object):
 
 
 if __name__ == '__main__':
+    assetsPath = os.path.join(config.SVN_ROOT, r'Dev\Server\kbeWin\kbengine\assets')
     if len(sys.argv) == 6:
         path = sys.argv[1]
         startId = int(sys.argv[2])
@@ -465,9 +473,9 @@ if __name__ == '__main__':
         opt = 1
         if opt == 0:
             rank = RankDungeon(
-                r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 4, 3)
+                assetsPath, 62000004, 62000005, 4, 3)
             rank.test()
         else:
             gen = Generator(
-                r'E:\svn\Dev\Server\kbeWin\kbengine\assets', 62000004, 62000005, 4, 3)
+                assetsPath, 62000004, 62000005, 4, 3)
             gen.createNewFile()

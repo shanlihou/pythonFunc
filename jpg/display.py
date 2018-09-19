@@ -23,7 +23,7 @@ class display(object):
     def __init__(self):
         global num
         pygame.init()
-        self.screen = pygame.display.set_mode((640, 480), 0, 32)
+        self.screen = pygame.display.set_mode((1024, 768), 0, 32)
         print('init:', num)
         self.num = num
         num += 1

@@ -61,7 +61,7 @@ class MapDisplay(object):
         x /= 2
         y /= 2
         x -= 200
-        y = 118 - y
+        y = 150 - y
         return x, y
 
     @staticmethod
