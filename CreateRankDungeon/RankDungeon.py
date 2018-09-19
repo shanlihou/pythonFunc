@@ -5,10 +5,13 @@ import random
 import sys
 import math
 import re
+import time
+import shutil
 
 import TMX
 # import mapDisplay
 from _operator import pos
+import config
 
 
 class Crystal(object):
@@ -226,10 +229,9 @@ class RankDungeon(object):
 
             w = mapCard['card'].w
             h = mapCard['card'].h
-            for x, y in [(0, 0), (0, 1), (1, 0), (1, 1)]:
-                x, y = pos[0] + 32 * x, pos[1] + 32 * y
-                if cPos[0] < x < cPos[0] + w and cPos[1] < y < cPos[1] + h:
-                    return False
+            if pos[0] + 32 > cPos[0] and pos[0] < cPos[0] + w and\
+                    pos[1] < cPos[1] + h and pos[1] + 32 > cPos[1]:
+                return False
 
         return True
 
@@ -428,10 +430,12 @@ class Generator(object):
 
     def createNewFile(self):
         import innerWorldDungeon_rankDungeonInfo as IWDRID
-        fileName = self.root + '\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
-        pattern = re.compile(r'("dungeonString": )(.+)(,$)')
+        fileName = config.SVN_ROOT + \
+            r'\Dev\Server\kbeWin\kbengine\assets\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
+        fileNew = fileName + time.strftime('.%Y-%m-%H-%M-%S')
+        pattern = re.compile(r'("dungeonString": )(.+)(,*$)')
         with open(fileName) as fr:
-            fw = open(fileName + '.new.py', 'w')
+            fw = open(fileNew, 'w')
             for line in fr:
                 find = pattern.search(line)
                 if find:
@@ -443,6 +447,10 @@ class Generator(object):
                     fw.write(newLine)
                     continue
                 fw.write(line)
+            fw.close()
+
+        dstDir = config.SVN_ROOT + r'\配置表\data\python'
+        shutil.copy(fileNew, dstDir)
 
 
 if __name__ == '__main__':
