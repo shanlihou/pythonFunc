@@ -110,6 +110,17 @@ class display(object):
         self.screen.blit(self.font.render(text, True, (0, 0, 0)), (x, y))
         pygame.display.update()
 
+    def loopOnce(self):
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exit()
+            elif event.type == MOUSEMOTION:
+                if 'mouseMotion' in self.callbackDict:
+                    func = self.callbackDict['mouseMotion']
+                    func(*event.pos)
+
+        return '1'
+
     def test(self):
         while True:
             for event in pygame.event.get():

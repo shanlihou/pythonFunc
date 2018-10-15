@@ -15,7 +15,7 @@ class Revert(object):
                 continue
 
             if files[0] == 'M' or files[0] == '!' or files[0] == 'C':
-                if files[1] == '+':
+                if files[1] == '+' or files[1] == 'C':
                     fileName = ' '.join(files[2:])
                 else:
                     fileName = ' '.join(files[1:])
@@ -55,6 +55,10 @@ if __name__ == '__main__':
 
         rev = Revert(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
+        rev.test()
+
+        rev = Revert(
+            r'E:\server\scripts\kbengine_unity3d_plugins')
         rev.test()
     elif opt == 1:
 

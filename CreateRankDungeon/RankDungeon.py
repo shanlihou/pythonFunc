@@ -12,6 +12,7 @@ import TMX
 # import mapDisplay
 from _operator import pos
 import config
+from test.test_audioop import datas
 
 
 class Crystal(object):
@@ -96,20 +97,20 @@ class RankDungeon(object):
         commonMons = list(filter(lambda x: self.HDBD[x]['type'] != 1, monIds))
         bossMons = list(filter(lambda x: self.HDBD[x]['type'] == 1, monIds))
         monsters = []
+        bossIter = iter(random.sample(bossMons, self.count - 1))
         while monCount:
             mon = random.choice(commonMons)
             monsters.append(mon)
             monCount -= 1
 
         while self.boss == -1:
-            mon = random.choice(bossMons)
-            self.boss = mon
+            self.boss = next(bossIter)
 
         for i in range(self.count - 1):
             monAdds = monsters[i *
                                self.everyMonCount:(i + 1) * self.everyMonCount]
             if i:
-                monAdds.append(random.choice(bossMons))
+                monAdds.append(next(bossIter))
 
             self.monsters.append(monAdds)
 
@@ -398,7 +399,7 @@ class RankDungeon(object):
         '''
         print('parse:')
         self.parseDungeonString(
-            '{"cards":"62000004|(32,-80)|0#62000005|(64,-64)|0#62000007|(32,-48)|90#62000012|(0,-48)|180","Boss":"61000610|(73.4,-24.73)|212.89|2|2","Monster":"30040001|(48,-33.8)|0|2|3#30040001|(9.06,-28.26)|180|2|4"}')
+            '{"Boss":"61000601|(95,-41)|180.0|2|2","Monster":"61000330|(66,-37)|180.0|2|2#61000412|(72,-37)|180.0|2|2#61000518|(69,-35)|180.0|2|2#61000311|(49,-29)|180.0|2|3#61000530|(56,-33)|180.0|2|3#61000418|(57,-28)|180.0|2|3#61000601|(51,-37)|180.0|2|3#61000419|(18,-36)|180.0|2|4#61000517|(16,-44)|180.0|2|4#61000308|(21,-22)|180.0|2|4#61000601|(12,-34)|180.0|2|4#30040001|41.06,-28.26|0|2|0#30040001|16.00,-33.80|0|2|0","cards":"62000005|(64,-64)|0#62000012|(32,-48)|180#62000007|(0,-48)|90#62000004|(0,-80)|0"}')
 
         # display
         import mapDisplay
@@ -416,6 +417,7 @@ class Generator(object):
         self.everyMonCount = everyMonCount
         self.rank = RankDungeon(self.root, self.startId,
                                 self.endId, self.count, self.everyMonCount)
+        self.bossList = []
         self.rank.loadRank()
         self.rank.loadTmx()
 
@@ -428,6 +430,34 @@ class Generator(object):
             finalStrs.append(rank.finalStr)
         print(finalStrs)
 
+    def createObj(self, index, dungeonId, bossId):
+        retStr = '"%d": {\n' % index + ' ' * 8 + '"ID": %d,\n' % dungeonId
+        retStr += ' ' * 8 + '"BOSSID": %d\n' % bossId + ' ' * 4 + '}'
+        return retStr
+
+    def createClientFile(self):
+        import innerWorldDungeon_rankDungeonInfo as IWDRID
+        dungeons = list(IWDRID.datas.keys())
+        dungeons.sort()
+        bossIter = iter(self.bossList)
+        objList = []
+        for index, dungeonId in enumerate(dungeons):
+            objStr = self.createObj(index + 1, dungeonId, next(bossIter))
+            objList.append(objStr)
+
+        dataStr = (',\n' + ' ' * 4).join(objList)
+        dataStr = '{\n' + ' ' * 4 + dataStr + '\n}'
+        filename = 'innerWorldDungeon.rankDungeonInfo.txt'
+        file1 = os.path.join(
+            config.SVN_ROOT, config.RANK_INFO_CLIENT1, filename)
+        with open(file1, 'w') as fw:
+            fw.write(dataStr)
+
+        file2 = os.path.join(
+            config.SVN_ROOT, config.RANK_INFO_CLIENT2, filename)
+        with open(file2, 'w') as fw:
+            fw.write(dataStr)
+
     def createNewFile(self):
         import innerWorldDungeon_rankDungeonInfo as IWDRID
         fileName = config.SVN_ROOT + \
@@ -438,10 +468,11 @@ class Generator(object):
         def rep(m):
             self.rank.init()
             self.rank.generate()
-            retStr = m.group(1).title() + "'" + self.rank.finalStr + "'"
-            if m.group(2).title().endswith(','):
+            retStr = m.group(1) + "'" + self.rank.finalStr + "'"
+            self.bossList.append(self.rank.boss)
+            if m.group(2).endswith(','):
                 retStr += ','
-            retStr += m.group(3).title()
+            retStr += m.group(3)
             return retStr
 
         with open(fileName) as fr:
@@ -459,9 +490,12 @@ class Generator(object):
         dstDir = config.SVN_ROOT + r'\配置表\data\python'
         shutil.copy(fileNew, dstDir)
 
+        self.createClientFile()
+
 
 if __name__ == '__main__':
-    assetsPath = os.path.join(config.SVN_ROOT, r'Dev\Server\kbeWin\kbengine\assets')
+    assetsPath = os.path.join(
+        config.SVN_ROOT, r'Dev\Server\kbeWin\kbengine\assets')
     if len(sys.argv) == 6:
         path = sys.argv[1]
         startId = int(sys.argv[2])
