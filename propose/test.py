@@ -2,6 +2,7 @@
 import asyncio
 
 from aiohttp import web
+from aiohttp import web_runner
 from Lib.display import display
 
 
@@ -31,6 +32,7 @@ async def displayLoop():
 
 async def init(loop):
     app = web.Application(loop=loop)
+    app = web_runner.AppRunner(app=app).app()
     app.router.add_route('GET', '/', index)
     app.router.add_route('GET', '/hello/{name}', hello)
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)
@@ -38,7 +40,11 @@ async def init(loop):
     display()
     return srv
 
-loop = asyncio.get_event_loop()
-tasks = [init(loop), displayLoop()]
-loop.run_until_complete(asyncio.wait(tasks))
-loop.run_forever()
+def start():
+    loop = asyncio.get_event_loop()
+    tasks = [init(loop), displayLoop()]
+    loop.run_until_complete(asyncio.wait(tasks))
+    loop.run_forever()
+
+if __name__ == '__main__':
+    pass

@@ -1,3 +1,4 @@
+#coding=utf-8
 import os
 import sys
 import re
@@ -21,7 +22,7 @@ def deleteEmpty(path):
                     listFormat.append(strFind.group(1))
     #print listFormat
     if len(listFormat) == 0:
-        print 'will delete:', path
+        print('will delete:', path)
         os.system('rd /s /q "' + path + '"')
     return listFormat
 def joinPath(path, name):
@@ -44,23 +45,23 @@ def cp(path):
                     cpList.append(joinPath(path, i))
                     #print(path + '\\' + i)
                     #shutil.move(path + '\\' + i, 'video\\' + i)
-    except Exception, e:
-        print e
+    except (Exception) as e:
+        print(e)
     lenToCp = len(cpList)
     if lenToCp > 0:
         if lenToCp < 5:
-            print cpList
+            print(cpList)
             #return
             for i in cpList:
                 #help(os)
                 shutil.move(i, 'e:\\889914\\video\\' + os.path.basename(i))
         else:
-            print 'len of %s is :%d' % (path, lenToCp)
+            print('len of %s is :%d' % (path, lenToCp))
 if __name__ == '__main__':
     opt = 0
     if opt == 0:
         cp('e:\\')
-        print '-' * 60
+        print('-' * 60)
         deleteEmpty('E:\\889914')
     elif opt == 1:
         if len(sys.argv) == 3:
