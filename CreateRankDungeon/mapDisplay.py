@@ -42,8 +42,8 @@ class MapDisplay(object):
 
     def displayMap(self):
         for info in self.cards:
-            x, y = info['pos']
-            self.drawCards(x, y, info['card'].turnMap)
+            x, y = info.pos
+            self.drawCards(x, y, info.card.turnMap)
 
         for info in self.mons:
             x, y = info['pos']

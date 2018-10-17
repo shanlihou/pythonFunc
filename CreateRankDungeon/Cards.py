@@ -46,13 +46,90 @@ class MapCardVal(object):
         self.angle = angle
         self.useDoor = useDoor
 
+    def getCardStr(self):
+        self.cardStr = '|'.join([str(self.id), str(self.pos), str(self.angle)])
+
 
 class MapCards(list):
+    oppoDoorDir = [2, 3, 0, 1]
+    addPos = [(-32, 0), (0, -32), (32, 0), (0, 32)]
+    startPos = (64, -64)
+
     def __init__(self, cards):
         self.cards = cards
 
+    def getCouldUseDoor(self, useDict, fDoor, bDoor, useDoor):
+        retList = []
+        for fIndex, fd in enumerate(fDoor):
+            if not fd:
+                continue
+
+            if fIndex == useDoor:
+                continue
+
+            if fIndex in useDict:
+                bList = useDict[fIndex]
+                for bIndex, bd in enumerate(bDoor):
+                    if not bd:
+                        continue
+
+                    if bIndex in bList:
+                        continue
+
+                    retList.append(fIndex)
+                    break
+            else:
+                retList.append(fIndex)
+        return retList
+
+    def getDoorDir(self, door, angle):
+        angle /= 90
+        return int((door - angle + 4) % 4)
+
+    def getChoiceDoor(self, door, useDoor):
+        Door = list(filter(lambda x: door[x] and x not in useDoor, range(4)))
+        return random.choice(Door)
+
+    def getTurnAngle(self, oppoDoor, curDoor):
+        return ((curDoor + 4 - oppoDoor) % 4) * 90
+
+    def getNewCardInfo(self, info, card, useDict):
+        newInfo = {}
+        couldUseDoorList = self.getCouldUseDoor(
+            useDict, info.card.door, card.tmx.door, info.useDoor)
+        if not couldUseDoorList:
+            return None, useDict
+        # door = self.getChoiceDoor(info['card'].door, info['useDoor'])
+        door = random.choice(couldUseDoorList)
+        doorDir = self.getDoorDir(door, info.angle)
+        oppoDoor = self.oppoDoorDir[doorDir]
+        curDoor = self.getChoiceDoor(card.tmx.door, useDict.get(door, []))
+        newPos = (info.pos[0] + self.addPos[doorDir][0],
+                  info.pos[1] + self.addPos[doorDir][1])
+
+        turnAngle = self.getTurnAngle(oppoDoor, curDoor)
+        newInfo = MapCardVal(newPos, card.cardId, card.tmx, turnAngle, curDoor)
+        newInfo.getCardStr()
+        useDict.setdefault(door, [])
+        useDict[door].append(curDoor)
+        return newInfo, useDict
+
+    def isValidCardPos(self, mapCards, pos):
+        for index, mapCard in enumerate(mapCards):
+            cPos = mapCard.pos
+            if not index:
+                cPos = self.startPos
+
+            w = mapCard.card.w
+            h = mapCard.card.h
+            if pos[0] + 32 > cPos[0] and pos[0] < cPos[0] + w and\
+                    pos[1] < cPos[1] + h and pos[1] + 32 > cPos[1]:
+                return False
+
+        return True
+
     def recPlaceCard(self, mapCards, deep):
-        print('recP', mapCards, deep)
+        print('recP', len(self.cards), deep)
         card = self.cards[deep]
         useDict = {}
         while 1:
@@ -60,7 +137,7 @@ class MapCards(list):
             if not info:
                 break
 
-            if not self.isValidCardPos(mapCards, info['pos']):
+            if not self.isValidCardPos(mapCards, info.pos):
                 continue
 
             mapCards.append(info)
@@ -80,15 +157,16 @@ class MapCards(list):
         # fix end card
         cardInfo = MapCardVal((64, -48), self.cards[1].cardId, self.cards[1].tmx, 0, -1)
         mapCards.append(cardInfo)
-        tmpCards = Cards(self.cards[2:])
+        tmpCards = self.cards[2:]
         tmpCards.append(self.cards[0])
         self.cards = tmpCards
         self.recPlaceCard(mapCards, 0)
-        mapCards[0]['pos'] = self.startPos
-        mapCards[0]['cardStr'] = self.getCardStr(mapCards[0])
+        mapCards[0].pos = self.startPos
+        mapCards[0].getCardStr()
 
         for card in mapCards:
             print(card)
-            print(card['card'].door)
-        self.mapCards = mapCards
+            print(card.card.door)
+
+        self.extend(mapCards)
 

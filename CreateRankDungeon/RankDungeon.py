@@ -37,8 +37,6 @@ class RankDungeon(object):
         self.startPos = (64, -64)
         self.everyMonCount = everyMonCount
         self.tmxList = {}
-        self.oppoDoorDir = [2, 3, 0, 1]
-        self.addPos = [(-32, 0), (0, -32), (32, 0), (0, 32)]
         self.cardFilter = [62000006, 62000007, 62000012]
         self.card2Crystal = {62000006: (-4.2, -4.22),
                              62000007: (1.8, 0),
@@ -118,131 +116,9 @@ class RankDungeon(object):
         self.cards = Cards.Cards(self.tmxList)
         self.cards.randomCards(self.startID, self.endID, self.count)
 
-    def getDoorDir(self, door, angle):
-        angle /= 90
-        return int((door - angle + 4) % 4)
-
-    def getChoiceDoor(self, door, useDoor):
-        Door = list(filter(lambda x: door[x] and x not in useDoor, range(4)))
-        return random.choice(Door)
-
-    def getTurnAngle(self, oppoDoor, curDoor):
-        return ((curDoor + 4 - oppoDoor) % 4) * 90
-
-    def getCouldUseDoor(self, useDict, fDoor, bDoor, useDoor):
-        retList = []
-        for fIndex, fd in enumerate(fDoor):
-            if not fd:
-                continue
-
-            if fIndex == useDoor:
-                continue
-
-            if fIndex in useDict:
-                bList = useDict[fIndex]
-                for bIndex, bd in enumerate(bDoor):
-                    if not bd:
-                        continue
-
-                    if bIndex in bList:
-                        continue
-
-                    retList.append(fIndex)
-                    break
-            else:
-                retList.append(fIndex)
-        return retList
-
-    def getNewCardInfo(self, info, card, useDict):
-        newInfo = {}
-        print(info['id'], info['card'].door,
-              info['useDoor'], card.tmx.door, useDict)
-        couldUseDoorList = self.getCouldUseDoor(
-            useDict, info['card'].door, card.tmx.door, info['useDoor'])
-        if not couldUseDoorList:
-            return None, useDict
-        # door = self.getChoiceDoor(info['card'].door, info['useDoor'])
-        door = random.choice(couldUseDoorList)
-        doorDir = self.getDoorDir(door, info['angle'])
-        oppoDoor = self.oppoDoorDir[doorDir]
-        curDoor = self.getChoiceDoor(card.tmx.door, useDict.get(door, []))
-        newPos = (info['pos'][0] + self.addPos[doorDir][0],
-                  info['pos'][1] + self.addPos[doorDir][1])
-
-        turnAngle = self.getTurnAngle(oppoDoor, curDoor)
-        print(door, doorDir, oppoDoor, curDoor)
-        newInfo['pos'] = newPos
-        newInfo['angle'] = turnAngle
-        newInfo['card'] = card.tmx
-        newInfo['id'] = card.cardId
-        newInfo['useDoor'] = curDoor
-        newInfo['cardStr'] = self.getCardStr(newInfo)
-        useDict.setdefault(door, [])
-        useDict[door].append(curDoor)
-        return newInfo, useDict
-
-    def getCardStr(self, info):
-        return '|'.join([str(info['id']), str(info['pos']), str(info['angle'])])
-
     def placeCards(self):
-        mapCards = []
-        info = {}
-        # fix end card
-        info['pos'] = (64, -48)
-        info['id'] = self.cards[1].cardId
-        info['card'] = self.cards[1].tmx
-        info['angle'] = 0
-        info['useDoor'] = -1
-        mapCards.append(info)
-        cards = self.cards[2:]
-        cards.append(self.cards[0])
-        self.cards = cards
-        self.recPlaceCard(mapCards, 0)
-        mapCards[0]['pos'] = self.startPos
-        mapCards[0]['cardStr'] = self.getCardStr(mapCards[0])
-
-        for card in mapCards:
-            print(card)
-            print(card['card'].door)
-        self.mapCards = mapCards
-
-    def isValidCardPos(self, mapCards, pos):
-        for index, mapCard in enumerate(mapCards):
-            cPos = mapCard['pos']
-            if not index:
-                cPos = self.startPos
-
-            w = mapCard['card'].w
-            h = mapCard['card'].h
-            if pos[0] + 32 > cPos[0] and pos[0] < cPos[0] + w and\
-                    pos[1] < cPos[1] + h and pos[1] + 32 > cPos[1]:
-                return False
-
-        return True
-
-    def recPlaceCard(self, mapCards, deep):
-        print('recP', mapCards, deep)
-        card = self.cards[deep]
-        useDict = {}
-        while 1:
-            info, useDict = self.getNewCardInfo(mapCards[-1], card, useDict)
-            if not info:
-                break
-
-            if not self.isValidCardPos(mapCards, info['pos']):
-                continue
-
-            mapCards.append(info)
-            if deep == len(self.cards) - 1:
-                return True
-
-            ret = self.recPlaceCard(mapCards, deep + 1)
-            if ret:
-                return True
-
-            del mapCards[-1]
-
-        return False
+        self.mapCards = Cards.MapCards(self.cards)
+        self.mapCards.placeCards()
 
     def turnCrystal(self, pos, angle):
         angle = 360 - angle
@@ -269,7 +145,7 @@ class RankDungeon(object):
         '''
         self.crystals = []
         for index, card in enumerate(self.mapCards):
-            cardId = card['id']
+            cardId = card.id
             if not self.cardFilt(cardId):
                 continue
             '''
@@ -280,8 +156,8 @@ class RankDungeon(object):
                     break
             '''
             pos = self.card2Crystal[cardId]
-            cardPos = card['pos']
-            cardAngle = card['angle']
+            cardPos = card.pos
+            cardAngle = card.angle
             crystal = Crystal(30040001, pos, index)
             pos = self.turnCrystal(pos, cardAngle)
             pos = self.getCrystalPos(pos, cardPos)
@@ -294,12 +170,12 @@ class RankDungeon(object):
 
     def placeOneMonster(self, monID, info, group):
         areaRange = self.HDBD[monID]['areaRange']
-        pos = info['card'].placeMonster(areaRange, info['angle'])
+        pos = info.card.placeMonster(areaRange, info.angle)
         monInfo = {}
         monInfo['id'] = monID
         monInfo['area'] = areaRange
-        monInfo['pos'] = (info['pos'][0] + pos[0],
-                          info['pos'][1] + pos[1])
+        monInfo['pos'] = (info.pos[0] + pos[0],
+                          info.pos[1] + pos[1])
         monInfo['name'] = self.HDBD[monID]['name']
         monInfo['monStr'] = self.getMonStr(monID, monInfo['pos'], group)
         print(monInfo['monStr'])
@@ -320,12 +196,12 @@ class RankDungeon(object):
         self.bossInfo = self.placeOneMonster(
             self.boss, self.mapCards[0], 2)
         # monsterInfos.append(monInfo)
-        self.mapCards[-1]['card'].getTurnMap(self.mapCards[-1]['angle'])
+        self.mapCards[-1].card.getTurnMap(self.mapCards[-1].angle)
         self.monInfos = monsterInfos
 
     def makeUpString(self):
         strDict = {}
-        strDict['cards'] = '#'.join(map(lambda x: x['cardStr'], self.mapCards))
+        strDict['cards'] = '#'.join(map(lambda x: x.cardStr, self.mapCards))
         strDict['Monster'] = '#'.join(
             map(lambda x: x['monStr'], self.monInfos))
         cryStr = '#'.join(map(lambda x: x.cryStr, self.crystals))
