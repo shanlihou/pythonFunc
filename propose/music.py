@@ -1,15 +1,11 @@
 #coding=utf-8
 import winsound
+import time
 
 class Music(object):
-    def __init__(self):
-        '''
-        self.HZ = {'c': 523, 'c#': 554, 'd': 587, 'd#': 622, 'e': 659, 'f': 698, 
-                   'f#': 740, 'g': 784, 'g#': 831, 'a': 880, 'a#': 932, 'b': 988}'''
-        self.HZ = {'1': 523, '1#': 554, '2': 587, '2#': 622, '3': 659, '4': 698, 
+    HZ = {'1': 523, '1#': 554, '2': 587, '2#': 622, '3': 659, '4': 698, 
                    '4#': 740, '5': 784, '5#': 831, '6': 880, '6#': 932, '7': 988}
-        self.high = {'h': 2, 'm': 1, 'l': 0.5}
-    
+    high = {'b': 4, 'h': 2, 'm': 1, 'l': 0.5}    
     
     def test1(self):
         step = 523 // 12
@@ -26,8 +22,9 @@ class Music(object):
             print(i, i - last)
             last = i
             winsound.Beep(i, 500)
-            
-    def playPitch(self, pitch):
+        
+    @classmethod    
+    def playPitch(cls, pitch):
         pIter = iter(pitch)
         p = next(pIter)
         tmp = next(pIter)
@@ -37,26 +34,33 @@ class Music(object):
             
         high = tmp
         duration = float(''.join(list(pIter)))
-        hz = self.HZ[p] * self.high[high]
-        duration = int(duration * 170)
+        duration = int(duration * 250)
+        if p == '0':
+            time.sleep(duration / 1000)
+            return
+            
+        hz = cls.HZ[p] * cls.high[high]
         print(p, high, duration, hz)
         winsound.Beep(hz, duration)
     
-    def playSec(self, sec):
+    @classmethod
+    def playSec(cls, sec):
         pitchs = sec.split(',')
         for pitch in pitchs:
-            self.playPitch(pitch)
+            cls.playPitch(pitch)
     
     
     def playFile(self, fileName):
+        start = 34
         with open(fileName) as fr:
             musicData = fr.read()
             secs = musicData.split('\n')
             for sec in secs:
                 if sec.startswith('n'):
                     continue
-                
-                self.playSec(sec)
+                start -= 1
+                if start < 0:
+                    self.playSec(sec)
             
     def test(self):
         self.playFile('canon.txt')

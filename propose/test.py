@@ -4,6 +4,7 @@ import asyncio
 from aiohttp import web
 from aiohttp import web_runner
 from Lib.display import display
+from propose.music import Music
 
 
 async def index(request):
@@ -14,8 +15,10 @@ async def index(request):
 async def hello(request):
     await asyncio.sleep(0.5)
     text = '<h1>hello, %s!</h1>' % request.match_info['name']
+    help(request)
     display().drawPoint(15,  15, 0x889914, 9)
     display().display()
+    Music.playPitch(request.match_info['name'])
     return web.Response(body=text.encode('utf-8'))
 
 
@@ -47,4 +50,4 @@ def start():
     loop.run_forever()
 
 if __name__ == '__main__':
-    pass
+    start()
