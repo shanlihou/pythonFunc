@@ -9,6 +9,7 @@ import time
 import shutil
 
 import TMX
+import Cards
 # import mapDisplay
 from _operator import pos
 import config
@@ -45,7 +46,6 @@ class RankDungeon(object):
         self.init()
 
     def init(self):
-        self.cards = []
         self.monsters = []
         self.boss = -1
 
@@ -114,25 +114,9 @@ class RankDungeon(object):
 
             self.monsters.append(monAdds)
 
-    def cardFilt(self, cardId):
-        return cardId in self.cardFilter
-
     def randomCards(self):
-        cards = []
-        cards.extend((self.startID, self.endID))
-        count = self.count - 2
-        # 过滤地块id
-        tmxIds = list(filter(self.cardFilt, self.tmxList.keys()))
-        while count:
-            tmxs = random.sample(tmxIds, count)
-            for tmx in tmxs:
-                if tmx not in cards:
-                    cards.append(tmx)
-                    count -= 1
-
-        for card in cards:
-            tmx = self.parseTmx(card)
-            self.cards.append((card, tmx))
+        self.cards = Cards.Cards(self.tmxList)
+        self.cards.randomCards(self.startID, self.endID, self.count)
 
     def getDoorDir(self, door, angle):
         angle /= 90
@@ -172,16 +156,16 @@ class RankDungeon(object):
     def getNewCardInfo(self, info, card, useDict):
         newInfo = {}
         print(info['id'], info['card'].door,
-              info['useDoor'], card[1].door, useDict)
+              info['useDoor'], card.tmx.door, useDict)
         couldUseDoorList = self.getCouldUseDoor(
-            useDict, info['card'].door, card[1].door, info['useDoor'])
+            useDict, info['card'].door, card.tmx.door, info['useDoor'])
         if not couldUseDoorList:
             return None, useDict
         # door = self.getChoiceDoor(info['card'].door, info['useDoor'])
         door = random.choice(couldUseDoorList)
         doorDir = self.getDoorDir(door, info['angle'])
         oppoDoor = self.oppoDoorDir[doorDir]
-        curDoor = self.getChoiceDoor(card[1].door, useDict.get(door, []))
+        curDoor = self.getChoiceDoor(card.tmx.door, useDict.get(door, []))
         newPos = (info['pos'][0] + self.addPos[doorDir][0],
                   info['pos'][1] + self.addPos[doorDir][1])
 
@@ -189,8 +173,8 @@ class RankDungeon(object):
         print(door, doorDir, oppoDoor, curDoor)
         newInfo['pos'] = newPos
         newInfo['angle'] = turnAngle
-        newInfo['card'] = card[1]
-        newInfo['id'] = card[0]
+        newInfo['card'] = card.tmx
+        newInfo['id'] = card.cardId
         newInfo['useDoor'] = curDoor
         newInfo['cardStr'] = self.getCardStr(newInfo)
         useDict.setdefault(door, [])
@@ -205,8 +189,8 @@ class RankDungeon(object):
         info = {}
         # fix end card
         info['pos'] = (64, -48)
-        info['id'] = self.cards[1][0]
-        info['card'] = self.cards[1][1]
+        info['id'] = self.cards[1].cardId
+        info['card'] = self.cards[1].tmx
         info['angle'] = 0
         info['useDoor'] = -1
         mapCards.append(info)
@@ -273,6 +257,9 @@ class RankDungeon(object):
         x = cryPos[0] + cardPos[0] + 16
         y = cryPos[1] + cardPos[1] + 16
         return x, y
+
+    def cardFilt(self, cardId):
+        return cardId in self.cardFilter
 
     def randomCrystals(self):
         '''
@@ -367,11 +354,6 @@ class RankDungeon(object):
             for i in mod:
                 print(i)
             print('-' * 60)
-
-    def parseTmx(self, tmxID):
-        tmx = TMX.TMX(self.tmxList[tmxID])
-        tmx.parseAllInfo()
-        return tmx
 
     def getDungeonStr(self):
         self.loadRank()

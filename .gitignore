@@ -26,3 +26,5 @@ decrypt
 *.png
 *.bak
 *.rar
+*.xml
+*.iml
