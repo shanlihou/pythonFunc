@@ -3,6 +3,7 @@ from ast import parse
 import math
 import random
 import xml.sax
+import copy
 
 
 class TmxHandler(xml.sax.ContentHandler):
@@ -27,7 +28,8 @@ class TmxHandler(xml.sax.ContentHandler):
 
 
 class TMX(object):
-    def __init__(self, path):
+    def __init__(self, path, id):
+        self.id = id
         self.path = path
         self.width = 9
         self.dir = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -36,6 +38,9 @@ class TMX(object):
                          lambda x, y: (31 - y, x),
                          lambda x, y: (31 - x, 31 - y),
                          lambda x, y: (y, 31 - x)]
+
+    def init(self):
+        self.turnMap = None
 
     def getMap(self):
         fileRead = open(self.path, 'rb').read()
@@ -121,7 +126,7 @@ class TMX(object):
 
         newMap = []
         if not angle:
-            self.turnMap = self.mapList
+            self.turnMap = copy.copy(self.mapList)
             self.turnMap.reverse()
             self.x2y()
             return
@@ -182,8 +187,9 @@ class TMX(object):
                 print(markSet)
                 self.printTurnMap()
                 print(w, h)
-            x = random.randint(0, 31)
-            y = random.randint(0, 31)
+                return None, None
+            x = random.randint(0, self.w)
+            y = random.randint(0, self.h)
             if (x, y) in markSet:
                 continue
 

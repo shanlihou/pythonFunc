@@ -10,10 +10,10 @@ import shutil
 
 import TMX
 import Cards
+import Plunder
 # import mapDisplay
 from _operator import pos
 import config
-from test.test_audioop import datas
 
 
 class Crystal(object):
@@ -241,7 +241,7 @@ class RankDungeon(object):
         self.loadRank()
         self.loadTmx()
         self.generate()
-        tmx = TMX.TMX(self.tmxList[62000012])
+        tmx = TMX.TMX(self.tmxList[62000012], 62000012)
         tmx.test()
         print(self.cards)
         self.turnCrystal((9, 7), 45)
@@ -362,12 +362,16 @@ if __name__ == '__main__':
         everyMonCount = int(sys.argv[5])
         rank = RankDungeon(path, startId, endId, count, everyMonCount)
     else:
-        opt = 1
+        opt = 2
         if opt == 0:
             rank = RankDungeon(
                 assetsPath, 62000004, 62000005, 4, 3)
             rank.test()
-        else:
+        elif opt == 1:
             gen = Generator(
-                assetsPath, 62000004, 62000005, 4, 3)
+                assetsPath, 62000004, 62000005, 4, 4)
             gen.createNewFile()
+        else:
+            plunder = Plunder.Plunder(
+                assetsPath, 62000004, 62000005, 4, 3)
+            plunder.test()

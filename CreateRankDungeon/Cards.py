@@ -1,6 +1,7 @@
 import random
 import TMX
 
+
 class CardVal(object):
     def __init__(self, cardId, tmx):
         self.cardId = cardId
@@ -17,11 +18,33 @@ class Cards(list):
         return cardId in self.cardFilter
 
     def parseTmx(self, tmxID):
-        tmx = TMX.TMX(self.tmxList[tmxID])
+        print('tmxID:', tmxID)
+        tmx = TMX.TMX(self.tmxList[tmxID], tmxID)
         tmx.parseAllInfo()
         return tmx
 
     def randomCards(self, startId, endId, count):
+        cards = []
+        cards.extend((startId, endId))
+        count = count - 2
+        # 过滤地块id
+        tmxIds = list(filter(self.cardFilt, self.tmxList.keys()))
+        while count:
+            cards.append(random.choice(tmxIds))
+            count -= 1
+            continue
+            '''
+            tmxs = random.sample(tmxIds, count)
+            for tmx in tmxs:
+                if tmx not in cards:
+                    cards.append(tmx)
+                    count -= 1'''
+
+        for card in cards:
+            tmx = self.parseTmx(card)
+            self.append(CardVal(card, tmx))
+
+    def randomCards2(self, startId, endId, count):
         cards = []
         cards.extend((startId, endId))
         count = count - 2
@@ -37,6 +60,7 @@ class Cards(list):
         for card in cards:
             tmx = self.parseTmx(card)
             self.append(CardVal(card, tmx))
+
 
 class MapCardVal(object):
     def __init__(self, pos, id, card, angle, useDoor):
@@ -155,7 +179,8 @@ class MapCards(list):
     def placeCards(self):
         mapCards = []
         # fix end card
-        cardInfo = MapCardVal((64, -48), self.cards[1].cardId, self.cards[1].tmx, 0, -1)
+        cardInfo = MapCardVal(
+            (64, -48), self.cards[1].cardId, self.cards[1].tmx, 0, -1)
         mapCards.append(cardInfo)
         tmpCards = self.cards[2:]
         tmpCards.append(self.cards[0])
@@ -169,4 +194,3 @@ class MapCards(list):
             print(card.card.door)
 
         self.extend(mapCards)
-
