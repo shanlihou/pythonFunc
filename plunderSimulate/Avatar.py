@@ -26,6 +26,7 @@ class Avatar(object):
         self.attackTimes = 0
         self.beingAttackTimes = 0
         self.days = 0
+        self.effect = random.randint(*config.effect)
         self.startInfo = '---*--- init ---*---\n'\
             'score:{}\nlingqiLevel:{}\ncangkuLevel:{}\nlingStone:{}\nhunStone:{}\n'.format(self.score, self.lqLv, self.ckLv, self.ling, self.hun) +\
             '---*--- init ---*---\n'
@@ -167,6 +168,7 @@ class Avatar(object):
         strPrint += 'xiancao:{}\n'.format(self.exData.get(30000009, 0))
         strPrint += 'attackTimes:{}\n'.format(self.attackTimes)
         strPrint += 'beingAttack:{}\n'.format(self.beingAttackTimes)
+        strPrint += 'effect:{}\n'.format(self.effect)
         strPrint += '\n' + '-' * 30 + '\n'
         return strPrint
 

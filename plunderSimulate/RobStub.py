@@ -169,6 +169,9 @@ class RobStub(object):
             matchList = list(
                 filter(lambda x: x.ownerGbId != playerGbId, matchList))
             if not matchList:
+                if not enlargeRange:
+                    break
+
                 addRange += enlargeRange
                 continue
 

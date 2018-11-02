@@ -19,6 +19,7 @@ import rewardData_rewardData as RDDT
 import building_cangku as BCKD
 import building_base
 import building_explore as BED
+import formula_generalFormula as FGFD
 
 if __name__ == '__main__':
     pass

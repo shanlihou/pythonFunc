@@ -7,6 +7,7 @@ from DATA import BCKD
 from DATA import PSD
 from DATA import gameconst
 from DATA import BSGD
+from DATA import FGFD
 
 class PlunderRewardCtx(object):
     def __init__(self, selfLingqiLv, lingStone, hunStone, targetSpaceGateLv, completion, selfSpaceGateLv, targetCangkuLv,
@@ -29,8 +30,8 @@ def _randomValue(origin, rangeStr, minValue):
     return max(random.randint(origin - rangeValue, origin + rangeValue), minValue)
 
 
-def calcCompletion(Ra, Rb):
-    return (1 + random.randint(1, config.K) / 100) / (1 + 10 ** ((Ra - Rb) / 400))
+def calcCompletion(Ra, Rb, Za, Zb):
+    return min(1, max(0, (Za / Zb + random.randint(1, config.K) / 100) / (1 + 10 ** ((Rb - Ra) / 400))))
 
 
 def eloCalc(Ra, Rb, completion):
@@ -49,13 +50,19 @@ def eloCalc(Ra, Rb, completion):
         return Ra2, Rb2
 
 
+def _calcEffective(ownerId, lingqiLv):
+    effective = FGFD.datas[34000002]['serverFormula']({'level': lingqiLv})
+    count = ((ownerId // gameconst.PLUNDER_MAX_COUNT) + 1) * 4
+    return effective * count
+
+
 def plunder(aGbId, dGbId):
     aAvatar = Avatar.AvatarPool().getAvatar(aGbId)
     aSpaceGateLv = utils.getWarpGateLevel(aAvatar.score)
     if utils.isAvatar(dGbId):
         dAvatar = Avatar.AvatarPool().getAvatar(dGbId)
         targetScore = dAvatar.score
-        completion = calcCompletion(aAvatar.score, dAvatar.score)
+        completion = calcCompletion(aAvatar.score, dAvatar.score, aAvatar.effect, dAvatar.effect)
         dSpaceGateLv = utils.getWarpGateLevel(dAvatar.score)
         prCtx = PlunderRewardCtx(aAvatar.lqLv, dAvatar.ling, dAvatar.hun, dSpaceGateLv, completion, aSpaceGateLv, dAvatar.ckLv,
                          dAvatar.lqLv, aAvatar.score, dAvatar.score, aAvatar.ckLv)
@@ -78,7 +85,8 @@ def plunder(aGbId, dGbId):
         hunStone = random.randint(int(hunStoneMax * cangkuData['systemWorldHunStoneMin']),
                                   int(hunStoneMax * cangkuData['systemWorldHunStoneMax']))
 
-        completion = calcCompletion(aAvatar.score, targetScore)
+        dEffect = _calcEffective(dGbId, targetLingqiLv)
+        completion = calcCompletion(aAvatar.score, targetScore, aAvatar.effect, dEffect)
 
         prCtx = PlunderRewardCtx(aAvatar.lqLv, lingStone, hunStone, dSpaceGateLv, completion, aSpaceGateLv, targetCangkuLv,
                  targetLingqiLv, aAvatar.score, targetScore, aAvatar.ckLv)
