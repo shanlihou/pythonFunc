@@ -4,7 +4,7 @@ import os
 class Commit(object):
     def __init__(self, path):
         self.path = path
-        
+
     def push(self):
         os.system('git add -A')
         os.system("git commit -m 'auto'")
