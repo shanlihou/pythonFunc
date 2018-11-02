@@ -23,6 +23,7 @@ class Commit(object):
         print(isNeed)
         if isNeed:
             self.push()
+        print('finished')
 
 
 if __name__ == '__main__':
