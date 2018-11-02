@@ -1,12 +1,13 @@
 import os
 import sys
+import config
 
-g_root = r'E:\svn'
-dataPath = os.path.join(g_root, r'Dev\Server\kbeWin\kbengine\assets\scripts\server_common')
+
+dataPath = os.path.join(config.root, r'Dev\Server\kbeWin\kbengine\assets\scripts\server_common')
 sys.path.append(dataPath)
-dataPath = os.path.join(g_root, r'Dev\Server\kbeWin\kbengine\assets\scripts\data')
+dataPath = os.path.join(config.root, r'Dev\Server\kbeWin\kbengine\assets\scripts\data')
 sys.path.append(dataPath)
-dataPath = os.path.join(g_root, r'Dev\Server\kbeWin\kbengine\assets\scripts\user_type')
+dataPath = os.path.join(config.root, r'Dev\Server\kbeWin\kbengine\assets\scripts\user_type')
 sys.path.append(dataPath)
 import gameconst
 import building_spaceGate as BSGD

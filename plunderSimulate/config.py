@@ -6,4 +6,5 @@ lingqiLevel = (1, 9)
 K = 40
 A1 = 0.5
 A2 = 0.5
+root = r'E:\svn'
 output_file = 'out.txt'

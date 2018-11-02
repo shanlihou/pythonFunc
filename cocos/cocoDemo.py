@@ -1,5 +1,6 @@
 import cocos
 from cocos.actions import *
+from django.utils import duration
 
 
 class HelloWorld(cocos.layer.Layer):
@@ -21,13 +22,18 @@ class HelloWorld(cocos.layer.Layer):
 
         scale = ScaleBy(3, duration=2)
         label.do(Repeat(scale + Reverse(scale)))
-        sprite.do(Repeat(Reverse(scale) + scale))
+        moveBy = MoveBy((50, 100), duration=2)
+        wave = Waves3D(duration=2)
+        lens = Lens3D(duration=2)
+        twril = Twirl( grid=(16,12), duration=4)
+        sprite.do(Repeat(Reverse(scale) + scale + twril))
 
 
 if __name__ == '__main__':
 
     cocos.director.director.init()
     hello_layer = HelloWorld()
-    hello_layer.do(RotateBy(360, duration=10))
+    action = Accelerate(RotateBy(360, duration=10))
+    hello_layer.do(action)
     main_scene = cocos.scene.Scene(hello_layer)
     cocos.director.director.run(main_scene)

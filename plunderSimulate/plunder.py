@@ -102,9 +102,21 @@ def plunder(aGbId, dGbId):
     for id, num in exAward.items():
         award[id] = award.get(id, 0) + num
 
+    ling = award.get(30000006, 0)
+    hun = award.get(30000007, 0)
+    tao = award.get(30000008, 0)
+    cao = award.get(30000009, 0)
+
     aAvatar.award(award)
     aNew, dNew = eloCalc(aAvatar.score, targetScore, completion)
     aAvatar.score = aNew
     if utils.isAvatar(dGbId):
         dAvatar.score = dNew
 
+    attackInfo = {'defenceOwner': dGbId,
+                  'completion': completion,
+                  'ling': ling,
+                  'hun': hun,
+                  'tao': tao,
+                  'cao': cao}
+    aAvatar.addAttackInfo(attackInfo)
