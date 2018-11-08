@@ -1,8 +1,21 @@
 # coding=utf-8
 import cocos
 from cocos.actions import *
-from django.utils import duration
 
+
+class Coco(object):
+    pass
+
+
+class MyAction(IntervalAction):
+    def __init__(self, duration):
+        self.duration = duration
+
+    def update(self, t):
+        self.target.opacity = 255 * (1-t)
+
+def spriteUpdate(*args):
+    print(args)
 
 class HelloWorld(cocos.layer.Layer):
     def __init__(self):
@@ -16,22 +29,18 @@ class HelloWorld(cocos.layer.Layer):
         label.position = 320, 240
         self.add(label)
 
-        sprite = cocos.sprite.Sprite(r'1.jpg')
-        sprite.position = 320, 240
-        sprite.scale = 3
-        self.add(sprite, z=1)
-
         scale = ScaleBy(3, duration=2)
-        label.do(Repeat(scale + Reverse(scale)))
-        moveBy = MoveBy((50, 100), duration=2)
-        wave = Waves3D(duration=2)
-        lens = Lens3D(duration=2)
-        twril = Twirl( grid=(16,12), duration=4)
-        sprite.do(Repeat(Reverse(scale) + scale + twril + moveBy))
+        label.schedule_interval(spriteUpdate, 0.5, label)
+        # label.do(Repeat(scale + Reverse(scale)))
+        label.do(scale + Reverse(scale))
+        self.schedule(self.update)
+
+    def update(self, *args):
+        # print(' im in update:', args)
+        pass
 
 
 if __name__ == '__main__':
-
     cocos.director.director.init()
     hello_layer = HelloWorld()
     action = Accelerate(RotateBy(360, duration=10))

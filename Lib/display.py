@@ -25,6 +25,8 @@ class display(object):
         pygame.init()
         self.screen = pygame.display.set_mode((100, 200), 0, 32)
         print('init:', num)
+        import traceback
+        traceback.print_stack()
         self.num = num
         num += 1
         self.drawBack((255, 255, 255))
