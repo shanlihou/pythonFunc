@@ -3,55 +3,29 @@ import asyncio
 
 from aiohttp import web
 from aiohttp import web_runner
-from Lib.display import display
-from propose.music import Music
-
-
-async def index(request):
-    await asyncio.sleep(0.5)
-    return web.Response(body=b'<h1>Index</h1>')
-
-
-async def hello(request):
-    await asyncio.sleep(0.5)
-    text = '<h1>hello, %s!</h1>' % request.match_info['name']
-    help(request)
-    display().drawPoint(15,  15, 0x889914, 9)
-    display().display()
-    Music.playPitch(request.match_info['name'])
-    return web.Response(body=text.encode('utf-8'))
-
-
-async def loopOnce():
-    display().loopOnce()
-    return 1
-
-
-async def displayLoop():
-    while True:
-        display().loopOnce()
-        await asyncio.sleep(0.1)
+from RPC import RPC
+from coco import start as cocoStart
+from music import Music
 
 
 async def cmd(request):
     data = await request.json()
+    RPC().parseCmd(data)
+    return web.json_response({'result': 'success'})
 
 
 async def init(loop):
     app = web.Application(loop=loop)
     app = web_runner.AppRunner(app=app).app()
-    app.router.add_route('GET', '/', index)
-    app.router.add_route('GET', '/hello/{name}', hello)
-    app.router.add_post('cmd', cmd, expect_handler=web.Request.json)
+    app.router.add_post('/cmd/', cmd, expect_handler=web.Request.json)
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)
     print('Server started at http://127.0.0.1:8000...')
-    display()
     return srv
 
 
 def start():
     loop = asyncio.get_event_loop()
-    tasks = [init(loop), displayLoop()]
+    tasks = [init(loop)]
     loop.run_until_complete(asyncio.wait(tasks))
     loop.run_forever()
 
