@@ -1,6 +1,8 @@
 # coding=utf-8
 import winsound
 import time
+import const
+import threading
 
 
 class Music(object):
@@ -26,6 +28,7 @@ class Music(object):
 
     @classmethod
     def playPitch(cls, pitch):
+        print('pitch:', pitch)
         pIter = iter(pitch)
         p = next(pIter)
         tmp = next(pIter)
@@ -49,6 +52,16 @@ class Music(object):
         pitchs = sec.split(',')
         for pitch in pitchs:
             cls.playPitch(pitch)
+
+    @classmethod
+    def playCmd(cls, jsonData):
+        mType = jsonData.get('type', 0)
+        if mType == const.MusicType.pitch:
+            func = cls.playPitch
+        elif mType == const.MusicType.sec:
+            func = cls.playSec
+        t = threading.Thread(target=func, args=(jsonData['data'], ))
+        t.start()
 
     def playFile(self, fileName):
         start = 34

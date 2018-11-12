@@ -4,8 +4,7 @@ import asyncio
 from aiohttp import web
 from aiohttp import web_runner
 from RPC import RPC
-from coco import start as cocoStart
-from music import Music
+import threading
 
 
 async def cmd(request):
@@ -23,12 +22,24 @@ async def init(loop):
     return srv
 
 
-def start():
-    loop = asyncio.get_event_loop()
+def serverStart(*args):
+    print('args:', args)
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError as e:
+        print(e)
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        loop = asyncio.get_event_loop()
+
     tasks = [init(loop)]
     loop.run_until_complete(asyncio.wait(tasks))
     loop.run_forever()
 
 
+def serverThread():
+    t = threading.Thread(target=serverStart, args=())
+    t.start()
+
+
 if __name__ == '__main__':
-    start()
+    serverThread()

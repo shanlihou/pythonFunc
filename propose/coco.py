@@ -1,52 +1,119 @@
 # coding=utf-8
 import cocos
+import threading
 from cocos.actions import *
-from singleton import singleton
+from center import center
+import functools
 import const
 
 
-def killAfterStop(t, label):
+def killAfterStop(t, label, func):
     isActionRunning = label.are_actions_running()
     if not isActionRunning:
         label.kill()
+        func()
 
 
-@singleton
+class State(object):
+    idle = 0
+    act = 1
+
+
+def isIdle(func):
+    @functools.wraps(func)
+    def _(self, *args, **kwargs):
+        if self.state != State.idle:
+            return
+
+        return func(self, *args, **kwargs)
+
+    return _
+
 class Coco(cocos.layer.Layer):
     def __init__(self):
+        print('coco init')
         super(Coco, self).__init__()
+        self.taskList = []
+        self.resetState()
+        self.schedule(self.update)
 
+    def getPos(self, dir):
+        x, y = cocos.director.director.get_window_size()
+        if dir == 0:
+            return x // 2, y
+        elif dir == 1:
+            return 0, y // 2
+        elif dir == 2:
+            return x // 2, 0
+        elif dir == 3:
+            return x, y // 2
+
+    def getSpeed(self, dir):
+        x, y = cocos.director.director.get_window_size()
+        if dir == 0:
+            return 0, -y
+        elif dir == 1:
+            return x, 0
+        elif dir == 2:
+            return 0, y
+        elif dir == 3:
+            return -x, 0
+
+    @isIdle
     def addLabel(self, data, actType, args):
         label = cocos.text.Label(
             data,
             font_name='Times New Roman',
-            font_size=32,
+            font_size=1,
             anchor_x='center', anchor_y='center')
 
-        label.position = 320, 240
         self.add(label)
-        label.schedule_interval(killAfterStop, 0.5, label)
+        label.schedule_interval(killAfterStop, 0.1, label, self.resetState)
         # label.do(Repeat(scale + Reverse(scale)))
+        duration = args.get('duration', 2)
         if actType == const.ActType.move:
-            act = MoveBy((-50, 0), duration=2)
+            dir = args.get('dir', 0)
+            label.position = self.getPos(dir)
+            act = MoveBy(self.getSpeed(dir), duration=duration)
         elif actType == const.ActType.scale:
-            scale = ScaleBy(3, duration=2)
+            scale = ScaleBy(3, duration=duration)
             act = scale + Reverse(scale)
 
+        self.state = State.act
         label.do(act)
 
+    def resetState(self):
+        self.state = State.idle
+
     def update(self, *args):
-        # print(' im in update:', args)
-        pass
+        if self.state == State.idle and self.taskList:
+            self.doTask()
+
+    def addTask(self, task):
+        print('add task:', task)
+        self.taskList.append(task)
+
+    @isIdle
+    def doTask(self):
+        if not self.taskList:
+            return
+
+        task = self.taskList[0]
+        del self.taskList[0]
+        self.addLabel(task['data'], task['act'], task)
 
 
-def start():
-    cocos.director.director.init()
+def start(*args):
+    cocos.director.director.init(width=800, height=100, caption="cici")
     main_layer = Coco()
-    action = Accelerate(RotateBy(360, duration=10))
-    main_layer.do(action)
+    center.register('coco', main_layer)
     main_scene = cocos.scene.Scene(main_layer)
     cocos.director.director.run(main_scene)
+
+
+def threadCoco():
+    t = threading.Thread(target=start, args=())
+    t.start()
 
 
 if __name__ == '__main__':
