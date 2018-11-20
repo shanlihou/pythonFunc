@@ -29,6 +29,7 @@ class Crystal(object):
 
 
 class RankDungeon(object):
+    dungeonKey = ['groupFourWithBoss', 'groupThreeWithBoss', 'groupThreeWithoutBoss', 'groupTwoWithBoss', 'groupTwoWithoutBoss']
     def __init__(self, root, startID, endID, count, everyMonCount):
         self.startID = startID
         self.endID = endID
@@ -43,7 +44,10 @@ class RankDungeon(object):
                              62000012: (6.94, -3.74)}
         self.init()
 
-    def init(self):
+    def init(self, count=0, randomCount=0):
+        if count:
+            self.count = count + 1
+        self.randomCount = randomCount
         self.monsters = []
         self.boss = -1
 
@@ -52,6 +56,7 @@ class RankDungeon(object):
         # print(dataPath)
         sys.path.append(dataPath)
         import innerWorldDungeon_rankDungeonInfo as IWDRDID
+        import innerWorldDungeon_rankDungeon as IWDRDD
         import field_base as FBD
         import homeDefence_base as HDBD
         import innerWorldDungeon_dungeon as IWDDD
@@ -62,6 +67,7 @@ class RankDungeon(object):
         self.HDBD = HDBD.datas
         self.IWDDD = IWDDD.datas
         self.HDCD = HDCD.datas
+        self.IWDRDD = IWDRDD
         #self.CBD = CBD.datas
         # self.parseDungeonString(self.IWDDD[51000010]['dungeonString'])
 
@@ -88,7 +94,7 @@ class RankDungeon(object):
                 continue
             self.tmxList[id] = fullpath
 
-    def randomMonster(self):
+    def randomMonsterOld(self):
         monCount = (self.count - 1) * self.everyMonCount
         monIds = list(map(lambda x: x['ID'], filter(
             lambda x: x['isOpen'], self.HDBD.values())))
@@ -111,6 +117,68 @@ class RankDungeon(object):
                 monAdds.append(next(bossIter))
 
             self.monsters.append(monAdds)
+
+    def getGroupMonster(self, groupName, bossId, commonMons, bossMons):
+        groups = self.IWDRDD.datas[groupName]['value']
+        groups = list(filter(lambda x: x[0] != bossId, groups))
+        bossMons = list(filter(lambda x: x != bossId, bossMons))
+        mons = random.choice(groups)
+        print(mons)
+        retList = []
+        if groupName == 'groupFourWithBoss':
+            retList.extend(mons)
+        elif groupName == 'groupThreeWithBoss':
+            retList.extend(mons)
+            retList.append(random.choice(commonMons))
+        elif groupName == 'groupThreeWithoutBoss':
+            retList.append(random.choice(bossMons))
+            retList.extend(mons)
+        elif groupName == 'groupTwoWithBoss':
+            retList.extend(mons)
+            retList.extend(random.sample(commonMons, 2))
+        elif groupName == 'groupTwoWithoutBoss':
+            retList.append(random.choice(bossMons))
+            retList.append(random.choice(commonMons))
+            retList.extend(mons)
+
+        return retList
+
+    def getGroupRandom(self, bossId, commonMons, bossMons):
+        bossMons = list(filter(lambda x: x != bossId, bossMons))
+        retList = []
+        retList.append(random.choice(bossMons))
+        retList.extend(random.sample(commonMons, 3))
+        return retList
+
+    def randomMonster(self):
+        monIds = list(map(lambda x: x['ID'], filter(
+            lambda x: x['isOpen'], self.HDBD.values())))
+        commonMons = list(filter(lambda x: self.HDBD[x]['type'] != 1, monIds))
+        bossMons = list(filter(lambda x: self.HDBD[x]['type'] == 1, monIds))
+
+        rCount = self.randomCount
+        count = self.count - self.randomCount - 1
+        index = 0
+        bossId = 0
+        self.monsters = []
+        while rCount or count:
+            index += 1
+            rand = random.randint(1, rCount + count)
+            if rand <= rCount:
+                rCount -= 1
+                groupName = random.choice(self.dungeonKey)
+                mons = self.getGroupMonster(groupName, bossId, commonMons, bossMons)
+            else:
+                count -= 1
+                mons = self.getGroupRandom(bossId, commonMons, bossMons)
+
+            if index == 1:
+                bossId = mons[0]
+                self.monsters.append(mons[1:])
+            else:
+                self.monsters.append(mons)
+
+        self.boss = bossId
 
     def randomCards(self):
         self.cards = Cards.Cards(self.tmxList)
@@ -238,6 +306,7 @@ class RankDungeon(object):
         return self.finalStr
 
     def test(self):
+        self.init(5, 3)
         self.loadRank()
         self.loadTmx()
         self.generate()
@@ -316,21 +385,31 @@ class Generator(object):
         with open(file2, 'w') as fw:
             fw.write(dataStr)
 
+    def getMonsterArgs(self, rank):
+        for start, end, arg1, arg2 in config.MONSTER_RANDOM_RULES:
+            if start <= rank <= end:
+                return arg1, arg2
+        else:
+            return 5, 0
+
     def createNewFile(self):
         import innerWorldDungeon_rankDungeonInfo as IWDRID
         fileName = config.SVN_ROOT + \
             r'\Dev\Server\kbeWin\kbengine\assets\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
         fileNew = fileName + time.strftime('.%Y-%m-%H-%M-%S')
         pattern = re.compile(r'("dungeonString": )(.+)(,*$)')
+        self.rankClass = 1
 
         def rep(m):
-            self.rank.init()
+            monArgs = self.getMonsterArgs(self.rankClass)
+            self.rank.init(*monArgs)
             self.rank.generate()
             retStr = m.group(1) + "'" + self.rank.finalStr + "'"
             self.bossList.append(self.rank.boss)
             if m.group(2).endswith(','):
                 retStr += ','
             retStr += m.group(3)
+            self.rankClass += 1
             return retStr
 
         with open(fileName) as fr:
@@ -362,7 +441,7 @@ if __name__ == '__main__':
         everyMonCount = int(sys.argv[5])
         rank = RankDungeon(path, startId, endId, count, everyMonCount)
     else:
-        opt = 0
+        opt = 1
         if opt == 0:
             rank = RankDungeon(
                 assetsPath, 62000004, 62000005, 4, 3)
