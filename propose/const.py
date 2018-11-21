@@ -10,3 +10,7 @@ class PlayType(object):
 class MusicType(object):
     pitch = 0
     sec = 1
+
+
+MUSIC_DURATION = 250
+

@@ -363,12 +363,10 @@ class Generator(object):
         return retStr
 
     def createClientFile(self):
-        import innerWorldDungeon_rankDungeonInfo as IWDRID
-        dungeons = list(IWDRID.datas.keys())
-        dungeons.sort()
         bossIter = iter(self.bossList)
         objList = []
-        for index, dungeonId in enumerate(dungeons):
+        for index in range(config.MAX_RANK):
+            dungeonId = config.RANK_DUNGEON_START_ID + index
             objStr = self.createObj(index + 1, dungeonId, next(bossIter))
             objList.append(objStr)
 

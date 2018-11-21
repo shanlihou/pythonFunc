@@ -3,6 +3,7 @@ import winsound
 import time
 import const
 import threading
+import const
 
 
 class Music(object):
@@ -38,7 +39,7 @@ class Music(object):
 
         high = tmp
         duration = float(''.join(list(pIter)))
-        duration = int(duration * 250)
+        duration = int(duration * const.MUSIC_DURATION)
         if p == '0':
             time.sleep(duration / 1000)
             return
