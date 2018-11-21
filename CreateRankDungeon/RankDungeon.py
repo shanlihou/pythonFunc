@@ -393,6 +393,36 @@ class Generator(object):
             return 5, 0
 
     def createNewFile(self):
+        fileName = config.SVN_ROOT + \
+            r'\Dev\Server\kbeWin\kbengine\assets\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
+        fileNew = fileName + time.strftime('.%Y-%m-%H-%M-%S')
+        writeData = '''datas = { 
+    '''
+        space8 = ' ' * 8
+        space4 = ' ' * 4
+        dataList = []
+        for i in range(config.MAX_RANK):
+            ID = config.RANK_DUNGEON_START_ID + i
+            ranking = i + 1
+            monArgs = self.getMonsterArgs(ranking)
+            self.rank.init(*monArgs)
+            self.rank.generate()
+            retStr = self.rank.finalStr
+            self.bossList.append(self.rank.boss)
+            data = '%d: {\n' % ID + space8 + '"ID": %d,\n' % ID + space8 + '"dungeonString": \''
+            data += retStr + "',\n" + space4 + '}'
+            dataList.append(data)
+
+        writeData += (',\n' + space4).join(dataList) + '\n}'
+        with open(fileNew, 'w') as fw:
+            fw.write(writeData)
+
+        dstDir = config.SVN_ROOT + r'\配置表\data\python'
+        shutil.copy(fileNew, dstDir)
+        self.createClientFile()
+
+
+    def createNewFileOld(self):
         import innerWorldDungeon_rankDungeonInfo as IWDRID
         fileName = config.SVN_ROOT + \
             r'\Dev\Server\kbeWin\kbengine\assets\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
