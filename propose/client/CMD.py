@@ -53,6 +53,7 @@ class CMD(object):
             datas.append(self.getMoveData('123', pitchDur / 1000, 1))
             self.poster.post(datas)
 
+
 if __name__ == '__main__':
     cmd = CMD('http://127.0.0.1:8000/cmd/')
     cmd.test()
