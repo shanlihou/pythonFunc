@@ -29,7 +29,7 @@ class Crystal(object):
 
 
 class RankDungeon(object):
-    dungeonKey = ['groupFourWithBoss', 'groupThreeWithBoss', 'groupThreeWithoutBoss', 'groupTwoWithBoss', 'groupTwoWithoutBoss']
+    DUNGEONKEY = ['groupFourWithBoss', 'groupThreeWithBoss', 'groupThreeWithoutBoss', 'groupTwoWithBoss', 'groupTwoWithoutBoss']
     def __init__(self, root, startID, endID, count, everyMonCount):
         self.startID = startID
         self.endID = endID
@@ -70,6 +70,17 @@ class RankDungeon(object):
         self.IWDRDD = IWDRDD
         #self.CBD = CBD.datas
         # self.parseDungeonString(self.IWDDD[51000010]['dungeonString'])
+
+        self.dungeonKey = []
+        for key in self.DUNGEONKEY:
+            if key not in self.IWDRDD.datas:
+                continue
+
+            data = self.IWDRDD.datas[key]['value']
+            if not data:
+                continue
+
+            self.dungeonKey.append(key)
 
     def loadTmx(self):
         tmxPath = os.path.join(self.root, r'res\spaces\field')
@@ -390,6 +401,14 @@ class Generator(object):
         else:
             return 5, 0
 
+    def getLevelByRank(self, rank):
+        levelList = config.RANK_LEVEL_TABLE
+        for start, end, diff in levelList:
+            if start <= rank <= end:
+                return diff
+
+        return 0
+
     def createNewFile(self):
         fileName = config.SVN_ROOT + \
             r'\Dev\Server\kbeWin\kbengine\assets\scripts\data\innerWorldDungeon_rankDungeonInfo.py'
@@ -399,6 +418,7 @@ class Generator(object):
         space8 = ' ' * 8
         space4 = ' ' * 4
         dataList = []
+        level = 1
         for i in range(config.MAX_RANK):
             ID = config.RANK_DUNGEON_START_ID + i
             ranking = i + 1
@@ -407,8 +427,14 @@ class Generator(object):
             self.rank.generate()
             retStr = self.rank.finalStr
             self.bossList.append(self.rank.boss)
+            if ranking != 1:
+                diff = self.getLevelByRank(ranking)
+                level += diff
+
             data = '%d: {\n' % ID + space8 + '"ID": %d,\n' % ID + space8 + '"dungeonString": \''
-            data += retStr + "',\n" + space4 + '}'
+            data += retStr + "',\n"
+            data += space8 + '"level": ' + str(level) + '\n'
+            data += space4 + '}'
             dataList.append(data)
 
         writeData += (',\n' + space4).join(dataList) + '\n}'
@@ -418,7 +444,6 @@ class Generator(object):
         dstDir = config.SVN_ROOT + r'\配置表\data\python'
         shutil.copy(fileNew, dstDir)
         self.createClientFile()
-
 
     def createNewFileOld(self):
         import innerWorldDungeon_rankDungeonInfo as IWDRID
