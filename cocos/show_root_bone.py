@@ -2,7 +2,7 @@ import cocos
 from cocos import skeleton
 
 # import the skeleton we have created
-import root_bone
+import human_bone
 
 
 class TestLayer(cocos.layer.Layer):
@@ -12,7 +12,7 @@ class TestLayer(cocos.layer.Layer):
         x, y = cocos.director.director.get_window_size()
 
         # create a ColorSkin for our skeleton
-        self.skin = skeleton.ColorSkin(root_bone.skeleton, (255, 0, 0, 255))
+        self.skin = skeleton.ColorSkin(human_bone.skeleton, (255, 0, 0, 255))
 
         # add the skin to the scene
         self.add(self.skin)
