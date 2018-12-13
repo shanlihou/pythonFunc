@@ -29,6 +29,7 @@ def isIdle(func):
 
     return _
 
+
 class Coco(cocos.layer.Layer):
     def __init__(self):
         print('coco init')
