@@ -3,6 +3,7 @@ import os
 import sys
 import re
 import shutil
+from log import logger
 def merge(list1, list2):
     map(lambda x: list1.append(x), filter(lambda x: x not in list1, list2))
     return list1
@@ -23,6 +24,7 @@ def deleteEmpty(path):
     #print listFormat
     if len(listFormat) == 0:
         print('will delete:', path)
+        logger.warn('will delete:', path)
         os.system('rd /s /q "' + path + '"')
     return listFormat
 def joinPath(path, name):

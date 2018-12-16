@@ -14,3 +14,5 @@ formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(l
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+if __name__ == '__main__':
+    logger.warn('hello')
