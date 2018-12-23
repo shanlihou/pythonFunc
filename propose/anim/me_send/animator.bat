@@ -1,0 +1,1 @@
+python G:\github\others\cocos\tools\skeleton\animator.py human_bone.py --skin human_skin.py sample.anim

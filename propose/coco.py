@@ -5,6 +5,10 @@ from cocos.actions import *
 from center import center
 import functools
 import const
+import os
+import imp
+import pickle
+from cocos import skeleton
 
 
 def killAfterStop(t, label, func):
@@ -28,6 +32,18 @@ def isIdle(func):
         return func(self, *args, **kwargs)
 
     return _
+
+
+
+def getAnim(dirName):
+    boneName = os.path.join(dirName, 'human_bone.py')
+    skinName = os.path.join(dirName, 'human_skin.py')
+    animName = os.path.join(dirName, 'sample.anim')
+    sk = imp.load_source('skeleton', boneName).skeleton
+    skin = imp.load_source('skin', skinName).skin
+    anim = pickle.load(open(animName, 'rb'))
+    skin = skeleton.BitmapSkin(sk, skin)
+    return skin, anim
 
 
 class Coco(cocos.layer.Layer):
@@ -105,7 +121,7 @@ class Coco(cocos.layer.Layer):
 
 
 def start(*args):
-    cocos.director.director.init(width=800, height=100, caption="cici")
+    cocos.director.director.init(width=800, height=600, caption="cici")
     main_layer = Coco()
     center.register('coco', main_layer)
     main_scene = cocos.scene.Scene(main_layer)

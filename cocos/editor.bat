@@ -1,1 +1,0 @@
-python E:\shgithub\others\coco_sample\cocos\tools\skeleton\skeleton_editor.py human_bone.py human_skin.py

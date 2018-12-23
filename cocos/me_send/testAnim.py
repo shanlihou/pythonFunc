@@ -1,8 +1,8 @@
 import cocos
 from cocos.director import director
 from cocos import skeleton
-import body_and_arm
-import body_and_arm_skin
+import human_bone
+import human_skin
 import pickle
 
 
@@ -12,7 +12,7 @@ class TestLayer(cocos.layer.Layer):
 
         x, y = director.get_window_size()
         self.skin = skeleton.BitmapSkin(
-            body_and_arm.skeleton, body_and_arm_skin.skin)
+            human_bone.skeleton, human_skin.skin)
         self.add(self.skin)
         x, y = director.get_window_size()
         self.skin.position = x / 2, y / 2
