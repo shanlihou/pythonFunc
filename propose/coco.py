@@ -8,10 +8,12 @@ import const
 import os
 import imp
 import pickle
+import time
 from cocos import skeleton
 
 
 def killAfterStop(t, label, func):
+    print(t)
     isActionRunning = label.are_actions_running()
     if not isActionRunning:
         label.kill()
@@ -34,19 +36,45 @@ def isIdle(func):
     return _
 
 
-
-def getAnim(dirName):
-    boneName = os.path.join(dirName, 'human_bone.py')
-    skinName = os.path.join(dirName, 'human_skin.py')
-    animName = os.path.join(dirName, 'sample.anim')
-    sk = imp.load_source('skeleton', boneName).skeleton
-    skin = imp.load_source('skin', skinName).skin
-    anim = pickle.load(open(animName, 'rb'))
-    skin = skeleton.BitmapSkin(sk, skin)
-    return skin, anim
+class TaskType(object):
+    label = 0
+    anim = 1
 
 
-class Coco(cocos.layer.Layer):
+class AnimMixin(object):
+    animDict = {'baobao_recv': [150, 150, 5]}
+
+    @staticmethod
+    def getAnim(dirName):
+        dirName = os.path.join('anim', dirName)
+        boneName = os.path.join(dirName, 'human_bone.py')
+        skinName = os.path.join(dirName, 'human_skin.py')
+        animName = os.path.join(dirName, 'sample.anim')
+        sk = imp.load_source('skeleton', boneName).skeleton
+        skin = imp.load_source('skin', skinName).skin
+        anim = pickle.load(open(animName, 'rb'))
+        skin = skeleton.BitmapSkin(sk, skin)
+        return skin, anim
+
+    @isIdle
+    def addAnim(self, task):
+        name = task['name']
+        x, y, delay = self.animDict[name]
+        skin, anim = self.getAnim(name)
+        self.add(skin)
+        skin.position = x, y
+        self.state = State.act
+        skin.do(cocos.actions.Repeat(skeleton.Animate(anim)))
+        finalTime = time.time() + delay
+        skin.schedule_interval(self.skinKillFunc, 0.1, skin, finalTime)
+
+    def skinKillFunc(self, t, skin, final):
+        if time.time() > final:
+            skin.kill()
+            self.resetState()
+
+
+class Coco(cocos.layer.Layer, AnimMixin):
     def __init__(self):
         print('coco init')
         super(Coco, self).__init__()
@@ -117,7 +145,11 @@ class Coco(cocos.layer.Layer):
 
         task = self.taskList[0]
         del self.taskList[0]
-        self.addLabel(task['data'], task['act'], task)
+        tType = task.get('type', 0)
+        if tType == TaskType.label:
+            self.addLabel(task['data'], task['act'], task)
+        elif tType == TaskType.anim:
+            self.addAnim(task)
 
 
 def start(*args):

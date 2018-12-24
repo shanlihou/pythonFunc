@@ -18,15 +18,12 @@ def singleton(cls, *args, **kw):
     return _singleton
 
 
-@singleton
 class display(object):
     def __init__(self):
         global num
         pygame.init()
-        self.screen = pygame.display.set_mode((100, 200), 0, 32)
+        self.screen = pygame.display.set_mode((1000, 1000), 0, 32)
         print('init:', num)
-        import traceback
-        traceback.print_stack()
         self.num = num
         num += 1
         self.drawBack((255, 255, 255))
@@ -139,9 +136,9 @@ class display(object):
                         func = self.callbackDict['mouseMotion']
                         func(*event.pos)
 
-            self.allSprites.update()
-            self.drawBack((255, 255, 255))
-            self.allSprites.draw(self.screen)
+            # self.allSprites.update()
+            # self.drawBack((255, 255, 255))
+            # self.allSprites.draw(self.screen)
             pygame.display.flip()
 
 

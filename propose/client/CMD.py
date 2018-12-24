@@ -1,4 +1,6 @@
 from poster import Poster
+import sys
+sys.path.append('..')
 import const
 import time
 import os
@@ -7,12 +9,18 @@ import os
 class CMD(object):
     def __init__(self, url):
         self.poster = Poster(url)
-        
-    def getMusicData(self, pitch):
+
+    @staticmethod
+    def getMusicData(pitch):
         return {'cmd': 'music', 'type': 0, 'data': pitch}
 
-    def getMoveData(self, data, duration, dir):
+    @staticmethod
+    def getMoveData(data, duration, dir):
         return {'cmd': 'coco', 'act': 0, 'data': data, 'duration': duration, 'dir': dir}
+
+    @staticmethod
+    def getAnimData(x, y, duration):
+        return {'cmd': 'coco', 'type': 1, 'name': 'baobao_recv'}
 
     def getPitchDur(self, pitch):
         if pitch[1] == '#':
@@ -43,15 +51,18 @@ class CMD(object):
 
     def test(self):
         print(os.getcwd())
-        if 0:
+        opt = 2
+        if opt == 0:
             self.notation('..\canon.txt')
-        elif 1:
+        elif opt == 1:
             pitch = '3h8'
             data = self.getMusicData(pitch)
             pitchDur = self.getPitchDur(pitch)
             datas = [data]
             datas.append(self.getMoveData('123', pitchDur / 1000, 1))
             self.poster.post(datas)
+        elif opt == 2:
+            self.poster.post(self.getAnimData(150, 150, 5))
 
 
 if __name__ == '__main__':

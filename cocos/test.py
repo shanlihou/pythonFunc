@@ -20,7 +20,7 @@ def getAnim(dirName):
 class TestLayer(cocos.layer.Layer):
     def __init__(self):
         super(TestLayer, self).__init__()
-        skin, anim = getAnim('me_send')
+        skin, anim = getAnim('baobao_recv')
         x, y = director.get_window_size()
         self.skin = skin
         self.add(self.skin)

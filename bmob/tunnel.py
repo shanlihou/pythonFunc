@@ -14,6 +14,7 @@ class Tunnel(object):
 
     def fileInfoCB(self, fileInfo):
         infoList = fileInfo.split()
+        print(infoList)
         fileName = infoList[-1]
         if not fileName.endswith('.py') and not fileName.endswith('.pem'):
             return
@@ -49,8 +50,8 @@ class Tunnel(object):
         self.ftp.storbinary('STOR ' + bn, open(filePath, 'rb'))
 
     def test(self):
-        self.downPath('bmob')
-        self.upFile('../TabbedView.py')
+        self.downPath('propose')
+        # self.upFile('../TabbedView.py')
 
 
 if __name__ == '__main__':
