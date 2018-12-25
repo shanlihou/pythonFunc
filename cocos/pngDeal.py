@@ -1,7 +1,9 @@
 import png
 import os
-png.from_array([[255, 0, 0, 255],
-                [0, 255, 255, 0]], 'L').save("small_smiley.png")
+
+parseDict = {
+    'rgba': [3, 4, 'RGBA'],
+    'grey': [1, 2, 'LA']}
 
 
 def dealPng(name):
@@ -9,15 +11,22 @@ def dealPng(name):
     pr = png.Reader(filename=fileName)
     rgb = pr.asDirect()
     width, height, pixels, meta = rgb
+
+    if meta['greyscale']:
+        start, step, code = parseDict['grey']
+    else:
+        start, step, code = parseDict['rgba']
+
+    print(width, height, meta)
     pList = []
     for i in pixels:
         pList.append(i)
     for data in pList:
-        for index in range(3, len(data), 4):
+        for index in range(start, len(data), step):
             al = data[index]
             data[index] = 20 if al else 0
 
-    png.from_array(pList, 'RGBA').save(name)
+    png.from_array(pList, code).save(name)
 
 
 def dealPath(path):
@@ -47,7 +56,6 @@ class PngDeal(object):
 if __name__ == '__main__':
     opt = 0
     if opt:
-        pd = PngDeal('baobao.png')
-        pd.test()
+        dealPng('message.png')
     else:
         dealPath('resources')

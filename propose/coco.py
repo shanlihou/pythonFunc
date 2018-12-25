@@ -9,6 +9,8 @@ import os
 import imp
 import pickle
 import time
+import math
+import random
 from cocos import skeleton
 
 
@@ -39,10 +41,22 @@ def isIdle(func):
 class TaskType(object):
     label = 0
     anim = 1
+    zoo = 2
 
 
 class AnimMixin(object):
-    animDict = {'baobao_recv': [150, 150, 5]}
+    animDict = {
+        'baobao_recv':
+        {
+            'anim': [0, 0, 5],
+            'sprite': [1, 3, 0.4, 'message.png']
+        },
+        'me_send':
+        {
+            'anim': [0, 0, 5],
+            'sprite': [1, 3, 0.4, 'message.png']
+        }
+    }
 
     @staticmethod
     def getAnim(dirName):
@@ -56,22 +70,86 @@ class AnimMixin(object):
         skin = skeleton.BitmapSkin(sk, skin)
         return skin, anim
 
+    def getMidXY(self):
+        x, y = cocos.director.director.get_window_size()
+        return x // 2, y // 2
+
+    def getAnimData(self, name):
+        return self.animDict[name]['anim']
+
+    def getSpriteData(self, name):
+        return self.animDict[name]['sprite']
+
     @isIdle
-    def addAnim(self, task):
+    def addAnimTask(self, task):
         name = task['name']
-        x, y, delay = self.animDict[name]
+        x, y, delay = self.getAnimData(name)
+        if not x and not y:
+            x, y = self.getMidXY()
+        self.addAnim(x, y, delay, name)
+
+        dire, delay, scale, spName = self.getSpriteData(name)
+        spSpeed = self.getSpeed(dire, x, y)
+        if name == 'baobao_recv':
+            x = 0
+
+        self.addSprite(x, y, spSpeed, delay, scale, spName)
+
+    def addAnim(self, x, y, delay, name):
         skin, anim = self.getAnim(name)
         self.add(skin)
         skin.position = x, y
-        self.state = State.act
         skin.do(cocos.actions.Repeat(skeleton.Animate(anim)))
         finalTime = time.time() + delay
-        skin.schedule_interval(self.skinKillFunc, 0.1, skin, finalTime)
+        skin.schedule_interval(self.killFunc, 0.1, skin, finalTime)
 
-    def skinKillFunc(self, t, skin, final):
+    def addSprite(self, x, y, speed, duration, scale, pngname):
+        sprite = cocos.sprite.Sprite(pngname)
+        sprite.position = x, y
+        sprite.scale = scale
+        self.add(sprite)
+        act = MoveBy(speed, duration=duration)
+        sprite.do(act + CallFunc(sprite.kill))
+
+    @isIdle
+    def addZoo(self, task):
+        delay = task['duration']
+        midX, midY = self.getMidXY()
+        r = midY // 2
+        theta = 0
+        finalTime = time.time() + delay
+        batch = cocos.batch.BatchNode()
+        for aName in os.listdir('animal'):
+            piT = theta * math.pi / 180
+            x = midX + r * math.cos(piT)
+            y = midY + r * math.sin(piT)
+            sprite = cocos.sprite.Sprite('animal/' + aName)
+            sprite.scale = 0.5
+            sprite.position = x, y
+            act = MoveBy((0, r * 0.5), duration=0.5 + random.random() * 0.5)
+            act = act + Reverse(act)
+            sprite.do(Repeat(act))
+            batch.add(sprite)
+
+            theta += 360 / 7
+        batch.schedule_interval(self.killFunc, 0.1, batch, finalTime)
+        self.add(batch)
+        
+    @isIdle    
+    def addThrow(self):
+        skin, anim = self.getAnim('me_throw')
+        self.add(skin)
+        x, y = self.getMidXY()
+        skin.position = x, y
+        skin.do(cocos.actions.Repeat(skeleton.Animate(anim)))
+        finalTime = time.time() + delay
+        skin.schedule_interval(self.killFunc, 0.1, skin, finalTime)
+        
+        
+
+    def killFunc(self, t, skin, final):
         if time.time() > final:
             skin.kill()
-            self.resetState()
 
 
 class Coco(cocos.layer.Layer, AnimMixin):
@@ -93,8 +171,9 @@ class Coco(cocos.layer.Layer, AnimMixin):
         elif dir == 3:
             return x, y // 2
 
-    def getSpeed(self, dir):
-        x, y = cocos.director.director.get_window_size()
+    def getSpeed(self, dir, x=0, y=0):
+        if not x and not y:
+            x, y = cocos.director.director.get_window_size()
         if dir == 0:
             return 0, -y
         elif dir == 1:
@@ -149,7 +228,9 @@ class Coco(cocos.layer.Layer, AnimMixin):
         if tType == TaskType.label:
             self.addLabel(task['data'], task['act'], task)
         elif tType == TaskType.anim:
-            self.addAnim(task)
+            self.addAnimTask(task)
+        elif tType == TaskType.zoo:
+            self.addZoo(task)
 
 
 def start(*args):
