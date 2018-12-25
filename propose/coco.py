@@ -12,6 +12,7 @@ import time
 import math
 import random
 from cocos import skeleton
+from _functools import partial
 
 
 def killAfterStop(t, label, func):
@@ -42,6 +43,8 @@ class TaskType(object):
     label = 0
     anim = 1
     zoo = 2
+    throw = 3
+    code = 4
 
 
 class AnimMixin(object):
@@ -101,12 +104,13 @@ class AnimMixin(object):
         skin.position = x, y
         skin.do(cocos.actions.Repeat(skeleton.Animate(anim)))
         finalTime = time.time() + delay
-        skin.schedule_interval(self.killFunc, 0.1, skin, finalTime)
+        skin.schedule_interval(lambda x: self.killFunc(skin, finalTime), 0.1)
 
-    def addSprite(self, x, y, speed, duration, scale, pngname):
+    def addSprite(self, x, y, speed, duration, scale, pngname, rotation=0):
         sprite = cocos.sprite.Sprite(pngname)
         sprite.position = x, y
         sprite.scale = scale
+        sprite.rotation = rotation
         self.add(sprite)
         act = MoveBy(speed, duration=duration)
         sprite.do(act + CallFunc(sprite.kill))
@@ -132,24 +136,60 @@ class AnimMixin(object):
             batch.add(sprite)
 
             theta += 360 / 7
-        batch.schedule_interval(self.killFunc, 0.1, batch, finalTime)
+        batch.schedule_interval(lambda x: self.killFunc(batch, finalTime), 0.1)
         self.add(batch)
-        
-    @isIdle    
-    def addThrow(self):
+
+    @isIdle
+    def addThrow(self, task):
+        delay = task['duration']
         skin, anim = self.getAnim('me_throw')
         self.add(skin)
         x, y = self.getMidXY()
         skin.position = x, y
-        skin.do(cocos.actions.Repeat(skeleton.Animate(anim)))
-        finalTime = time.time() + delay
-        skin.schedule_interval(self.killFunc, 0.1, skin, finalTime)
-        
-        
+        skin.do(skeleton.Animate(anim) +
+                CallFunc(partial(self.addThrow2, skin, delay)))
 
-    def killFunc(self, t, skin, final):
+    def addThrow2(self, lastskin, delay):
+        delay = delay - 1
+        lastskin.kill()
+        skin, anim = self.getAnim('me_throw_after')
+        self.add(skin)
+        x, y = self.getMidXY()
+        skin.position = x, y
+        skin.do(Repeat(skeleton.Animate(anim)))
+        finalTime = time.time() + delay
+        skin.schedule_interval(lambda x: self.killFunc(skin, finalTime), 0.1)
+        self.addSprite(x + 150, y + 130, (x, 0), delay, 0.5, 'flower.png', 90)
+
+    @isIdle
+    def addCatch(self, task):
+        delay = task['duration']
+        skin, anim = self.getAnim('baobao_catch')
+        self.add(skin)
+        x, y = self.getMidXY()
+        skin.position = x, y
+        skin.do(Repeat(skeleton.Animate(anim)))
+        finalTime = time.time() + delay
+        skin.schedule_interval(lambda x: self.killFunc(skin, finalTime), 0.1)
+        self.addSprite(0, y + 80, (x - 100, 0), delay, 0.5, 'flower.png', 90)
+
+    @isIdle
+    def addCatch2(self, task):
+        delay = task['duration']
+        skin, anim = self.getAnim('baobao_catch_after')
+        self.add(skin)
+        x, y = self.getMidXY()
+        skin.position = x, y
+        skin.do(Repeat(skeleton.Animate(anim)))
+        finalTime = time.time() + delay
+        skin.schedule_interval(lambda x: self.killFunc(skin, finalTime), 0.1)
+
+    @staticmethod
+    def killFunc(skin, final, func=None):
         if time.time() > final:
             skin.kill()
+            if func:
+                func()
 
 
 class Coco(cocos.layer.Layer, AnimMixin):
@@ -231,6 +271,10 @@ class Coco(cocos.layer.Layer, AnimMixin):
             self.addAnimTask(task)
         elif tType == TaskType.zoo:
             self.addZoo(task)
+        elif tType == TaskType.throw:
+            self.addThrow(task)
+        elif tType == TaskType.code:
+            getattr(self, task['code'])(task)
 
 
 def start(*args):

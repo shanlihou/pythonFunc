@@ -26,6 +26,14 @@ class CMD(object):
     def getZooData(duration):
         return {'cmd': 'coco', 'type': 2, 'duration': duration}
 
+    @staticmethod
+    def getThrowData(duration):
+        return {'cmd': 'coco', 'type': 3, 'duration': duration}
+
+    @staticmethod
+    def getCodehData(code, duration):
+        return {'cmd': 'coco', 'type': 4, 'code': code, 'duration': duration}
+
     def getPitchDur(self, pitch):
         if pitch[1] == '#':
             return int(pitch[3:]) * const.MUSIC_DURATION
@@ -55,7 +63,7 @@ class CMD(object):
 
     def test(self):
         print(os.getcwd())
-        opt = 3
+        opt = 5
         if opt == 0:
             self.notation('..\canon.txt')
         elif opt == 1:
@@ -69,6 +77,12 @@ class CMD(object):
             self.poster.post(self.getAnimData(150, 150, 5))
         elif opt == 3:
             self.poster.post(self.getZooData(5))
+        elif opt == 4:
+            self.poster.post(self.getThrowData(5))
+        elif opt == 5:
+            self.poster.post(self.getCodehData('addCatch', 5))
+            time.sleep(5)
+            self.poster.post(self.getCodehData('addCatch2', 5))
 
 
 if __name__ == '__main__':
