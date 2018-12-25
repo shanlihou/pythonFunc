@@ -1,3 +1,4 @@
+from functools import partial
 from ftplib import FTP
 import os
 
@@ -11,45 +12,60 @@ class Tunnel(object):
         ftp.login('123')
         self.ftp = ftp
         self.fileList = []
+        self.cur = 'tmp'
 
-    def fileInfoCB(self, fileInfo):
+    def fileInfoCB(self, fileList, fileInfo):
         infoList = fileInfo.split()
-        print(infoList)
+        # print(infoList)
         fileName = infoList[-1]
+        isdir = True if infoList[0].startswith('d') else False
+        if isdir:
+            fileList.append((isdir, fileName))
+            return
+
         if not fileName.endswith('.py') and not fileName.endswith('.pem'):
             return
 
         if fileName == 'tunnel.py':
             return
 
-        print('will down :', fileName)
-        self.fileList.append(fileName)
+        fileList.append((isdir, fileName))
         return
-        with open(fileName, 'wb') as fw:
-            # downName = 'RETR ' + os.path.join(self.downPath, fileName)
-            downName = 'RETR ' + fileName
-            self.ftp.retrbinary(downName, fw)
+
+    def downFile(self, local, remote):
+        with open(local, 'wb') as fw:
+            downName = 'RETR ' + remote
+            self.ftp.retrbinary(downName, fw.write)
 
     def downPath(self, path):
-        self.downPath = 'python\\pythonFunc\\' + path
-        self.ftp.cwd(self.downPath)
-        self.ftp.dir(self.fileInfoCB)
-        filePath = '..\\' + path
-        try:
-            os.mkdir(filePath)
-        except Exception as e:
-            print(e)
+        self.ftp.cwd(path)
+        fileList = []
+        old = self.cur
+        self.cur = os.path.join(old, path)
 
-        for fileName in self.fileList:
-            with open(filePath + '\\' + fileName, 'wb') as fw:
-                downName = 'RETR ' + fileName
-                self.ftp.retrbinary(downName, fw.write)
+        try:
+            os.mkdir(self.cur)
+        except Exception as e:
+            pass
+
+        self.ftp.dir(partial(self.fileInfoCB, fileList))
+        for isdir, filename in fileList:
+            if isdir:
+                self.downPath(filename)
+            else:
+                localname = os.path.join(self.cur, filename)
+                print(localname)
+                self.downFile(localname, filename)
+
+        self.ftp.cwd('..')
+        self.cur = old
 
     def upFile(self, filePath):
         bn = os.path.basename(filePath)
         self.ftp.storbinary('STOR ' + bn, open(filePath, 'rb'))
 
     def test(self):
+        self.ftp.cwd('python\\pythonFunc\\')
         self.downPath('propose')
         # self.upFile('../TabbedView.py')
 
