@@ -1,7 +1,7 @@
 import math
 
-from jpg import display
-from jpg.display import displayInstance
+import display
+from display import displayInstance
 
 
 class MapDisplay(object):

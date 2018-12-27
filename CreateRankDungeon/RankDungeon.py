@@ -494,7 +494,7 @@ if __name__ == '__main__':
         everyMonCount = int(sys.argv[5])
         rank = RankDungeon(path, startId, endId, count, everyMonCount)
     else:
-        opt = 1
+        opt = 0
         if opt == 0:
             rank = RankDungeon(
                 assetsPath, 62000004, 62000005, 4, 3)
