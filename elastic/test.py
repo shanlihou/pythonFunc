@@ -49,7 +49,20 @@ class Elastic(object):
         ret = requests.get(
             'http://localhost:9200/accounts/person/1?pretty=true')
         print(ret.text)
-
+        
+    def getAll(self):
+        ret = requests.get(
+            'http://localhost:9200/accounts/person/_search')
+        print(ret.text)
+        
+    def search(self):
+        data = {'query':{'match':{'desc':'系统'}},
+                'size':1
+            }
+        headers = {'Content-Type': 'application/json'}
+        ret = requests.post('http://localhost:9200/accounts/person/_search', headers=headers,data=data)
+        print(ret.text)
+        
     def setting(self):
         data = '{"index.blocks.read_only_allow_delete": null}'
         headers = {'Content-Type': 'application/json'}
@@ -67,7 +80,7 @@ class Elastic(object):
 
         ret = requests.delete('http://localhost:9200/weather')
         print(ret.text)
-        self.getDoc()
+        self.getAll()
         # self.init()
         # self.setting()
         # self.addDoc()
