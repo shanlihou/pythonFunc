@@ -1,7 +1,25 @@
 # coding:utf-8
 import requests
 import json
+import tornado
+import tornado.httpclient
+import tornado.gen
 
+
+@tornado.gen.coroutine
+def elasticRequest(uri, callback, method='GET', data=None):
+    http_client = tornado.httpclient.AsyncHTTPClient()
+    req = tornado.httpclient.HTTPRequest(
+        url=uri,
+        method=method,
+        body=data,
+
+        )
+    response = yield tornado.gen.Task(http_client.fetch, req)
+    if response.error:
+        print('ckz: elasticRequest error:', response.error)
+    else:
+        callback(response)
 
 class Elastic(object):
     def init(self):
