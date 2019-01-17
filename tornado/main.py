@@ -20,8 +20,15 @@ def elasticRequest(uri, callback, method='GET', data=None, headers=None):
     )
     response = yield tornado.gen.Task(http_client.fetch, req)
     if response.error:
+        data = response.body.decode('utf-8')
+        jsonData = json.loads(data)
+        root_cause = jsonData.get('error', {}).get('root_cause', [])
+        for cause in root_cause:
+            if cause['type'] == 'resource_already_exists_exception':
+                return
         print('ckz: elasticRequest error:', response.error, uri)
         print(response.body)
+        
     else:
         callback(response)
 
@@ -87,6 +94,15 @@ class FriendSearchMixin(object):
         uri = self.join(self.uriBase, self.indexName)
         print(uri)
         elasticRequest(uri, func, 'PUT', data, self.headers)
+        
+    def indexObId(self, obId):
+        uri = self.join(self.uriBase, self.indexName, self.typeName, str(obId)) + '?pretty=true'
+        def _func(resp):
+            data = resp.body.decode('utf-8')
+            jsonData = json.loads(data)
+            print(jsonData)
+            print(jsonData['_source'])
+        elasticRequest(uri, _func)
 
     def searchAvatarName(self, name):
         for i in name:
@@ -105,7 +121,7 @@ class FriendSearchMixin(object):
             for data in hits:
                 print(data)
                 source = data['_source']
-                print(source)
+                print(source, data['_id'])
 
         elasticRequest(uri, func, 'POST', data, self.headers)
 
@@ -115,9 +131,10 @@ class FriendSearchMixin(object):
     def test(self):
         self.initElastic()
         # self.setting()
-        self.cat()
+        #self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
-        self.searchAvatarName('纳兰')
+        self.searchAvatarName('修罗')
+        self.indexObId(8423432)
 
 
 if __name__ == "__main__":
