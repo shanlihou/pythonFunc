@@ -26,9 +26,11 @@ class Revert(object):
                 revertList.append((files[2], line))
             elif files[0] == 'R':
                 revertList.append((files[3], line))
+            elif len(files) > 3 and ''.join(files[0:3]) == 'A+C':
+                revertList.append((files[3], line))
 
         for i, line in revertList:
-            svnStr = 'svn revert "%s"' % i
+            svnStr = 'svn revert --depth infinity "%s"' % i
             print('revert:', svnStr)
             print('origin:', line)
             os.system(svnStr)
