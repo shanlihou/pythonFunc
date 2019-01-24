@@ -28,7 +28,7 @@ def elasticRequest(uri, callback, method='GET', data=None, headers=None):
                 return
         print('ckz: elasticRequest error:', response.error, uri)
         print(response.body)
-        
+
     else:
         callback(response)
 
@@ -58,6 +58,15 @@ class FriendSearchMixin(object):
             print(resp.body)
         print(uri)
         elasticRequest(uri, func, 'PUT', data, self.headers)
+
+    def delete(self, dbId):
+        uri = self.join(self.uriBase, self.indexName, self.typeName, str(dbId))
+
+        def func(resp):
+            print('delete------------------------------------')
+            print(resp.body)
+        print(uri)
+        elasticRequest(uri, func, 'DELETE')
 
     def addAvatarInfo(self, name, gbId, id):
         data = {'name': name,
@@ -94,15 +103,29 @@ class FriendSearchMixin(object):
         uri = self.join(self.uriBase, self.indexName)
         print(uri)
         elasticRequest(uri, func, 'PUT', data, self.headers)
-        
+
     def indexObId(self, obId):
-        uri = self.join(self.uriBase, self.indexName, self.typeName, str(obId)) + '?pretty=true'
+        uri = self.join(self.uriBase, self.indexName,
+                        self.typeName, str(obId)) + '?pretty=true'
+
         def _func(resp):
             data = resp.body.decode('utf-8')
             jsonData = json.loads(data)
             print(jsonData)
             print(jsonData['_source'])
         elasticRequest(uri, _func)
+        
+    def getAll(self):
+        uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
+
+        def func(resp):
+            print('-' * 60)
+            body = resp.body.decode('utf-8')
+            body = json.loads(body)
+            for data in body['hits']['hits']:
+                print(data)
+        print(uri)
+        elasticRequest(uri, func, 'GET')
 
     def searchAvatarName(self, name):
         for i in name:
@@ -131,10 +154,12 @@ class FriendSearchMixin(object):
     def test(self):
         self.initElastic()
         # self.setting()
-        #self.cat()
+        # self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
         self.searchAvatarName('血色')
         self.indexObId(8423432)
+        self.delete(557056)
+        self.getAll()
 
 
 if __name__ == "__main__":
