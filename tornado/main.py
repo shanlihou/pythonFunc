@@ -40,7 +40,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(10272) + '_friend'
+        self.indexName = str(10000) + '_friend'
         self.typeName = 'Avatar'
 
     def cat(self):
@@ -127,7 +127,7 @@ class FriendSearchMixin(object):
         print(uri)
         elasticRequest(uri, func, 'GET')
 
-    def searchAvatarName(self, name):
+    def searchAvatarName2(self, name):
         for i in name:
             print(ord(i))
         data = {'query': {'match': {'name': name}},
@@ -148,18 +148,55 @@ class FriendSearchMixin(object):
 
         elasticRequest(uri, func, 'POST', data, self.headers)
 
+    def searchAvatarName(self, name):
+        for i in name:
+            print(ord(i))
+        data = {'query': {'match': {'name': name}},
+                'size': 100
+                }
+        
+        data = {'query': {'constant_score': {'filter': {'term': {'name': name}}}}}
+        data = json.dumps(data)
+        uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
+
+        def func(resp):
+            body = resp.body.decode('utf-8')
+            jsonData = json.loads(body)
+            hits = jsonData['hits']['hits']
+            print(hits)
+            for data in hits:
+                print(data)
+                source = data['_source']
+                print(source, data['_id'])
+
+        elasticRequest(uri, func, 'POST', data, self.headers)
+        
+    def analyze(self, ):
+        uri = self.join(self.uriBase, self.indexName, '_analyze')
+        data = {'field': 'name',
+                'text': '紫夜之殇'}
+        data = json.dumps(data)
+
+        def func(resp):
+            body = resp.body.decode('utf-8')
+            jsonData = json.loads(body)
+            print(jsonData)
+
+        elasticRequest(uri, func, 'POST', data, self.headers)
+
     def join(self, *args):
         return '/'.join(args)
 
     def test(self):
-        self.initElastic()
+        #self.initElastic()
         # self.setting()
         # self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
-        self.searchAvatarName('血色')
-        self.indexObId(8423432)
-        self.delete(557056)
-        self.getAll()
+        self.searchAvatarName('紫')
+        self.analyze()
+        #self.indexObId(8423432)
+        #self.delete(557056)
+        #self.getAll()
 
 
 if __name__ == "__main__":
