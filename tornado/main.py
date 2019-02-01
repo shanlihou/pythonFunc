@@ -127,14 +127,15 @@ class FriendSearchMixin(object):
         print(uri)
         elasticRequest(uri, func, 'GET')
 
-    def searchAvatarName2(self, name):
+    def searchAvatarName(self, name):
         for i in name:
             print(ord(i))
-        data = {'query': {'match': {'name': name}},
+        data = {'query': {'match': {'name': {'query': name,
+                                              'operator': 'and'}}},
                 'size': 100
                 }
         data = json.dumps(data)
-        uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
+        uri = self.join(self.uriBase, self.indexName, self.typeName, '_search?explain')
 
         def func(resp):
             body = resp.body.decode('utf-8')
@@ -148,7 +149,7 @@ class FriendSearchMixin(object):
 
         elasticRequest(uri, func, 'POST', data, self.headers)
 
-    def searchAvatarName(self, name):
+    def searchAvatarName2(self, name):
         for i in name:
             print(ord(i))
         data = {'query': {'match': {'name': name}},
@@ -192,7 +193,7 @@ class FriendSearchMixin(object):
         # self.setting()
         # self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
-        self.searchAvatarName('紫')
+        self.searchAvatarName('+紫+夜')
         self.analyze()
         #self.indexObId(8423432)
         #self.delete(557056)
