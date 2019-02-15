@@ -175,7 +175,7 @@ class FriendSearchMixin(object):
     def analyze(self, ):
         uri = self.join(self.uriBase, self.indexName, '_analyze')
         data = {'field': 'name',
-                'text': '紫夜之殇'}
+                'text': '一叶传说'}
         data = json.dumps(data)
 
         def func(resp):
