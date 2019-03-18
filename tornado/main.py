@@ -40,7 +40,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(999) + '_friend'
+        self.indexName = str(10516) + '_friend'
         self.typeName = 'Avatar'
 
     def cat(self):
@@ -103,6 +103,16 @@ class FriendSearchMixin(object):
         uri = self.join(self.uriBase, self.indexName)
         print(uri)
         elasticRequest(uri, func, 'PUT', data, self.headers)
+        
+    def clearDB(self):
+        uri = self.join(self.uriBase, self.indexName)
+
+        def func(resp):
+            print('clearDB------------------------------------')
+            print(resp.body)
+        print(uri)
+        elasticRequest(uri, func, 'DELETE')
+        
 
     def indexObId(self, obId):
         uri = self.join(self.uriBase, self.indexName,
@@ -114,7 +124,7 @@ class FriendSearchMixin(object):
             print(jsonData)
             print(jsonData['_source'])
         elasticRequest(uri, _func)
-        
+
     def getAll(self):
         uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
 
@@ -131,11 +141,12 @@ class FriendSearchMixin(object):
         for i in name:
             print(ord(i))
         data = {'query': {'match': {'name': {'query': name,
-                                              'operator': 'and'}}},
+                                             'operator': 'and'}}},
                 'size': 100
                 }
         data = json.dumps(data)
-        uri = self.join(self.uriBase, self.indexName, self.typeName, '_search?explain')
+        uri = self.join(self.uriBase, self.indexName,
+                        self.typeName, '_search?explain')
 
         def func(resp):
             body = resp.body.decode('utf-8')
@@ -155,7 +166,7 @@ class FriendSearchMixin(object):
         data = {'query': {'match': {'name': name}},
                 'size': 100
                 }
-        
+
         data = {'query': {'constant_score': {'filter': {'term': {'name': name}}}}}
         data = json.dumps(data)
         uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
@@ -171,7 +182,7 @@ class FriendSearchMixin(object):
                 print(source, data['_id'])
 
         elasticRequest(uri, func, 'POST', data, self.headers)
-        
+
     def analyze(self, ):
         uri = self.join(self.uriBase, self.indexName, '_analyze')
         data = {'field': 'name',
@@ -189,17 +200,19 @@ class FriendSearchMixin(object):
         return '/'.join(args)
 
     def test(self):
-        #self.initElastic()
+        # self.initElastic()
         # self.setting()
         # self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
         # self.searchAvatarName('+紫+夜')
         # self.analyze()
+        # self.addAvatarInfo('zhang liang', 99124, 13422)
         self.getAll()
+        # self.clearDB()
         print('end---')
-        #self.indexObId(8423432)
-        #self.delete(557056)
-        #self.getAll()
+        # self.indexObId(8423432)
+        # self.delete(557056)
+        # self.getAll()
 
 
 if __name__ == "__main__":

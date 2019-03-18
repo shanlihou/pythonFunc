@@ -14,12 +14,13 @@ def elasticRequest(uri, callback, method='GET', data=None):
         method=method,
         body=data,
 
-        )
+    )
     response = yield tornado.gen.Task(http_client.fetch, req)
     if response.error:
         print('ckz: elasticRequest error:', response.error)
     else:
         callback(response)
+
 
 class Elastic(object):
     def init(self):
@@ -67,20 +68,21 @@ class Elastic(object):
         ret = requests.get(
             'http://localhost:9200/accounts/person/1?pretty=true')
         print(ret.text)
-        
+
     def getAll(self):
         ret = requests.get(
             'http://localhost:9200/accounts/person/_search')
         print(ret.text)
-        
+
     def search(self):
-        data = {'query':{'match':{'desc':'系统'}},
-                'size':1
-            }
+        data = {'query': {'match': {'desc': '系统'}},
+                'size': 1
+                }
         headers = {'Content-Type': 'application/json'}
-        ret = requests.post('http://localhost:9200/accounts/person/_search', headers=headers,data=data)
+        ret = requests.post(
+            'http://localhost:9200/accounts/person/_search', headers=headers, data=data)
         print(ret.text)
-        
+
     def setting(self):
         data = '{"index.blocks.read_only_allow_delete": null}'
         headers = {'Content-Type': 'application/json'}
