@@ -40,7 +40,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(10516) + '_friend'
+        self.indexName = str(10000) + '_friend'
         self.typeName = 'Avatar'
 
     def cat(self):
@@ -204,10 +204,10 @@ class FriendSearchMixin(object):
         # self.setting()
         # self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
-        # self.searchAvatarName('+紫+夜')
+        self.searchAvatarName('剑舞繁花')
         # self.analyze()
         # self.addAvatarInfo('zhang liang', 99124, 13422)
-        self.getAll()
+        # self.getAll()
         # self.clearDB()
         print('end---')
         # self.indexObId(8423432)
