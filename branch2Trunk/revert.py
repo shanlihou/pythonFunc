@@ -52,7 +52,7 @@ if __name__ == '__main__':
         rev = Revert('E:\svn\Dev\Client')
         rev.test()
 
-        rev = Revert('F:\Client2')
+        rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
         rev.test()
 
         rev = Revert(
