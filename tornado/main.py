@@ -40,7 +40,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(10000) + '_friend'
+        self.indexName = str(10516) + '_friend'
         self.typeName = 'Avatar'
 
     def cat(self):
