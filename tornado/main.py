@@ -79,6 +79,17 @@ class FriendSearchMixin(object):
             print('add:', response.body)
         elasticRequest(uri, func, 'PUT', data, self.headers)
 
+    def testPost(self, name, gbId, id):
+        data = {'name': name,
+                'gbId': gbId}
+
+        data = json.dumps(data)
+        uri = self.join(self.uriBase, self.indexName, self.typeName, str(id))
+
+        def func(response):
+            print('add:', response.body)
+        elasticRequest(uri, func, 'POST', data, self.headers)
+
     def initElastic(self):
         data = '''{
   "mappings": {
@@ -103,7 +114,7 @@ class FriendSearchMixin(object):
         uri = self.join(self.uriBase, self.indexName)
         print(uri)
         elasticRequest(uri, func, 'PUT', data, self.headers)
-        
+
     def clearDB(self):
         uri = self.join(self.uriBase, self.indexName)
 
@@ -112,7 +123,6 @@ class FriendSearchMixin(object):
             print(resp.body)
         print(uri)
         elasticRequest(uri, func, 'DELETE')
-        
 
     def indexObId(self, obId):
         uri = self.join(self.uriBase, self.indexName,
@@ -152,8 +162,9 @@ class FriendSearchMixin(object):
             body = resp.body.decode('utf-8')
             jsonData = json.loads(body)
             hits = jsonData['hits']['hits']
-            print(hits)
+            #print(hits)
             for data in hits:
+                print('\n\n')
                 print(data)
                 source = data['_source']
                 print(source, data['_id'])
@@ -207,7 +218,8 @@ class FriendSearchMixin(object):
         # self.searchAvatarName('剑舞繁花')
         # self.analyze()
         # self.addAvatarInfo('zhang liang', 99124, 13422)
-        self.getAll()
+        self.testPost('zhang san feng', 33423, 9013)
+        self.searchAvatarName('zhang')
         # self.clearDB()
         print('end---')
         # self.indexObId(8423432)
