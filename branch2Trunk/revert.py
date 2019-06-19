@@ -37,6 +37,10 @@ class Revert(object):
 
         os.system('svn up')
         
+    def update(self):
+        os.chdir(self.path)
+        os.system('svn up')
+        
     def cpWin2Linux(self, winPath, linuxPath):
         os.chdir(winPath)
         ret = os.popen('svn st')
@@ -67,7 +71,7 @@ if __name__ == '__main__':
         rev.test()
 
         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
-        rev.test()
+        rev.update()
 
         rev = Revert(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')

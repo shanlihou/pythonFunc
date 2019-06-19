@@ -219,12 +219,12 @@ class FriendSearchMixin(object):
         # self.analyze()
         # self.addAvatarInfo('zhang liang', 99124, 13422)
         # self.testPost('zhang san feng', 33423, 9013)
-        self.searchAvatarName('测试')
+        # self.searchAvatarName('测试')
         # self.clearDB()
         print('end---')
         # self.indexObId(8423432)
         # self.delete(557056)
-        # self.getAll()
+        self.getAll()
 
 
 if __name__ == "__main__":
