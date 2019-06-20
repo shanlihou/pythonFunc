@@ -31,6 +31,9 @@ class Revert(object):
 
         for i, line in revertList:
             svnStr = 'svn revert --depth infinity "%s"' % i
+            if 'fmod' in line:
+                continue
+
             print('revert:', svnStr)
             print('origin:', line)
             os.system(svnStr)
@@ -71,7 +74,7 @@ if __name__ == '__main__':
         rev.test()
 
         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
-        rev.update()
+        rev.test()
 
         rev = Revert(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
@@ -86,3 +89,4 @@ if __name__ == '__main__':
         rev = Revert(r'E:\svn\Dev\Client')
         rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts', 
                         r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts')
+        
