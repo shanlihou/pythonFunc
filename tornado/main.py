@@ -37,7 +37,7 @@ class FriendSearchMixin(object):
     headers = {'Content-Type': 'application/json'}
 
     def __init__(self):
-        self.ip = '192.168.16.252'
+        self.ip = '192.168.10.49'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
         self.indexName = str(10516) + '_friend'
@@ -211,14 +211,14 @@ class FriendSearchMixin(object):
         return '/'.join(args)
 
     def test(self):
-        # self.initElastic()
+        #self.initElastic()
         # self.setting()
         # self.cat()
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
         # self.searchAvatarName('剑舞繁花')
         # self.analyze()
-        # self.addAvatarInfo('zhang liang', 99124, 13422)
-        # self.testPost('zhang san feng', 33423, 9013)
+        self.addAvatarInfo('zhang liang', 99124, 13422)
+        self.testPost('zhang san feng', 33423, 9013)
         # self.searchAvatarName('测试')
         # self.clearDB()
         print('end---')
