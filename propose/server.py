@@ -17,7 +17,7 @@ async def init(loop):
     app = web.Application(loop=loop)
     app = web_runner.AppRunner(app=app).app()
     app.router.add_post('/cmd/', cmd, expect_handler=web.Request.json)
-    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)
+    srv = await loop.create_server(app.make_handler(), '0.0.0.0', 8000)
     print('Server started at http://127.0.0.1:8000...')
     return srv
 

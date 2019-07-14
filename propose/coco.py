@@ -225,10 +225,11 @@ class Coco(cocos.layer.Layer, AnimMixin):
 
     @isIdle
     def addLabel(self, data, actType, args):
+        print('add label')
         label = cocos.text.Label(
             data,
             font_name='Times New Roman',
-            font_size=1,
+            font_size=50,
             anchor_x='center', anchor_y='center')
 
         self.add(label)
@@ -261,10 +262,12 @@ class Coco(cocos.layer.Layer, AnimMixin):
     def doTask(self):
         if not self.taskList:
             return
-
+        
         task = self.taskList[0]
         del self.taskList[0]
         tType = task.get('type', 0)
+        
+        print('do task:', task)
         if tType == TaskType.label:
             self.addLabel(task['data'], task['act'], task)
         elif tType == TaskType.anim:

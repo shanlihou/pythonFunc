@@ -1,14 +1,32 @@
+#coding:utf-8
 from poster import Poster
 import sys
 sys.path.append('..')
 import const
 import time
 import os
+import random
 
 
 class CMD(object):
-    def __init__(self, url):
-        self.poster = Poster(url)
+    text = '我爱你应彬小宝宝嫁给我吧'
+    def __init__(self, url1, url2):
+        self.lPoster = Poster(url1)
+        self.rPoster = Poster(url2)
+        self.poster = Poster(url1)
+        self.turnIter = self.getCurTurn()
+        
+    def getCurTurn(self):
+        textIter = iter(self.text)
+        cur = 0
+        text = ''
+        dir = 0
+        while 1:
+            if cur == 0:
+                text = next(textIter)
+                dir = random.randint(0, 3)
+            yield text, dir
+            cur = (cur + 1) % 2
 
     @staticmethod
     def getMusicData(pitch):
@@ -47,7 +65,8 @@ class CMD(object):
                 data = self.getMusicData(pitch)
                 pitchDur = self.getPitchDur(pitch)
                 datas = [data]
-                datas.append(self.getMoveData('123', pitchDur / 1000, 0))
+                text, dir = next(self.turnIter)
+                datas.append(self.getMoveData(text, pitchDur / 1000, dir))
                 self.poster.post(datas)
                 time.sleep(pitchDur / 1000)
 
@@ -86,5 +105,5 @@ class CMD(object):
 
 
 if __name__ == '__main__':
-    cmd = CMD('http://127.0.0.1:8000/cmd/')
+    cmd = CMD('http://127.0.0.1:8000/cmd/', 'http://127.0.0.1:8000/cmd/')
     cmd.test()
