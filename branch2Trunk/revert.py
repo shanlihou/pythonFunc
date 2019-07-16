@@ -15,7 +15,7 @@ class Revert(object):
                 continue
 
             if files[0] == 'M' or files[0] == '!' or files[0] == 'C':
-                if files[1] == '+' or files[1] == 'C':
+                if files[1] == '+' or files[1] == 'C' or files[1] == 'L':
                     fileName = ' '.join(files[2:])
                 else:
                     fileName = ' '.join(files[1:])
