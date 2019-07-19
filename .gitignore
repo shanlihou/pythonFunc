@@ -28,3 +28,4 @@ decrypt
 *.rar
 *.xml
 *.iml
+node_modules

@@ -23,14 +23,6 @@ class ListPath(object):
     def test(self):
         fileList = self.getAllFile()
         print(fileList)
-        
-def mkdir(path):
-    dirname = os.path.dirname(path)
-    if not os.path.exists(dirname):
-        mkdir(dirname)
-        
-    if not os.path.exists(path):
-        os.mkdir(path)
 
 
 if __name__ == '__main__':
