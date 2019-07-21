@@ -11,14 +11,23 @@ def ping(ip):
     cmd = os.popen('ping %s' % ip)
     result = cmd.read()
     pat = re.compile(r'\((\d+)\%.*\)')
+    print(result)
     find = pat.search(result)
+    isLoss = True
     if find:
-        result = int(find.groups()[0])
-        print(result)
-        if result < 5:
-            return True
+        ret = int(find.groups()[0])
+        print(ret)
+        if ret < 5:
+            isLoss = False
 
-    return False
+    pat = re.compile(r'= (\d+)ms')
+    find = pat.findall(result)
+    if len(find) == 3:
+        find = [int(x) for x in find]
+        if not isLoss:
+            return find[2]
+        
+    return -1
 
 
 def getFreeSS():
@@ -75,7 +84,8 @@ class SSR(object):
     def toJson(self, result):
         final = []
         for data in result:
-            if not ping(data['server']):
+            speed = ping(data['server'])
+            if speed == -1:
                 continue
 
             cfg = {
@@ -87,9 +97,12 @@ class SSR(object):
                 "plugin_opts": "",
                 "plugin_args": "",
                 "remarks": data["remarks"],
-                "timeout": 5
+                "timeout": 5,
+                'speed': speed,
             }
             final.append(cfg)
+        final.sort(key=lambda cfg: cfg['speed'])    
+        
         with open('couldUse.txt', 'wb') as fw:
             fw.write(pickle.dumps(final))
 
@@ -97,10 +110,14 @@ class SSR(object):
         print(final)
 
     def test(self):
+        #self.save(getFreeSS())
         result = self.load()
         self.toJson(result)
 
 
 if __name__ == '__main__':
-    ssr = SSR()
-    ssr.test()
+    if 1:
+        ssr = SSR()
+        ssr.test()
+    else:
+        ping('www.baidu.com')
