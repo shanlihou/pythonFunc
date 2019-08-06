@@ -31,7 +31,7 @@ def ping(ip):
 
 
 def getFreeSS():
-    youneedSSUrl = "https://www.youneed.win/free-ss"
+    youneedSSUrl = "https://v2s.top/"
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper() # CloudflareScraper inherits
     # from requests.Session
@@ -39,6 +39,7 @@ def getFreeSS():
     # print(rsponse.text) # => "..."
     if (rsponse.status_code == 200):
         responseHtml = rsponse.text
+        print(responseHtml)
         tree = html.fromstring(responseHtml)
         ssservers = tree.xpath("//section[@class='context']/table/tbody/tr")
         ssserversCount = len(ssservers)
@@ -108,11 +109,15 @@ class SSR(object):
 
         final = json.dumps(final, indent=4, separators=(',', ':'))
         print(final)
+        
+    def google(self):
+        pass
 
     def test(self):
-        #self.save(getFreeSS())
+        self.save(getFreeSS())
         result = self.load()
-        self.toJson(result)
+        print(result)
+        #self.toJson(result)
 
 
 if __name__ == '__main__':
