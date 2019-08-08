@@ -81,6 +81,11 @@ class SSR(object):
         with open('result.txt', 'rb') as fr:
             result = fr.read()
             return pickle.loads(result)
+        
+    def loadFromJson(self):
+        with open('electron.txt') as fr:
+            jsonObj = json.loads(fr.read())
+            return jsonObj
 
     def toJson(self, result):
         final = []
@@ -114,10 +119,9 @@ class SSR(object):
         pass
 
     def test(self):
-        self.save(getFreeSS())
-        result = self.load()
-        print(result)
-        #self.toJson(result)
+        # self.save(getFreeSS())
+        result = self.loadFromJson()
+        self.toJson(result)
 
 
 if __name__ == '__main__':
