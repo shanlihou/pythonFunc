@@ -73,8 +73,11 @@ if __name__ == '__main__':
         rev = Revert('E:\svn\Dev\Client')
         rev.test()
 
-        rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
+#         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
+#         rev.test()
+        rev = Revert(r'F:\Client2')
         rev.test()
+
 
         rev = Revert(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
