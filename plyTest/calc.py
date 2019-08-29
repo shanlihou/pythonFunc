@@ -3,7 +3,7 @@
 import ply.yacc as yacc
 
 # Get the token map from the lexer.  This is required.
-from calclex import tokens
+from calclex import tokens, states
 
 
 def p_add(p):
