@@ -1,6 +1,7 @@
 import os
 import os
 
+
 class Revert(object):
     def __init__(self, path):
         self.path = path
@@ -39,11 +40,11 @@ class Revert(object):
             os.system(svnStr)
 
         os.system('svn up')
-        
+
     def update(self):
         os.chdir(self.path)
         os.system('svn up')
-        
+
     def cpWin2Linux(self, winPath, linuxPath):
         os.chdir(winPath)
         ret = os.popen('svn st')
@@ -51,7 +52,7 @@ class Revert(object):
             files = line.split()
             if not files:
                 continue
-            
+
             if files[0] == 'M':
                 dstPath = os.path.join(linuxPath, files[1])
                 cpStr = 'copy %s %s' % (files[1], dstPath)
@@ -78,7 +79,6 @@ if __name__ == '__main__':
         rev = Revert(r'F:\Client2')
         rev.test()
 
-
         rev = Revert(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
         rev.test()
@@ -86,10 +86,9 @@ if __name__ == '__main__':
         rev = Revert(
             r'E:\server\scripts\kbengine_unity3d_plugins')
         rev.test()
-        
+
         os.system('svn up E:\svn\Dev\Server')
     elif opt == 1:
         rev = Revert(r'E:\svn\Dev\Client')
-        rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts', 
+        rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts',
                         r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts')
-        
