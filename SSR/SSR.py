@@ -4,6 +4,7 @@ import os
 import re
 import pickle
 import json
+import requests
 # get ss from web
 
 
@@ -26,7 +27,7 @@ def ping(ip):
         find = [int(x) for x in find]
         if not isLoss:
             return find[2]
-        
+
     return -1
 
 
@@ -72,22 +73,26 @@ class SSR(object):
     def __init__(self):
         pass
 
-    def save(self, result):
+    @staticmethod
+    def save(result):
         data = pickle.dumps(result)
         with open('result.txt', 'wb') as fw:
             fw.write(data)
 
-    def load(self):
+    @staticmethod
+    def load():
         with open('result.txt', 'rb') as fr:
             result = fr.read()
             return pickle.loads(result)
-        
-    def loadFromJson(self):
+
+    @staticmethod
+    def loadFromJson():
         with open('electron.txt') as fr:
             jsonObj = json.loads(fr.read())
             return jsonObj
 
-    def toJson(self, result):
+    @staticmethod
+    def toJson(result):
         final = []
         for data in result:
             speed = ping(data['server'])
@@ -107,21 +112,30 @@ class SSR(object):
                 'speed': speed,
             }
             final.append(cfg)
-        final.sort(key=lambda cfg: cfg['speed'])    
-        
+        final.sort(key=lambda cfg: cfg['speed'])
+
         with open('couldUse.txt', 'wb') as fw:
             fw.write(pickle.dumps(final))
 
         final = json.dumps(final, indent=4, separators=(',', ':'))
         print(final)
-        
-    def google(self):
-        pass
 
-    def test(self):
+    @staticmethod
+    def google():
+        try:
+            ret = requests.get('https://www.google.com', proxies={'https': '127.0.0.1:1080'})
+            print(ret)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    @classmethod
+    def test(cls):
         # self.save(getFreeSS())
-        result = self.loadFromJson()
-        self.toJson(result)
+        # result = self.loadFromJson()
+        # self.toJson(result)
+        cls.google()
 
 
 if __name__ == '__main__':
