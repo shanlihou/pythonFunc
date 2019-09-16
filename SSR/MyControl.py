@@ -24,7 +24,8 @@ def send(func, *args):
 
     s.sendto(bytes(args), address)
     s.close()
-    
+
+
 def afterDown(data):
     index = int(data)
     print(index)
@@ -32,7 +33,10 @@ def afterDown(data):
 
 def afterReset(*args):
     ret = SSR.SSR.google()
-    print(ret)
+    if ret:
+        pass
+    else:
+        send(afterDown, )
 
 
 async def start():
