@@ -133,9 +133,9 @@ class SSR(object):
     @classmethod
     def test(cls):
         # self.save(getFreeSS())
-        # result = self.loadFromJson()
-        # self.toJson(result)
-        cls.google()
+        result = cls.loadFromJson()
+        cls.toJson(result)
+        # cls.google()
 
 
 if __name__ == '__main__':

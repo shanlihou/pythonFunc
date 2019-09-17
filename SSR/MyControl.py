@@ -1,10 +1,13 @@
 import socket
 import asyncio
 import SSR
+import functools
+import json
 
 
 class GlobalData(object):
     CALL_BACK = None
+    GOOD_DATA = {}
 
 
 class Opr(object):
@@ -26,17 +29,56 @@ def send(func, *args):
     s.close()
 
 
+def printFinal():
+    p = [data for data in GlobalData.GOOD_DATA.values() if data is not None]
+    final = json.dumps(p, indent=4, separators=(',', ':'))
+    print(final)
+
+
+def getIndexInfo(index, data):
+    print(index, data)
+    dataList = data.decode('ascii').split('&')
+    if index in GlobalData.GOOD_DATA:
+        printFinal()
+        return
+
+    GlobalData.GOOD_DATA[index] = {
+        "server": dataList[0],
+        "server_port": int(dataList[1]),
+        "password": dataList[2],
+        "method": dataList[3],
+        "plugin": "",
+        "plugin_opts": "",
+        "plugin_args": "",
+        "remarks": dataList[4],
+        "timeout": 5,
+    }
+    send(afterDown, Opr.DownIndex)
+
+
 def afterDown(data):
     index = int(data)
+    if index in GlobalData.GOOD_DATA:
+        printFinal()
+        return
+
     print(index)
+    ret = SSR.SSR.google()
+    print(ret)
+    if ret:
+        send(functools.partial(getIndexInfo, index), Opr.GetServer)
+    else:
+        GlobalData.GOOD_DATA[index] = None
+        send(afterDown, Opr.DownIndex)
 
 
 def afterReset(*args):
     ret = SSR.SSR.google()
+    print(ret)
     if ret:
-        pass
+        send(functools.partial(getIndexInfo, 0), Opr.GetServer)
     else:
-        send(afterDown, )
+        send(afterDown, Opr.DownIndex)
 
 
 async def start():
