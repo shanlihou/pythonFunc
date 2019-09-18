@@ -32,6 +32,7 @@ def send(func, *args):
 def printFinal():
     p = [data for data in GlobalData.GOOD_DATA.values() if data is not None]
     final = json.dumps(p, indent=4, separators=(',', ':'))
+    final.sort(key=lambda cfg: cfg['speed'])
     print(final)
 
 
@@ -40,6 +41,12 @@ def getIndexInfo(index, data):
     dataList = data.decode('ascii').split('&')
     if index in GlobalData.GOOD_DATA:
         printFinal()
+        return
+
+    ret = SSR.ping(dataList[0])
+    if ret == -1:
+        GlobalData.GOOD_DATA[index] = None
+        send(afterDown, Opr.DownIndex)
         return
 
     GlobalData.GOOD_DATA[index] = {
@@ -52,6 +59,7 @@ def getIndexInfo(index, data):
         "plugin_args": "",
         "remarks": dataList[4],
         "timeout": 5,
+        "speed": ret,
     }
     send(afterDown, Opr.DownIndex)
 
