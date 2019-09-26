@@ -51,33 +51,33 @@ class jpgHelper(object):
 
     def readBit(self):
         FF = False
-        tmp = self.fileRead.read(1)
+        tmp = self.fileRead.read(1)[0]
         while tmp and not self.EOI:
-            num = ord(tmp)
+            num = tmp
             print('pre num:%x' % num)
             if FF:
                 if num == 0:
                     num = 0xff
                     FF = False
-                    tmp = self.fileRead.read(1)
+                    tmp = self.fileRead.read(1)[0]
                 elif num == 0xD9:
                     self.EOI = True
                     break
                 elif num >= 0xD0 and num < 0xD8:
-                    tmp = self.fileRead.read(1)
+                    tmp = self.fileRead.read(1)[0]
                     FF = False
                     print('find flag:%x' % num)
                     continue
                 else:
-                    tmp = self.fileRead.read(1)
+                    tmp = self.fileRead.read(1)[0]
                     continue
                 '''
                 elif num == 0xff:
-                    tmp = self.fileRead.read(1)
+                    tmp = self.fileRead.read(1)[0]
                     continue
                 '''
             else:
-                tmp = self.fileRead.read(1)
+                tmp = self.fileRead.read(1)[0]
                 if num == 0xff:
                     FF = True
                     continue
@@ -92,15 +92,15 @@ class jpgHelper(object):
     def readStream(self, bits):
         ret = 0
         for i in range(bits):
-            bit = self.inputStream.next()
-            if bit != None:
+            bit = next(self.inputStream, None)
+            if bit is not None:
                 ret = (ret << 1) + bit
             else:
                 return None
         return ret
 
     def parseHuffmanTbl(self, seq):
-        first = ord(seq[0])
+        first = seq[0]
         H1 = (0xf0 & first) >> 4
         L1 = 0x0f & first
         tmpTbl = {}
@@ -108,12 +108,12 @@ class jpgHelper(object):
         index = 17
         count = 0
         for i in range(1, 17):
-            num = ord(seq[i])
+            num = seq[i]
             count += num
             # print i, num, index, count
             for j in range(num):
                 # print 'index:', i, j, num, index, len(seq)
-                tmpTbl[(i, code)] = ord(seq[index])
+                tmpTbl[(i, code)] = seq[index]
                 index += 1
                 code += 1
             code <<= 1
@@ -152,7 +152,8 @@ class jpgHelper(object):
             while not self.EOI:
                 bit += 1
                 nextBit = self.readStream(1)
-                if nextBit == None:
+                if nextBit is None:
+                    print('end')
                     return [0 for i in range(64)]
                 num = (num << 1) + nextBit
                 if (bit, num) in huffTable:
@@ -205,6 +206,7 @@ class jpgHelper(object):
             vert = self.colorInfo[i + 1]['vertical']
             mcu[i] = []
             for j in range(hori * vert):
+                print(i, j)
                 mcu[i].append(self.readDataUnit(i + 1))
         return mcu
 
@@ -307,22 +309,22 @@ class jpgHelper(object):
         # sofo start of frame
         print('parseSOF---------------------------------------')
         tmp = self.fileRead.read(2)
-        size = ord(tmp[0]) * 256 + ord(tmp[1])
+        size = tmp[0] * 256 + tmp[1]
         print('size:', size)
         tmp = self.fileRead.read(6)
-        print(ord(tmp[0]))
-        print('image high:', ord(tmp[1]) * 256 + ord(tmp[2]))
-        print('image width:', ord(tmp[3]) * 256 + ord(tmp[4]))
-        colorNum = ord(tmp[5])
+        print(tmp[0])
+        print('image high:', tmp[1] * 256 + tmp[2])
+        print('image width:', tmp[3] * 256 + tmp[4])
+        colorNum = tmp[5]
         self.colorInfo = [{} for i in range(colorNum + 1)]
 
         for i in range(colorNum):
-            id = ord(self.fileRead.read(1))
-            tmp = ord(self.fileRead.read(1))
+            id = self.fileRead.read(1)[0]
+            tmp = self.fileRead.read(1)[0]
             print('id:', id)
             self.colorInfo[id]['horizontal'] = (tmp >> 4) & 0x0f
             self.colorInfo[id]['vertical'] = tmp & 0x0f
-            self.colorInfo[id]['Quant'] = ord(self.fileRead.read(1))
+            self.colorInfo[id]['Quant'] = self.fileRead.read(1)[0]
             print('hori:', self.colorInfo[id]['horizontal'],
                   'vert:', self.colorInfo[id]['vertical'])
             print('quant id:', self.colorInfo[id]['Quant'])
@@ -331,13 +333,13 @@ class jpgHelper(object):
         # dht huffman table
         print('parse DHT---------------------------------------')
         tmp = self.fileRead.read(2)
-        size = ord(tmp[0]) * 256 + ord(tmp[1])
+        size = tmp[0] * 256 + tmp[1]
         print('size:', size)
         tmp = self.fileRead.read(size - 2)
-        print(self.get2(ord(tmp[0])))
+        print(self.get2(tmp[0]))
         count = 0
         for i in range(1, 17):
-            count += ord(tmp[i])
+            count += tmp[i]
             # print i, count
         print('count:', count)
         self.parseHuffmanTbl(tmp)
@@ -347,39 +349,40 @@ class jpgHelper(object):
         # dqt Define Quantization Table
         print('parse DQT---------------------------------------')
         tmp = self.fileRead.read(2)
-        size = ord(tmp[0]) * 256 + ord(tmp[1])
+        size = tmp[0] * 256 + tmp[1]
         print('size:', size)
         tmp = self.fileRead.read(size - 2)
-        print(ord(tmp[0]))
-        id = ord(tmp[0]) & 0x0f
+        print(tmp[0])
+        id = tmp[0] & 0x0f
         tmpTable = []
         for i in range(64):
-            tmpTable.append(ord(tmp[i + 1]))
+            tmpTable.append(tmp[i + 1])
         self.quantTable[id] = tmpTable
 
     def parseSOS(self):
         print('parseSOS---------------------------------------SOS')
         tmp = self.fileRead.read(2)
-        size = ord(tmp[0]) * 256 + ord(tmp[1])
+        size = tmp[0] * 256 + tmp[1]
         print('size:', size)
         #tmp = self.fileRead.read(size - 2)
-        numColor = ord(self.fileRead.read(1))
+        numColor = self.fileRead.read(1)[0]
         self.huffmanNo = [{} for i in range(numColor + 1)]
         print('huffNo:', self.huffmanNo)
         for i in range(numColor):
-            id = ord(self.fileRead.read(1))
-            tmp = ord(self.fileRead.read(1))
+            id = self.fileRead.read(1)[0]
+            tmp = self.fileRead.read(1)[0]
             dc = (tmp >> 4) & 0x0f
             ac = tmp & 0x0f
             print('id:', id, 'dc:', dc, 'ac:', ac)
             self.huffmanNo[id]['dc'] = dc
             self.huffmanNo[id]['ac'] = ac
         for i in range(3):
-            print(self.get2(ord(self.fileRead.read(1))))
+            print(self.get2(self.fileRead.read(1)[0]))
         self.inputStream = self.readBit()
         self.numColor = numColor  # color sum num
 
         while not self.EOI:
+            print('not eoi')
             self.data.append(self.readMCU())
         print(self.data[0][0][1])
         self.calcDC()
@@ -396,19 +399,19 @@ class jpgHelper(object):
     def parseAPPn(self):
         print('parseAPPN---------------------------------------APPn')
         tmp = self.fileRead.read(2)
-        size = ord(tmp[0]) * 256 + ord(tmp[1])
+        size = tmp[0] * 256 + tmp[1]
         print('size:', size)
         tmp = self.fileRead.read(size - 2)
 
     def parseFlag(self):
         while 1:
-            flag = self.fileRead.read(1)
+            flag = self.fileRead.read(1)[0]
             if not flag:
                 break
-            flag = ord(flag)
+
             print('%x' % flag)
             if flag == 0xff:
-                flag = ord(self.fileRead.read(1))
+                flag = self.fileRead.read(1)[0]
                 print('%x' % flag)
                 if flag == 0xdb:
                     self.parseDQT()
@@ -430,16 +433,16 @@ class jpgHelper(object):
     def parser(self):
         tmp = self.fileRead.read(4)
         for i in tmp:
-            print('%x' % ord(i))
+            print('%x' % i)
         tmp = self.fileRead.read(2)
-        size = ord(tmp[0]) * 256 + ord(tmp[1])
+        size = tmp[0] * 256 + tmp[1]
         print('size:', size)
         tmp = self.fileRead.read(size - 2)
         print(tmp[:5])
-        print('ver:', str(ord(tmp[5])) + '.' + str(ord(tmp[6])))
-        print(ord(tmp[7]))
-        print('x:', ord(tmp[8]) * 256 + ord(tmp[9]))
-        print('y:', ord(tmp[10]) * 256 + ord(tmp[11]))
+        print('ver:', str(tmp[5]) + '.' + str(tmp[6]))
+        print(tmp[7])
+        print('x:', tmp[8] * 256 + tmp[9])
+        print('y:', tmp[10] * 256 + tmp[11])
         for i in tmp[12:]:
-            print('%x' % ord(i))
+            print('%x' % i)
         self.parseFlag()
