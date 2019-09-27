@@ -52,7 +52,7 @@ class jpgHelper(object):
     def readBit(self):
         FF = False
         tmp = self.fileRead.read(1)[0]
-        while tmp and not self.EOI:
+        while not self.EOI:
             num = tmp
             print('pre num:%x' % num)
             if FF:
@@ -241,7 +241,7 @@ class jpgHelper(object):
         for index in range(len(YCrCb)):
             if not YCrCb[index]:
                 continue
-            tmp = [range(8) for i in range(8)]
+            tmp = [list(range(8)) for i in range(8)]
             for i in range(8):
                 for j in range(8):
                     tmp[i][j] = YCrCb[index][self.zigMap[i][j]]
@@ -249,7 +249,7 @@ class jpgHelper(object):
 
     def idct(self, YCrCb):
         for index in range(len(YCrCb)):
-            tmp = [range(8) for i in range(8)]
+            tmp = [list(range(8)) for i in range(8)]
             if len(YCrCb[index]) == 0:
                 continue
             for x in range(8):
@@ -405,10 +405,11 @@ class jpgHelper(object):
 
     def parseFlag(self):
         while 1:
-            flag = self.fileRead.read(1)[0]
+            flag = self.fileRead.read(1)
             if not flag:
                 break
 
+            flag = flag[0]
             print('%x' % flag)
             if flag == 0xff:
                 flag = self.fileRead.read(1)[0]
