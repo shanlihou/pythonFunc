@@ -13,11 +13,15 @@ def C(x):
         return 1.0
 
 
+class MCU(object):
+    def __init__
+
+
 class jpgHelper(object):
     def __init__(self, fileName):
         # pre argu
         self.idct_precision = 8
-        #--------------------------
+        # --------------------------
         self.fileRead = open(fileName, 'rb')
         self.huffmanTbl = {}
         self.huffmanTbl['dc'] = [None] * 2
@@ -54,7 +58,6 @@ class jpgHelper(object):
         tmp = self.fileRead.read(1)[0]
         while not self.EOI:
             num = tmp
-            print('pre num:%x' % num)
             if FF:
                 if num == 0:
                     num = 0xff
@@ -82,11 +85,9 @@ class jpgHelper(object):
                     FF = True
                     continue
 
-            print('ord num :%x' % num)
             for i in range(7, -1, -1):
                 yield (num >> i) & 0x01
         while True:
-            print('return None:', self.EOI)
             yield None
 
     def readStream(self, bits):
