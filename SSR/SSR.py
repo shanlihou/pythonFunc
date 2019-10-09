@@ -124,8 +124,8 @@ class SSR(object):
     def google():
         try:
             ret = requests.get('https://www.google.com',
-                               proxies={'https': '127.0.0.1:1080'},)
-                               #timeout=(3, 7))
+                               proxies={'https': '127.0.0.1:1080'},
+                               timeout=30)
             print(ret)
             return True
         except Exception as e:

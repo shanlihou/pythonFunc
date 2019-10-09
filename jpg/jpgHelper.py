@@ -14,7 +14,8 @@ def C(x):
 
 
 class MCU(object):
-    def __init__
+    def __init__(self, numColor):
+        self.mucs = [None] * numColor
 
 
 class jpgHelper(object):
@@ -201,14 +202,14 @@ class jpgHelper(object):
         return data
 
     def readMCU(self):
-        mcu = [None] * self.numColor
+        mcu = MCU()
         for i in range(self.numColor):
             hori = self.colorInfo[i + 1]['horizontal']
             vert = self.colorInfo[i + 1]['vertical']
-            mcu[i] = []
+            mcu.mucs[i] = []
             for j in range(hori * vert):
                 print(i, j)
-                mcu[i].append(self.readDataUnit(i + 1))
+                mcu.mucs[i].append(self.readDataUnit(i + 1))
         return mcu
 
     def for_each_data_unit(self, type):
@@ -385,7 +386,6 @@ class jpgHelper(object):
         while not self.EOI:
             print('not eoi')
             self.data.append(self.readMCU())
-        print(self.data[0][0][1])
         self.calcDC()
         display().displayData(self.data, 7, 1)
 
