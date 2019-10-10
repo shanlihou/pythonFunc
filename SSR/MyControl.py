@@ -3,6 +3,7 @@ import asyncio
 import SSR
 import functools
 import json
+import os
 
 
 class GlobalData(object):
@@ -27,6 +28,17 @@ def send(func, *args):
 
     s.sendto(bytes(args), address)
     s.close()
+    
+
+def replaceGuiJson(path, final):
+    with open(path) as fr:
+        jObj = json.load(fr)
+        print(jObj['configs'])
+        jObj['configs'] = final
+        fw = open(path + '.new', 'w')
+        json.dump(jObj, fw)
+        cmdStr = 'move {} {}'.format(path + '.new', path)
+        os.system(cmdStr)
 
 
 def printFinal():
@@ -34,6 +46,8 @@ def printFinal():
     p.sort(key=lambda cfg: cfg.get('speed'))
     final = json.dumps(p, indent=4, separators=(',', ':'))
     print(final)
+    path = r'E:\shgithub\others\shadowsocks-windows\shadowsocks-csharp\bin\x86\Release\gui-config.json'
+    replaceGuiJson(path, p)
 
 
 def getIndexInfo(index, data):
