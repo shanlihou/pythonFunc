@@ -62,7 +62,7 @@ class display(object):
         offsetY = (step * 8 + 1) * offsetY
         for mcu in data:
             # print '\t', len(mcu)
-            for YCrCb in mcu:
+            for YCrCb in mcu.mcus:
                 # print '\t' * 2, len(YCrCb)
                 for k in YCrCb:
                     # print '\t' * 3, len(k)

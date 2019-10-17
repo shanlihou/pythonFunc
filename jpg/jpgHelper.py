@@ -15,7 +15,17 @@ def C(x):
 
 class MCU(object):
     def __init__(self, numColor):
-        self.mucs = [None] * numColor
+        self.numColor = numColor
+        self.mcus = [None] * numColor
+
+    def getHmultiVs(self, index):
+        return self.mcus[index]
+
+    def __repr__(self):
+        one = len(self.mcus)
+        two = len(self.mcus[0])
+        three = len(self.mcus[0][0])
+        return 'YCrCb:{}, HmultiV:{}, 3:{}'.format(one, two, three)
 
 
 class jpgHelper(object):
@@ -202,19 +212,19 @@ class jpgHelper(object):
         return data
 
     def readMCU(self):
-        mcu = MCU()
+        mcu = MCU(self.numColor)
         for i in range(self.numColor):
             hori = self.colorInfo[i + 1]['horizontal']
             vert = self.colorInfo[i + 1]['vertical']
-            mcu.mucs[i] = []
+            mcu.mcus[i] = []
             for j in range(hori * vert):
                 print(i, j)
-                mcu.mucs[i].append(self.readDataUnit(i + 1))
+                mcu.mcus[i].append(self.readDataUnit(i + 1))
         return mcu
 
     def for_each_data_unit(self, type):
         for mcu in self.data:
-            for YCrCb in mcu:
+            for YCrCb in mcu.mcus:
                 if type == 'deZig':
                     self.deZig(YCrCb)
                 elif type == 'idct':
@@ -223,7 +233,8 @@ class jpgHelper(object):
     def calcDC(self):
         prev = 0
         for mcu in self.data:
-            for YCrCb in mcu:
+            print(mcu)
+            for YCrCb in mcu.mcus:
                 for HmultiV in YCrCb:
                     if HmultiV:
                         HmultiV[0] += prev
@@ -231,10 +242,10 @@ class jpgHelper(object):
 
     def dequantify(self):
         for mcu in self.data:
-            for YCrCb in range(len(mcu)):
+            for YCrCb in range(mcu.numColor):
                 id = self.colorInfo[YCrCb + 1]['Quant']
                 qTable = self.quantTable[id]
-                for HmultiV in mcu[YCrCb]:
+                for HmultiV in mcu.getHmultiVs(YCrCb):
                     for index in range(len(HmultiV)):
                         # print index, len(HmultiV), len(qTable)
                         HmultiV[index] *= qTable[index]
