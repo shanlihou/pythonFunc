@@ -459,3 +459,9 @@ class jpgHelper(object):
         for i in tmp[12:]:
             print('%x' % i)
         self.parseFlag()
+
+    def jpgCombine(self):
+        print(self.colorInfo)
+        H = []
+        V = []
+

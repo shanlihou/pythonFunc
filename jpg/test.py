@@ -4,6 +4,7 @@ from jpgHelper import jpgHelper
 from display import display
 jpg = jpgHelper('box2.jpg')
 jpg.parser()
+jpg.jpgCombine()
 jpg.test()
 display().display()
 display().test()
