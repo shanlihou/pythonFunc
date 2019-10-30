@@ -88,6 +88,8 @@ if __name__ == '__main__':
         rev.test()
 
         os.system('svn up E:\svn\Dev\Server')
+
+        os.system(r'svn up E:\assets2')
     elif opt == 1:
         rev = Revert(r'E:\svn\Dev\Client')
         rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts',
