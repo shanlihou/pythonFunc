@@ -127,7 +127,7 @@ class SSR(object):
                                proxies={'https': '127.0.0.1:1080'},
                                timeout=30)
             print(ret)
-            return True
+            return True if ret.status_code == 200 else False
         except Exception as e:
             print(e)
             return False
