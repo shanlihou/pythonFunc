@@ -44,7 +44,8 @@ def replaceGuiJson(path, final):
 def printFinal():
     p = [data for data in GlobalData.GOOD_DATA.values() if data is not None]
     p.sort(key=lambda cfg: cfg.get('speed'))
-    final = json.dumps(p, indent=4, separators=(',', ':'))
+    #final = json.dumps(p, indent=4, separators=(',', ':'))
+    final = json.dumps(p)
     print(final)
     path = r'E:\shgithub\others\shadowsocks-windows\shadowsocks-csharp\bin\x86\Release\gui-config.json'
     replaceGuiJson(path, p)
