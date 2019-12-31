@@ -3,8 +3,11 @@ import time
 
 
 def save():
-    pic = ImageGrab.grab()
-    pic.save(r'F:\shonedrive\OneDrive\screen.jpg')
+    try:
+        pic = ImageGrab.grab()
+        pic.save(r'F:\shonedrive\OneDrive\screen.jpg')
+    except Exception as e:
+        pass
 
 
 if __name__ == '__main__':
