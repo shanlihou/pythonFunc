@@ -37,10 +37,10 @@ class FriendSearchMixin(object):
     headers = {'Content-Type': 'application/json'}
 
     def __init__(self):
-        self.ip = '192.168.10.49'
+        self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(10516) + '_friend'
+        self.indexName = str(20003) + '_friend'
         self.typeName = 'Avatar'
 
     def cat(self):
@@ -217,12 +217,12 @@ class FriendSearchMixin(object):
         # self.addAvatarInfo('包青一天大旧人', 2299822224)
         # self.searchAvatarName('剑舞繁花')
         # self.analyze()
-        self.addAvatarInfo('zhang liang', 99124, 13422)
-        self.testPost('zhang san feng', 33423, 9013)
-        # self.searchAvatarName('测试')
+        #self.addAvatarInfo('zhang liang', 99124, 13422)
+        #self.testPost('zhang san feng', 33423, 9013)
+        self.searchAvatarName('一世')
         # self.clearDB()
         print('end---')
-        # self.indexObId(8423432)
+        self.indexObId(2000351200)
         # self.delete(557056)
         self.getAll()
 
