@@ -86,6 +86,9 @@ if __name__ == '__main__':
         rev = Revert(
             r'E:\server\scripts\kbengine_unity3d_plugins')
         rev.test()
+        
+        rev = Revert(r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')
+        rev.test()
 
         os.system('svn up E:\svn\Dev\Server')
 
