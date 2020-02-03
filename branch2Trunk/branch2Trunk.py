@@ -11,15 +11,17 @@ class Branch2Trunk(object):
         os.chdir(self.src)
         ret = os.popen('svn st')
         for line in ret:
+            #sprint(line)
             ret = line.split()
             if len(ret) != 2:
                 continue
 
             status, path = ret
-            if status != 'M' and status != '?':
+            if status != 'M' and status != '?' and status != 'A':
                 continue
 
             cpStr = 'copy %s %s' % (path, os.path.join(self.dst, path))
+            print(cpStr)
             os.system(cpStr)
 
 
