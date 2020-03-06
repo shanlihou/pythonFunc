@@ -28,7 +28,7 @@ def get_local_ip():
 HOST = get_local_ip()
 PORT = 9527  # command port
 #CWD  = os.getenv('HOME')
-CWD = ""
+CWD = "shgithub"
 
 
 def log(func, cmd):
@@ -196,9 +196,12 @@ class FtpServerProtocol(threading.Thread):
 
             else:
                 for file in os.listdir(pathname):
-                    fileMessage = fileProperty(os.path.join(pathname, file))
-                    # print 'fileMessage:', fileMessage
-                    self.dataSock.send(fileMessage + '\r\n')
+                    try:
+                        fileMessage = fileProperty(os.path.join(pathname, file))
+                        # print 'fileMessage:', fileMessage
+                        self.dataSock.send(fileMessage + '\r\n')
+                    except Exception as e:
+                        print(e)
             self.stopDataSock()
             self.commSock.send('226 List done.\r\n')
 
