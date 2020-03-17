@@ -11,7 +11,7 @@ def exec_cmd(s, cmd_str):
 
 
 if __name__ == '__main__':
-    s = ServerProxy("http://192.168.16.91:8080")
+    s = ServerProxy("http://192.168.16.123:8080")
     while True:
         i = input()
         if not i.strip():

@@ -1,6 +1,6 @@
 from ftplib import FTP
 import os
-from numpy.ma.timer_comparison import cur
+import argparse
 
 
 class Tunnel(object):
@@ -68,7 +68,7 @@ class Tunnel(object):
         os.chdir('..')
         self.ftp.cwd('..\\..')
 
-    def upFile(self, filePath):
+    def up_file(self, filePath):
         bn = os.path.basename(filePath)
         self.ftp.storbinary('STOR ' + bn, open(filePath, 'rb'))
 
@@ -77,6 +77,20 @@ class Tunnel(object):
         self.upFile('../baidu.py')
 
 
+def main(args):
+    ap = argparse.ArgumentParser()
+    ap.add_argument('ip', default='192.168.16.123', nargs='?')
+    ap.add_argument('--up', '-u', action='store_true')
+    ap.add_argument('remote_dir')
+    ns = ap.parse_args(args)
+    t = Tunnel(ns.ip)
+    if ns.up:
+        t.up_file(ns.remote_dir)
+    else:
+        t.down_path(ns.remote_dir)
+    return 'ok'
+
+
 if __name__ == '__main__':
-    tunnel = Tunnel('192.168.16.67')
-    tunnel.test()
+    arg_str = 'abdd'
+    main(arg_str.split())
