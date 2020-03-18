@@ -1,9 +1,11 @@
 import socket
 import asyncio
 import SSR
+import sys
 import functools
 import json
 import os
+import pyperclip
 
 
 class GlobalData(object):
@@ -28,7 +30,7 @@ def send(func, *args):
 
     s.sendto(bytes(args), address)
     s.close()
-    
+
 
 def replaceGuiJson(path, final):
     with open(path) as fr:
@@ -44,11 +46,12 @@ def replaceGuiJson(path, final):
 def printFinal():
     p = [data for data in GlobalData.GOOD_DATA.values() if data is not None]
     p.sort(key=lambda cfg: cfg.get('speed'))
-    #final = json.dumps(p, indent=4, separators=(',', ':'))
+    # final = json.dumps(p, indent=4, separators=(',', ':'))
     final = json.dumps(p)
     print(final)
-    path = r'E:\shgithub\others\shadowsocks-windows\shadowsocks-csharp\bin\x86\Release\gui-config.json'
-    replaceGuiJson(path, p)
+    # path = r'E:\shgithub\others\shadowsocks-windows\shadowsocks-csharp\bin\x86\Release\gui-config.json'
+    pyperclip.copy(final)
+    sys.exit(1)
 
 
 def getIndexInfo(index, data):
@@ -106,8 +109,6 @@ def afterReset(*args):
 
 async def start():
     send(afterReset, Opr.SelectIndex, 0)
-
-
 
 
 class DiscoveryProtocol(asyncio.DatagramProtocol):
