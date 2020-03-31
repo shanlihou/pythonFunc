@@ -32,7 +32,8 @@ class CallHandler(QObject):
     @pyqtSlot(str, result=str)
     def myTest(self, test):
         return test
-    
+
+
 class Spider(QWidget):
     def __init__(self):
         super().__init__()
@@ -44,13 +45,13 @@ class Spider(QWidget):
         handler = CallHandler(self)
         channel.registerObject('pyjs', handler)
         view.page().setWebChannel(channel)
-        url_string = "http://javbest.net/category/uncensored/page/1/"
+        url_string = "https://www.baidu.com"
         view.load(QUrl(url_string))
         view.show()
         self.view = view
         self.channel = channel
         self.handler = handler
-        
+
     def initUI(self):
         grid = QGridLayout()
         grid.setSpacing(10)
@@ -60,13 +61,12 @@ class Spider(QWidget):
         self.setGeometry(0, 0, 1024, 768)
         self.setWindowTitle('BuriedLove')
         self.show()
-        
-        
+
     def test(self):
         pass
-    
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     sp = Spider()
     sys.exit(app.exec_())
-    
