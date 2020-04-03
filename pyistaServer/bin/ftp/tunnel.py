@@ -28,8 +28,13 @@ class Tunnel(object):
     def join_remote_names(self, *args):
         return '\\'.join(args)
 
-    def down_path(self, remote_path):
-        remote_root = 'python\\pythonFunc'
+    def down_path(self, remote_path, hasroot):
+        if hasroot:
+            remote_root = os.path.dirname(remote_path)
+            remote_path = os.path.basename(remote_path)
+        else:
+            remote_root = 'python\\pythonFunc'
+
         local_root = 'sh_download'
         try:
             os.mkdir(local_root)
@@ -81,16 +86,17 @@ def main(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('ip', default='192.168.16.123', nargs='?')
     ap.add_argument('--up', '-u', action='store_true')
+    ap.add_argument('--root', '-r', action='store_true')
     ap.add_argument('remote_dir')
     ns = ap.parse_args(args)
     t = Tunnel(ns.ip)
     if ns.up:
         t.up_file(ns.remote_dir)
     else:
-        t.down_path(ns.remote_dir)
+        t.down_path(ns.remote_dir, ns.root)
     return 'ok'
 
 
 if __name__ == '__main__':
-    arg_str = 'abdd'
+    arg_str = '-r others/Javbus_crawler'
     main(arg_str.split())
