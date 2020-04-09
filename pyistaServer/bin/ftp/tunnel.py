@@ -73,6 +73,14 @@ class Tunnel(object):
         os.chdir('..')
         self.ftp.cwd('..\\..')
 
+    def list(self):
+        self.file_list = []
+        self.ftp.dir(self.fileInfoCB)
+        return '\n'.join([x['filename'] for x in self.file_list])
+
+    def ch_dir(self, dir):
+        self.ftp.cwd(dir)
+
     def up_file(self, filePath):
         bn = os.path.basename(filePath)
         self.ftp.storbinary('STOR ' + bn, open(filePath, 'rb'))
@@ -82,21 +90,31 @@ class Tunnel(object):
         self.upFile('../baidu.py')
 
 
+g_tunnel = Tunnel('192.168.16.123')
+
+
 def main(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('ip', default='192.168.16.123', nargs='?')
-    ap.add_argument('--up', '-u', action='store_true')
-    ap.add_argument('--root', '-r', action='store_true')
-    ap.add_argument('remote_dir')
+    group = ap.add_mutually_exclusive_group()
+    group.add_argument('--up', '-u', default=None)
+    group.add_argument('--download', '-d', default=None)
+    group.add_argument('--root', '-r', default=None)
+    group.add_argument('--changedir', '-c', default=None)
+    group.add_argument('--list', '-l', action='store_true')
+    # ap.add_argument('remote_dir')
     ns = ap.parse_args(args)
-    t = Tunnel(ns.ip)
-    if ns.up:
-        t.up_file(ns.remote_dir)
-    else:
-        t.down_path(ns.remote_dir, ns.root)
-    return 'ok'
+    t = g_tunnel
+    ret = None
+    if ns.up is not None:
+        ret = t.up_file(ns.remote_dir)
+    elif ns.download is not None:
+        ret = t.down_path(ns.remote_dir, ns.root)
+    elif ns.list:
+        ret = t.list()
+    return 'ok' if ret is None else ret
 
 
 if __name__ == '__main__':
-    arg_str = '-r others/Javbus_crawler'
+    arg_str = '-l'
     main(arg_str.split())
