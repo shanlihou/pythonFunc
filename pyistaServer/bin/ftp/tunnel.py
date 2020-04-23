@@ -28,6 +28,18 @@ class Tunnel(object):
     def join_remote_names(self, *args):
         return '\\'.join(args)
 
+    def _get_cur_file_list(self):
+        self.file_list = []
+        self.ftp.dir(self.fileInfoCB)
+        return self.file_list
+    
+    def _get_cur_file_info(self, filename):
+        for fileinfo in self._get_cur_file_list():
+            if fileinfo['filename'] == filename:
+                return fileinfo
+        
+        return None        
+
     def down_path(self, remote_path, hasroot):
         if hasroot:
             remote_root = os.path.dirname(remote_path)
@@ -54,10 +66,7 @@ class Tunnel(object):
             self.ftp.cwd(cur)
             os.chdir(cur)
 
-            self.file_list = []
-            self.ftp.dir(self.fileInfoCB)
-
-            for fileinfo in self.file_list:
+            for fileinfo in self._get_cur_file_list():
                 print(fileinfo)
                 if fileinfo['is_dir']:
                     rec_down(fileinfo['filename'])
@@ -90,9 +99,6 @@ class Tunnel(object):
         self.upFile('../baidu.py')
 
 
-g_tunnel = Tunnel('192.168.16.123')
-
-
 def main(args):
     ap = argparse.ArgumentParser()
     ap.add_argument('ip', default='192.168.16.123', nargs='?')
@@ -104,9 +110,11 @@ def main(args):
     group.add_argument('--list', '-l', action='store_true')
     # ap.add_argument('remote_dir')
     ns = ap.parse_args(args)
-    t = g_tunnel
+    t = Tunnel('192.168.16.123')
     ret = None
-    if ns.up is not None:
+    if ns.root is not None:
+        ret = t.down_path(ns.root, True)
+    elif ns.up is not None:
         ret = t.up_file(ns.remote_dir)
     elif ns.download is not None:
         ret = t.down_path(ns.remote_dir, ns.root)
@@ -116,5 +124,5 @@ def main(args):
 
 
 if __name__ == '__main__':
-    arg_str = '-l'
+    arg_str = '-r others/Javbus_crawler/SearchView.py'
     main(arg_str.split())

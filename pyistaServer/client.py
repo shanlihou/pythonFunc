@@ -1,6 +1,13 @@
 from xmlrpc.client import ServerProxy
 import sys
 import json
+import os
+import re
+
+
+class OprType(object):
+    cmd = 1
+    down = 2
 
 
 def exec_cmd(s, cmd_str):
@@ -11,14 +18,33 @@ def exec_cmd(s, cmd_str):
 
 
 if __name__ == '__main__':
-    s = ServerProxy("http://192.168.16.82:8080")
-    while True:
-        print('please inpu:')
-        i = input()
-        if not i.strip():
-            continue
+    opr = OprType.down
+    if opr == OprType.cmd:
+        s = ServerProxy("http://192.168.16.82:8080")
+        while True:
+            print('please inpu:')
+            i = input()
+            if not i.strip():
+                continue
 
-        if i == 'q':
-            sys.exit()
-        else:
-            exec_cmd(s, i)
+            if i == 'q':
+                sys.exit()
+            else:
+                exec_cmd(s, i)
+    elif opr == OprType.down:
+        s = ServerProxy("http://192.168.16.82:8080")
+        root = r'E:\shgithub\others\Javbus_crawler'
+        os.chdir(root)
+        result = os.popen('git status')
+        pat = re.compile('\w+\.py')
+        files = []
+        for line in result.readlines():
+            if '.py' in line:
+                find = pat.search(line)
+                if find:
+                    files.append(find.group())
+
+        for filename in files:
+            cmd_str = 'ftp -r others/Javbus_crawler/{}'.format(filename)
+            print(cmd_str)
+            exec_cmd(s, cmd_str)
