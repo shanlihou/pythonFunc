@@ -18,7 +18,7 @@ def exec_cmd(s, cmd_str):
 
 
 if __name__ == '__main__':
-    opr = OprType.down
+    opr = OprType.cmd
     if opr == OprType.cmd:
         s = ServerProxy("http://192.168.16.82:8080")
         while True:

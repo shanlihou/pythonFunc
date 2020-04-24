@@ -32,13 +32,13 @@ class Tunnel(object):
         self.file_list = []
         self.ftp.dir(self.fileInfoCB)
         return self.file_list
-    
+
     def _get_cur_file_info(self, filename):
         for fileinfo in self._get_cur_file_list():
             if fileinfo['filename'] == filename:
                 return fileinfo
-        
-        return None        
+
+        return None
 
     def down_path(self, remote_path, hasroot):
         if hasroot:
@@ -56,31 +56,39 @@ class Tunnel(object):
         self.ftp.cwd(remote_root)
         os.chdir(local_root)
 
-        def rec_down(cur):
+        file_info = self._get_cur_file_info(remote_path)
+        if not file_info['is_dir']:
+            self._down_file(file_info['filename'])
+        else:
+            def rec_down(cur):
 
-            try:
-                os.mkdir(cur)
-            except Exception as e:
-                pass
+                try:
+                    os.mkdir(cur)
+                except Exception as e:
+                    pass
 
-            self.ftp.cwd(cur)
-            os.chdir(cur)
+                self.ftp.cwd(cur)
+                os.chdir(cur)
 
-            for fileinfo in self._get_cur_file_list():
-                print(fileinfo)
-                if fileinfo['is_dir']:
-                    rec_down(fileinfo['filename'])
-                else:
-                    with open(fileinfo['filename'], 'wb') as fw:
-                        downname = 'RETR {}'.format(fileinfo['filename'])
-                        self.ftp.retrbinary(downname, fw.write)
+                for fileinfo in self._get_cur_file_list():
+                    print(fileinfo)
+                    if fileinfo['is_dir']:
+                        rec_down(fileinfo['filename'])
+                    else:
+                        self._down_file(fileinfo['filename'])
 
-            self.ftp.cwd('..')
-            os.chdir('..')
+                self.ftp.cwd('..')
+                os.chdir('..')
 
-        rec_down(remote_path)
+            rec_down(remote_path)
+
         os.chdir('..')
         self.ftp.cwd('..\\..')
+
+    def _down_file(self, filename):
+        with open(filename, 'wb') as fw:
+            downname = 'RETR {}'.format(filename)
+            self.ftp.retrbinary(downname, fw.write)
 
     def list(self):
         self.file_list = []
@@ -110,12 +118,14 @@ def main(args):
     group.add_argument('--list', '-l', action='store_true')
     # ap.add_argument('remote_dir')
     ns = ap.parse_args(args)
+    print(ns)
+    return
     t = Tunnel('192.168.16.123')
     ret = None
     if ns.root is not None:
         ret = t.down_path(ns.root, True)
     elif ns.up is not None:
-        ret = t.up_file(ns.remote_dir)
+        ret = t.up_file(ns.up)
     elif ns.download is not None:
         ret = t.down_path(ns.remote_dir, ns.root)
     elif ns.list:
@@ -124,5 +134,5 @@ def main(args):
 
 
 if __name__ == '__main__':
-    arg_str = '-r others/Javbus_crawler/SearchView.py'
+    arg_str = '-u a.tar'
     main(arg_str.split())
