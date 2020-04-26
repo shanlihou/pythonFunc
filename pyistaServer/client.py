@@ -8,6 +8,7 @@ import re
 class OprType(object):
     cmd = 1
     down = 2
+    downJ = 3
 
 
 def exec_cmd(s, cmd_str):
@@ -18,7 +19,7 @@ def exec_cmd(s, cmd_str):
 
 
 if __name__ == '__main__':
-    opr = OprType.cmd
+    opr = OprType.downJ
     if opr == OprType.cmd:
         s = ServerProxy("http://192.168.16.82:8080")
         while True:
@@ -48,3 +49,6 @@ if __name__ == '__main__':
             cmd_str = 'ftp -r others/Javbus_crawler/{}'.format(filename)
             print(cmd_str)
             exec_cmd(s, cmd_str)
+    elif opr == OprType.downJ:
+        s = ServerProxy("http://192.168.16.82:8080")
+        exec_cmd(s, 'ftp -r others/Javbus_crawler')
