@@ -71,27 +71,35 @@ class Revert(object):
 if __name__ == '__main__':
     opt = 0
     if opt == 0:
+        print('1--------------------------------')
         rev = Revert('E:\svn\Dev\Client')
         rev.test()
 
 #         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
 #         rev.test()
+        print('2--------------------------------')
         rev = Revert(r'F:\Client2')
         rev.test()
 
+        print('3--------------------------------')
         rev = Revert(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
         rev.test()
 
+        print('4--------------------------------')
         rev = Revert(
             r'E:\server\scripts\kbengine_unity3d_plugins')
         rev.test()
-        
-        rev = Revert(r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')
+
+        print('5--------------------------------')
+        rev = Revert(
+            r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')
         rev.test()
 
+        print('6--------------------------------')
         os.system('svn up E:\svn\Dev\Server')
 
+        print('7--------------------------------')
         os.system(r'svn up E:\assets2')
     elif opt == 1:
         rev = Revert(r'E:\svn\Dev\Client')

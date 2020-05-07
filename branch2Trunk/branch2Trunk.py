@@ -31,6 +31,6 @@ if __name__ == '__main__':
     else:
         test = Branch2Trunk(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins',
-            r'E:\svn\Dev\Client\Assets\Plugins\kbengine\kbengine_unity3d_plugins')
+            r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
 
     test.test()

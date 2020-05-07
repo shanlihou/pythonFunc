@@ -1,7 +1,7 @@
 import socket
 import asyncio
 import SSR
-import sys
+import sysj
 import functools
 import json
 import os
