@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # local = r'G:\github\cocos\stone_war\cocoscreator_assets\build\wechatgame\res' + '\\'#本地文件或目录，与远程一致，当前为windows目录格式，window目录中间需要使用双斜线
     # local = r'G:\github\cocos\stone_war\cocoscreator_assets\build' +
     # '\\'#本地文件或目录，与远程一致，当前为windows目录格式，window目录中间需要使用双斜线
-    local = r'E:\shgithub\cocos\propose\build' + '\\'
+    local = r'G:\github\cocos\propose\build\wechatgame' + '\\'
     remote = '/home/shanlihou/'  # 远程文件或目录，与本地一致，当前为linux目录格式
-    ali = aliyun(host, port, username, password, local, remote, 'web-mobile')
+    ali = aliyun(host, port, username, password, local, remote, 'res')
     ali.test()

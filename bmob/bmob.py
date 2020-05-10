@@ -3,6 +3,10 @@ import json
 import rsa
 import base64
 import os
+import logging
+
+
+logging.basicConfig(filename='bmob.log', datefmt='%a, %d %b %Y %H:%M:%S', level=logging.INFO)
 
 
 def singleton(cls, *args, **kw):
@@ -96,7 +100,8 @@ class BMOB(object):
         headers = self.getHeaders()
         headers['Content-Type'] = 'application/json'
         url = self.base + table
-        requests.post(url, headers=headers, data=data)
+        ret = requests.post(url, headers=headers, data=data)
+        logging.info('add data content:{}'.format(ret.content))
 
     def putData(self, objId, table, data):
         headers = self.getHeaders()
