@@ -6,7 +6,12 @@ import os
 import logging
 
 
-logging.basicConfig(filename='bmob.log', datefmt='%a, %d %b %Y %H:%M:%S', level=logging.INFO)
+logging.basicConfig(
+                    level    = logging.DEBUG,              # 定义输出到文件的log级别，                                                            
+                    format   = '%(asctime)s  %(filename)s : %(levelname)s  %(message)s',    # 定义输出log的格式
+                    datefmt  = '%Y-%m-%d %A %H:%M:%S',                                     # 时间
+                    filename = '/home/pi/shlog/bmob.log',                # log文件名
+                    filemode = 'a+')         
 
 
 def singleton(cls, *args, **kw):
@@ -52,7 +57,7 @@ class BMOB(object):
     def loadPriKey(self, keyFile):
         if not os.path.exists(keyFile):
             keyFile = os.path.join(
-                r'E:\shgithub\python\pythonFunc\bmob', keyFile)
+                r'/home/pi/github/python/pyFunc/bmob', keyFile)
         with open(keyFile) as fr:
             pri_data = fr.read()
             self.priKey = rsa.PrivateKey._load_pkcs1_pem(pri_data)

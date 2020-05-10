@@ -1,9 +1,12 @@
+#!/usr/bin/python3
 #-*-coding:utf-8 -*-
 import requests
 from bs4 import BeautifulSoup
 import re
 import json
 from bmob import BMOB
+import logging
+
 
 class GetMyIp(object):
     def __init__(self, *args, **kwargs):
@@ -30,7 +33,9 @@ class GetMyIp(object):
             return fr.read()
         
     def test(self):
+        logging.info('start get')
         ip = self.get_ip()
+        logging.info('get ip:{}'.format(ip))
         data = json.dumps({'ip': BMOB().encrypt(ip)})
         BMOB().putData('019785abb1', 'rasp_ip', data)
         #self.save_html(ret.content)
