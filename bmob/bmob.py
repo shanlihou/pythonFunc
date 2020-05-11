@@ -1,17 +1,24 @@
+# coding:utf-8
 import requests
 import json
 import rsa
 import base64
 import os
 import logging
+import sys
 
+if sys.platform == 'win32':
+    logname = 'bmob.log'
+else:
+    logname = '/home/pi/shlog/bmob.log'
 
 logging.basicConfig(
-                    level    = logging.DEBUG,              # 定义输出到文件的log级别，                                                            
-                    format   = '%(asctime)s  %(filename)s : %(levelname)s  %(message)s',    # 定义输出log的格式
-                    datefmt  = '%Y-%m-%d %A %H:%M:%S',                                     # 时间
-                    filename = '/home/pi/shlog/bmob.log',                # log文件名
-                    filemode = 'a+')         
+    level=logging.DEBUG,              # 瀹氫箟杈撳嚭鍒版枃浠剁殑log绾у埆锛�
+    # 瀹氫箟杈撳嚭log鐨勬牸寮�
+    format='%(asctime)s  %(filename)s : %(levelname)s  %(message)s',
+    datefmt='%Y-%m-%d %A %H:%M:%S',                                     # 鏃堕棿
+    filename=logname,                # log鏂囦欢鍚�
+    filemode='a+')
 
 
 def singleton(cls, *args, **kw):
