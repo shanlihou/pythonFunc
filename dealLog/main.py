@@ -4,7 +4,9 @@ import os
 class DealLog(object):
     def __init__(self, src):
         self.src = src
-        self.filters = ['CNpc(90620)', 'Avatar(51274)']
+        self.filters = ['ckz: onMemberOffline', 'ckz: onMemberOnline',
+                         'use of',
+                         'ckz: onUpdateGuildData:']
 
     def isok(self, strin):
         for filterstr in self.filters:
@@ -35,7 +37,7 @@ class DealLog(object):
 
 
 def main():
-    dl = DealLog(r'E:\shLog\guide.log')
+    dl = DealLog(r'E:\shLog\use_of.log')
     dl.test()
 
 
