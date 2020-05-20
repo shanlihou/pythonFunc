@@ -18,6 +18,7 @@ class Opr(object):
     UpIndex = 1
     DownIndex = 2
     SelectIndex = 3
+    ImportFromClip = 4
 
 
 def send(func, *args):
@@ -43,6 +44,11 @@ def replaceGuiJson(path, final):
         os.system(cmdStr)
 
 
+def finalMsg(data):
+    print('final data:', data)
+    sys.exit(1)
+
+
 def printFinal():
     p = [data for data in GlobalData.GOOD_DATA.values() if data is not None]
     p.sort(key=lambda cfg: cfg.get('speed'))
@@ -51,7 +57,7 @@ def printFinal():
     print(final)
     # path = r'E:\shgithub\others\shadowsocks-windows\shadowsocks-csharp\bin\x86\Release\gui-config.json'
     pyperclip.copy(final)
-    sys.exit(1)
+    send(finalMsg, Opr.ImportFromClip)
 
 
 def getIndexInfo(index, data):
