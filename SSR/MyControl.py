@@ -57,6 +57,7 @@ def printFinal():
     print(final)
     # path = r'E:\shgithub\others\shadowsocks-windows\shadowsocks-csharp\bin\x86\Release\gui-config.json'
     pyperclip.copy(final)
+    sys.exit(1)
     send(finalMsg, Opr.ImportFromClip)
 
 
