@@ -72,14 +72,16 @@ if __name__ == '__main__':
     opt = 0
     if opt == 0:
         print('1--------------------------------')
-        rev = Revert('E:\svn\Dev\Client')
-        rev.test()
+#         rev = Revert(r'E:\svn\Dev\Client')
+#         rev.test()
+        os.system(r'svn up E:\svn\Dev\Client')
 
 #         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
 #         rev.test()
-        print('2--------------------------------')
-        rev = Revert(r'F:\Client2')
-        rev.test()
+#         print('2--------------------------------')
+# #         rev = Revert(r'F:\Client2')
+# #         rev.test()
+#         os.system(r'svn up F:\Client2')
 
         print('3--------------------------------')
         rev = Revert(
@@ -97,7 +99,7 @@ if __name__ == '__main__':
         rev.test()
 
         print('6--------------------------------')
-        os.system('svn up E:\svn\Dev\Server')
+        os.system(r'svn up E:\svn\Dev\Server')
 
         print('7--------------------------------')
         os.system(r'svn up E:\assets2')

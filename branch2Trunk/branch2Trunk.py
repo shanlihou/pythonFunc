@@ -4,6 +4,7 @@ import sys
 
 class Branch2Trunk(object):
     def __init__(self, src, dst):
+        print(src, dst)
         self.src = src
         self.dst = dst
 
@@ -11,7 +12,7 @@ class Branch2Trunk(object):
         os.chdir(self.src)
         ret = os.popen('svn st')
         for line in ret:
-            #sprint(line)
+            # sprint(line)
             ret = line.split()
             if len(ret) != 2:
                 continue
@@ -26,8 +27,15 @@ class Branch2Trunk(object):
 
 
 if __name__ == '__main__':
+    opt = 0
+    print(sys.argv)
     if len(sys.argv) == 3:
         test = Branch2Trunk(sys.argv[1], sys.argv[2])
+    elif opt == 1:
+        print(opt)
+        test = Branch2Trunk(
+            r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts',
+            r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts')
     else:
         test = Branch2Trunk(
             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins',
