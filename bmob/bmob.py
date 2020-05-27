@@ -10,7 +10,10 @@ import sys
 if sys.platform == 'win32':
     logname = 'bmob.log'
 else:
-    logname = '/home/pi/shlog/bmob.log'
+    if os.path.exists(r'/home/pi'):
+        logname = '/home/pi/shlog/bmob.log'
+    else:
+        logname = 'bmob.log'
 
 logging.basicConfig(
     level=logging.DEBUG,              # 瀹氫箟杈撳嚭鍒版枃浠剁殑log绾у埆锛�
@@ -64,7 +67,7 @@ class BMOB(object):
     def loadPriKey(self, keyFile):
         if not os.path.exists(keyFile):
             keyFile = os.path.join(
-                r'/home/pi/github/python/pyFunc/bmob', keyFile)
+                sys.path[0], keyFile)
         with open(keyFile) as fr:
             pri_data = fr.read()
             self.priKey = rsa.PrivateKey._load_pkcs1_pem(pri_data)

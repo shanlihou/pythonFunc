@@ -6,6 +6,7 @@ import re
 import json
 from bmob import BMOB
 import logging
+import pickle
 
 
 class GetMyIp(object):
@@ -43,11 +44,31 @@ class GetMyIp(object):
         #ip = self.parse_html(ret)
         # print(ip)
 
-    def test(self):
-        ret = BMOB().get('rasp_ip')
+    def get_bmob_ip(self):
+        try:
+            ret = BMOB().get('rasp_ip')
+        except Exception as e:
+            return ''
+
         ret = json.loads(ret)
         for data in ret['results']:
-            print(BMOB().decrypt(data['ip']))
+            return BMOB().decrypt(data['ip'])
+
+        return ''
+
+    def get_local_ip(self):
+        return pickle.load(open('myconfig', 'rb'))
+
+    def save_local_ip(self, ip):
+        pickle.dump(ip, open('myconfig', 'wb'))
+
+    def test(self):
+        ip = self.get_bmob_ip()
+        if ip:
+            self.save_local_ip(ip)
+            print(ip)
+        else:
+            print(self.get_local_ip())
 
 
 if __name__ == '__main__':
