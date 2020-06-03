@@ -83,26 +83,23 @@ if __name__ == '__main__':
 # #         rev.test()
 #         os.system(r'svn up F:\Client2')
 
-        print('3--------------------------------')
-        rev = Revert(
-            r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
-        rev.test()
-
-        print('4--------------------------------')
-        rev = Revert(
-            r'E:\server\scripts\kbengine_unity3d_plugins')
-        rev.test()
-
-        print('5--------------------------------')
-        rev = Revert(
-            r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')
-        rev.test()
+#         print('3--------------------------------')
+#         rev = Revert(
+#             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
+#         rev.test()
+# 
+#         print('4--------------------------------')
+#         rev = Revert(
+#             r'E:\server\scripts\kbengine_unity3d_plugins')
+#         rev.test()
+# 
+#         print('5--------------------------------')
+#         rev = Revert(
+#             r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')
+#         rev.test()
 
         print('6--------------------------------')
-        os.system(r'svn up E:\svn\Dev\Server')
-
-        print('7--------------------------------')
-        os.system(r'svn up E:\assets2')
+        os.system(r'svn up E:\trunk_server')
     elif opt == 1:
         rev = Revert(r'E:\svn\Dev\Client')
         rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts',
