@@ -72,8 +72,8 @@ if __name__ == '__main__':
     opt = 0
     if opt == 0:
         print('1--------------------------------')
-#         rev = Revert(r'E:\svn\Dev\Client')
-#         rev.test()
+        rev = Revert(r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
+        rev.test()
         os.system(r'svn up E:\svn\Dev\Client')
 
 #         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
