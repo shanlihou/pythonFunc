@@ -4,9 +4,8 @@ import os
 class DealLog(object):
     def __init__(self, src):
         self.src = src
-        self.filters = ['onWeatherChanged:',
-                        'guild battle start',
-                        'changeWeather']
+        self.filters = ['[Avatar(4587)]',
+                        '[Guild(6226)]:']
 
     def isok(self, strin):
         for filterstr in self.filters:
@@ -37,7 +36,7 @@ class DealLog(object):
 
 
 def main():
-    dl = DealLog(r'C:\Users\Administrator\Documents\WXWork\1688851680425036\Cache\File\2020-06\logger_cellapp(6).log')
+    dl = DealLog(r'E:\shLog\tmp.log')
     dl.test()
 
 
