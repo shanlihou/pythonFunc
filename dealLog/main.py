@@ -5,7 +5,8 @@ class DealLog(object):
     def __init__(self, src):
         self.src = src
         self.filters = ['[Avatar(4587)]',
-                        '[Guild(6226)]:']
+                        '[Guild(6226)]:',
+                        '[Guild(6224)]:']
 
     def isok(self, strin):
         for filterstr in self.filters:
