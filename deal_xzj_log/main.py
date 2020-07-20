@@ -3,7 +3,11 @@ import csv
 import pickle
 import os
 import time
+import utils
 import StatisticsBase
+import account_guide
+import guild_bandit
+import guild_battle
 
 
 def get_gbid_dic(csv_name):
@@ -19,6 +23,22 @@ def get_gbid_dic(csv_name):
     print(gbid_dic)
     print(len(gbid_dic))
     pickle.dump(gbid_dic, open('gbid_dic', 'wb'))
+
+
+def get_gbid_name_dic(filename):
+    line_num = 0
+    dic = {}
+    with open(filename, encoding='utf-8') as fr:
+        for line in fr:
+            if line_num == 0:
+                line_num = 1
+                continue
+
+            id, name, gbid = line.split(',')
+            gbid = int(gbid.strip())
+            dic[name] = gbid
+
+    pickle.dump(dic, open('name_gbid_dic', 'wb'))
 
 
 def get_filter_accounts(accounts_name):
@@ -83,20 +103,54 @@ class OneDay(object):
         od.next_stay[delay] = num
 
 
+class LoginAvatar(object):
+    def __init__(self, gbid):
+        self.gbid = gbid
+        self.last_login_time = 0
+        self.login_duration = []
+    
+    def pure_row(self, row):
+        pure_dict = {}
+        for k, v in row.items():
+            pure_dict[k] = v.strip()
+
+    def add_row(self, row):
+        timestamp = float(row['timestamp'].strip())
+        is_online = row['isOnline'].strip()
+        if is_online == 'True':
+            self.last_login_time = timestamp
+        else:
+            if not self.last_login_time:
+                print('error:', row)
+            else:
+                self.last_login_time = 0
+
+
 class Statistics(StatisticsBase.StatisticsBase):
     def __init__(self, filename):
         super(Statistics, self).__init__(filename)
         self.has_login_accounts = set()
+        self.avatars = {}
 
-    def init_data(self):
+    def filter(self, row_dict):
+        return row_dict['isOnline'].strip() == 'True'
+
+    def process_data(self):
         for row in self.reader:
-            if row['isOnline'].strip() != 'True':
+            gbid = row['gbId'].strip()
+            self.avatars.setdefault(gbid, LoginAvatar(gbid))
+            self.avatars[gbid].add_row(row)
+
+            if not self.filter(row):
                 continue
 
-            lo = LoginOnce(row)
-            self.add_login_once(lo)
+            self.process_one(row)
 
         return self
+
+    def process_one(self, row_dict):
+        lo = LoginOnce(row_dict)
+        self.add_login_once(lo)
 
     def add_login_once(self, log_one: LoginOnce):
         day = log_one.get_day()
@@ -106,6 +160,9 @@ class Statistics(StatisticsBase.StatisticsBase):
         if log_one.account not in self.has_login_accounts:
             self.has_login_accounts.add(log_one.account)
             od.add_newer(log_one.account)
+
+    def get_day_account_dic(self):
+        return {day: len(day_val.accounts) for day, day_val in self.days.items()}
 
     def get_od(self, day):
         return self.days.get(day)
@@ -118,12 +175,6 @@ class Statistics(StatisticsBase.StatisticsBase):
                     od.process_next_day_stay(self, i)
 
         return self
-
-    def get_headers(self):
-        return ','.join(map(lambda x: 'day{}'.format(x), self.days.keys()))
-
-    def get_infos(self, func, *args):
-        return ','.join(map(lambda x: getattr(x, func)(*args), self.days.values()))
 
     def dump(self, outname):
         datas = [
@@ -186,21 +237,42 @@ class AccountFilter(object):
         ret_name = self.export(log_id)
         self.delete_space_line(ret_name)
 
-    def calc_stay(self, filename, outname):
-        Statistics(filename)\
-            .init_data()\
-            .process()\
-            .dump(outname)
-
     def test(self):
-        # filter_once(70)
-        self.calc_stay(r'e:\shLog\log_70.csv.new.csv', 'e:\\shLog\\out.csv')
-        self.calc_stay(r'e:\shLog\log_70.csv', 'e:\\shLog\\out1.csv')
+        self.filter_once(60)
+
+
+def generate_csv_by_cols(cols, outname):
+    datas = []
+    for index in range(len(cols[0])):
+        datas.append(','.join(map(lambda x: str(x[index]), cols)))
+
+    datas = utils.add_col_header(['日', '玩家数', '账户数', '参与度'], datas)
+
+    with open(outname, 'w') as fw:
+        fw.write('\n'.join(datas))
+
+
+def generate_csv():
+    sta = Statistics(r'e:\shLog\log_70.csv.new.csv')
+    sta.process_data()\
+        .process()\
+        .dump('e:\\shLog\\out.csv')
+
+    da_dic = sta.get_day_account_dic()
+
+    gi = account_guide.deal_guide(da_dic)
+    gb = guild_bandit.deal_guild_bandit(da_dic)
+
+    col1 = guild_battle.deal_guild_battle('e:\\shLog\\ckz_tmp1.log', da_dic)
+    col2 = guild_battle.deal_guild_battle('e:\\shLog\\ckz_tmp3.log', da_dic)
+    generate_csv_by_cols([col1, col2], 'e:\\shlog\\guild_battle.csv')
 
 
 def main():
     # get_gbid_dic(r'E:\shLog\log_70.csv')
-    AccountFilter().test()
+    # AccountFilter().test()
+    #     get_gbid_name_dic('e:\\shLog\\release_2020_07_cha_name_gbId.csv')
+    generate_csv()
 
 
 if __name__ == '__main__':
