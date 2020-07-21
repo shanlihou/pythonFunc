@@ -2,7 +2,9 @@
 import csv
 import pickle
 import os
+import re
 import time
+import math
 import utils
 import StatisticsBase
 import account_guide
@@ -56,6 +58,7 @@ class LoginOnce(object):
         self.gbid = int(row_data['gbId'])
         self.time_st = time.localtime(int(row_data['timestamp']))
         self.account = row_data['account'].strip()
+        self.level = int(row_data['level'].strip())
 
     def get_day(self):
         return self.time_st.tm_mday
@@ -102,28 +105,66 @@ class OneDay(object):
 
         od.next_stay[delay] = num
 
+    def get_num_by_level(self, level):
+        return len(list(filter(lambda x: x.level >= level, self.accounts.values())))
+
 
 class LoginAvatar(object):
     def __init__(self, gbid):
         self.gbid = gbid
-        self.last_login_time = 0
+        self.first_login_time = math.inf
+        self.logout_time = 0
         self.login_duration = []
-    
+        self.login_log_infos = []
+
     def pure_row(self, row):
         pure_dict = {}
         for k, v in row.items():
             pure_dict[k] = v.strip()
 
+        return pure_dict
+
     def add_row(self, row):
+        row = self.pure_row(row)
+
         timestamp = float(row['timestamp'].strip())
         is_online = row['isOnline'].strip()
         if is_online == 'True':
-            self.last_login_time = timestamp
-        else:
-            if not self.last_login_time:
-                print('error:', row)
+            self.login_log_infos.append((timestamp, True))
+
+    def offline(self, timestamp):
+        self.login_log_infos.append((timestamp, False))
+
+    def process_min_stay(self):
+        self.login_log_infos.sort(key=lambda x: x[0])
+
+        last_login_time = 0
+        for timestamp, is_online in self.login_log_infos:
+            if is_online:
+                last_login_time = timestamp
+                if timestamp < self.first_login_time:
+                    self.first_login_time = timestamp
             else:
-                self.last_login_time = 0
+                if not last_login_time:
+                    print('error')
+                else:
+                    self.login_duration.append((last_login_time, timestamp))
+                    last_login_time = 0
+                    if self.logout_time < timestamp:
+                        self.logout_time = timestamp
+
+    def is_never_login_from_current(self, start_time):
+        left = self.first_login_time + start_time * 60
+        right = self.first_login_time + start_time * 60 + 60
+        if left < self.logout_time <= right:
+            return True
+
+    def is_need_delete(self):
+        end_time = utils.get_time_stamp('2020-07-10 18:00:00')
+        if self.first_login_time > end_time:
+            return True
+
+        return False
 
 
 class Statistics(StatisticsBase.StatisticsBase):
@@ -135,11 +176,14 @@ class Statistics(StatisticsBase.StatisticsBase):
     def filter(self, row_dict):
         return row_dict['isOnline'].strip() == 'True'
 
+    def process_min_stay_data(self, row):
+        gbid = int(row['gbId'].strip())
+        self.avatars.setdefault(gbid, LoginAvatar(gbid))
+        self.avatars[gbid].add_row(row)
+
     def process_data(self):
         for row in self.reader:
-            gbid = row['gbId'].strip()
-            self.avatars.setdefault(gbid, LoginAvatar(gbid))
-            self.avatars[gbid].add_row(row)
+            self.process_min_stay_data(row)
 
             if not self.filter(row):
                 continue
@@ -161,8 +205,8 @@ class Statistics(StatisticsBase.StatisticsBase):
             self.has_login_accounts.add(log_one.account)
             od.add_newer(log_one.account)
 
-    def get_day_account_dic(self):
-        return {day: len(day_val.accounts) for day, day_val in self.days.items()}
+    def get_day_account_dic(self, level=0):
+        return {day: day_val.get_num_by_level(level) for day, day_val in self.days.items()}
 
     def get_od(self, day):
         return self.days.get(day)
@@ -171,7 +215,7 @@ class Statistics(StatisticsBase.StatisticsBase):
         for day, od in self.days.items():
             next_day = day + 1
             if next_day in self.days:
-                for i in range(6):
+                for i in range(7):
                     od.process_next_day_stay(self, i)
 
         return self
@@ -193,6 +237,73 @@ class Statistics(StatisticsBase.StatisticsBase):
             fw.write('\n'.join(datas))
 
         return self
+
+    def add_destroy(self, data_list):
+        timestamp = time.mktime(time.strptime(
+            data_list[0], "%Y-%m-%d %H:%M:%S"))
+        gbid = int(data_list[1])
+        if utils.is_gbid_inter(gbid):
+            return
+
+        avatar = self.avatars.get(gbid)
+        if not avatar:
+            print("error:", gbid)
+            return
+
+        avatar.offline(timestamp)
+
+    def deal_destroy(self, filename):
+        # pat = re.compile('(\d+)\-(\d+)\-(\d+) (\d+)\:(\d+)\:(\d+).+Avatar\:\:onDestroy\:(\d+) ')
+        pat = re.compile(
+            '(\d+\-\d+\-\d+ \d+\:\d+\:\d+).+Avatar\:\:onDestroy\:(\d+) ')
+        with open(filename) as fr:
+            for line in fr:
+                find = pat.search(line)
+                if find:
+                    rets = find.groups()
+                    self.add_destroy(rets)
+
+        return self
+
+    def process_min_stay(self):
+        for avatar in self.avatars.values():
+            avatar.process_min_stay()
+
+        for k, avatar in list(self.avatars.items()):
+            if avatar.is_need_delete():
+                self.avatars.pop(k)
+
+        return self
+
+    def min_stay_header(self):
+        return ','.join(['在线时长', '人数', '剩余人数', '留存百分比'])
+
+    def generate_one_min_stay_data(self, start_min, whole_num, whole_static):
+        count = 0
+        rets = ['{}-{}'.format(start_min, start_min + 1)]
+        for avatar in self.avatars.values():
+            if avatar.is_never_login_from_current(start_min):
+                count += 1
+
+        rets.append(count)
+
+        whole_num -= count
+        rets.append(whole_num)
+        rets.append(whole_num / whole_static)
+        return ','.join(map(str, rets)), whole_num
+
+    def dump_min_stay(self, filename):
+        datas = []
+        datas.append(self.min_stay_header())
+        whole_num = len(self.avatars)
+        whole_static = whole_num
+        for time_start in range(120):
+            data_str, whole_num = self.generate_one_min_stay_data(
+                time_start, whole_num, whole_static)
+            datas.append(data_str)
+
+        with open(filename, 'w', encoding='utf-8') as fw:
+            fw.write('\n'.join(datas))
 
 
 class AccountFilter(object):
@@ -256,15 +367,27 @@ def generate_csv():
     sta = Statistics(r'e:\shLog\log_70.csv.new.csv')
     sta.process_data()\
         .process()\
-        .dump('e:\\shLog\\out.csv')
+        .dump('e:\\shLog\\out.csv')\
+        .deal_destroy('e:\\shLog\\destroy.txt')\
+        .process_min_stay()\
+        .dump_min_stay('e:\\shLog\\min_stay.csv')
 
-    da_dic = sta.get_day_account_dic()
+    sta = Statistics(r'e:\shLog\log_70.csv')
+    sta.process_data()\
+        .process()\
+        .dump('e:\\shLog\\out1.csv')
 
-    gi = account_guide.deal_guide(da_dic)
-    gb = guild_bandit.deal_guild_bandit(da_dic)
+    da_dic_guide = sta.get_day_account_dic(23)
+    gi = account_guide.deal_guide(da_dic_guide)
 
-    col1 = guild_battle.deal_guild_battle('e:\\shLog\\ckz_tmp1.log', da_dic)
-    col2 = guild_battle.deal_guild_battle('e:\\shLog\\ckz_tmp3.log', da_dic)
+    da_dic_guild_bandit = sta.get_day_account_dic(0)
+    gb = guild_bandit.deal_guild_bandit(da_dic_guild_bandit)
+
+    da_dic_guild_guild_battle = sta.get_day_account_dic(30)
+    col1 = guild_battle.deal_guild_battle(
+        'e:\\shLog\\ckz_tmp1.log', da_dic_guild_guild_battle)
+    col2 = guild_battle.deal_guild_battle(
+        'e:\\shLog\\ckz_tmp3.log', da_dic_guild_guild_battle)
     generate_csv_by_cols([col1, col2], 'e:\\shlog\\guild_battle.csv')
 
 

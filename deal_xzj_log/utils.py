@@ -1,5 +1,6 @@
 import functools
 import pickle
+import time
 
 
 g_name_gbid_dic = pickle.load(open('name_gbid_dic', 'rb'))
@@ -25,3 +26,7 @@ def get_account(gbid):
 
 def add_col_header(col_headers, datas):
     return ['{},{}'.format(col_headers[i], data) for i, data in enumerate(datas)]
+
+
+def get_time_stamp(time_str):
+    return time.mktime(time.strptime(time_str, "%Y-%m-%d %H:%M:%S"))
