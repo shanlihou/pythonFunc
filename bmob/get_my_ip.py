@@ -7,6 +7,7 @@ import json
 from bmob import BMOB
 import logging
 import pickle
+import time
 
 
 class GetMyIp(object):
@@ -70,7 +71,11 @@ class GetMyIp(object):
         else:
             print(self.get_local_ip())
 
+    def run(self):
+        while 1:
+            self.send_ip_to_bmob()
+            time.sleep(120)
 
 if __name__ == '__main__':
     gmi = GetMyIp()
-    gmi.test()
+    gmi.run()
