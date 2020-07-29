@@ -35,10 +35,17 @@ class DealLog(object):
             for line in lines:
                 fw.write(line)
 
+    def filter(self):
+        with open(self.src, encoding='UTF-8') as fr:
+            fw = open(self.src + '.new', 'w')
+            for line in fr:
+                if 'Avatar(150077)' in line:
+                    fw.write(line)
+
 
 def main():
-    dl = DealLog(r'E:\shLog\tmp.log')
-    dl.test()
+    dl = DealLog(r'F:\logs\logs\logger_baseapp.log')
+    dl.filter()
 
 
 if __name__ == '__main__':
