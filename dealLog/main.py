@@ -4,9 +4,9 @@ import os
 class DealLog(object):
     def __init__(self, src):
         self.src = src
-        self.filters = ['[Avatar(4587)]',
-                        '[Guild(6226)]:',
-                        '[Guild(6224)]:']
+        self.filters = [
+            '[WorldLineStub(6024)]:enterLine',
+        ]
 
     def isok(self, strin):
         for filterstr in self.filters:
@@ -39,12 +39,12 @@ class DealLog(object):
         with open(self.src, encoding='UTF-8') as fr:
             fw = open(self.src + '.new', 'w')
             for line in fr:
-                if 'Avatar(150077)' in line:
+                if self.isok(line):
                     fw.write(line)
 
 
 def main():
-    dl = DealLog(r'F:\logs\logs\logger_baseapp.log')
+    dl = DealLog(r'e:\shLog\logger_baseapp.log')
     dl.filter()
 
 
