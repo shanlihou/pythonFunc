@@ -1,4 +1,11 @@
+# coding=utf-8
 import os
+import re
+import time
+import heapq
+
+
+g_iter = iter(range(1000000000))
 
 
 class DealLog(object):
@@ -43,9 +50,118 @@ class DealLog(object):
                     fw.write(line)
 
 
+class LogLine(object):
+    def __init__(self, timestamp, line):
+        self.timestamp = timestamp
+        self.index = next(g_iter)
+        self.line = line
+
+    def __lt__(self, other):
+        if self.timestamp == other.timestamp:
+            return self.index < other.index
+
+        return self.timestamp < other.timestamp
+
+    def write_line(self, fp):
+        fp.write(self.line)
+
+
+class LogStream(object):
+    def __init__(self, filename):
+        self.stream = self.read_file(filename)
+        self.last_timestamp = 0
+
+    def read_file(self, filename):
+        pat = re.compile(r'\[(\d+)\-(\d+)\-(\d+) (\d+)\:(\d+)\:(\d+) (\d+)\]')
+        with open(filename, encoding='utf-8') as fr:
+            for line in fr:
+                find = pat.search(line)
+                if find:
+                    timestamp = self.get_timestamp(find.groups())
+                    yield LogLine(timestamp, line)
+
+    def read_one(self, timestamp):
+        if self.last_timestamp <= timestamp:
+            ret = next(self.stream, None)
+            if ret is None:
+                return ret
+
+            self.last_timestamp = ret.timestamp
+            return ret
+        else:
+            return None
+
+    def get_timestamp(self, groups):
+        a = time.strptime(' '.join(groups[:-1]), '%Y %m %d %H %M %S')
+        timestamp = time.mktime(a)
+        return timestamp * 1000 + int(groups[-1])
+
+
+class MergeLog(object):
+    def __init__(self, file_list):
+        self.filters = [
+            'Avatar(9461)',
+            'WorldLineStub'
+        ]
+        self.file_list = file_list
+        self.cache = []
+        self.max_num = 50000
+        self.fw = open(r'e:\shlog\merge.log', 'w', encoding='utf-8')
+
+    def isok(self, strin):
+        for filterstr in self.filters:
+            if filterstr in strin:
+                return True
+        else:
+            return False
+
+    def push_if_pop(self, val):
+        if not self.isok(val.line):
+            return
+
+        heapq.heappush(self.cache, val)
+        if len(self.cache) > self.max_num:
+            one = heapq.heappop(self.cache)
+            one.write_line(self.fw)
+
+    def test(self):
+        streams = []
+        for fn in self.file_list:
+            streams.append(LogStream(fn))
+
+        timestamp = 0
+        while 1:
+            ret = None
+            isRead = False
+            for stream in streams:
+                _timestamp = timestamp
+                while 1:
+                    ret = stream.read_one(timestamp)
+                    if ret is None:
+                        break
+                    else:
+                        self.push_if_pop(ret)
+                        isRead = True
+
+                        if _timestamp < ret.timestamp:
+                            _timestamp = ret.timestamp
+
+                timestamp = _timestamp
+
+            if not isRead:
+                break
+
+        while self.cache:
+            one = heapq.heappop(self.cache)
+            one.write_line(self.fw)
+
+
 def main():
-    dl = DealLog(r'e:\shLog\logger_baseapp.log')
-    dl.filter()
+    ml = MergeLog([
+        r'E:\shLog\黄成伟测试离开帮会\logger_baseapp.log',
+        r'E:\shLog\黄成伟测试离开帮会\logger_cellapp.log',
+    ])
+    ml.test()
 
 
 if __name__ == '__main__':
