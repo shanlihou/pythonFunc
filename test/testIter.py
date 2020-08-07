@@ -15,6 +15,8 @@ def getRankBySortedList(sortList, keyFunc):
 
 if __name__ == '__main__':
     aa = [2, 5, 64, 4, 32, 3, 4, 9, 3, 5, 6, 3, 2, 3]
+    print(len(filter(lambda x: x >5,aa)))
+    
     aa = sorted(aa, reverse=True)
     for index, i in enumerate(getRankBySortedList(aa, lambda x: x)):
         print(index, i, aa[index])
