@@ -73,7 +73,10 @@ class GetMyIp(object):
 
     def run(self):
         while 1:
-            self.send_ip_to_bmob()
+            try:
+                self.send_ip_to_bmob()
+            except Exception as e:
+                logging.error(str(e))
             time.sleep(120)
 
 if __name__ == '__main__':

@@ -1,0 +1,63 @@
+Traceback (most recent call last):
+  File "get_my_ip.py", line 4, in <module>
+    from bs4 import BeautifulSoup
+ModuleNotFoundError: No module named 'bs4'
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/urllib3/contrib/pyopenssl.py", line 485, in wrap_socket
+    cnx.do_handshake()
+  File "/usr/lib/python3/dist-packages/OpenSSL/SSL.py", line 1915, in do_handshake
+    self._raise_ssl_error(self._ssl, result)
+  File "/usr/lib/python3/dist-packages/OpenSSL/SSL.py", line 1639, in _raise_ssl_error
+    raise SysCallError(errno, errorcode.get(errno))
+OpenSSL.SSL.SysCallError: (104, 'ECONNRESET')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 665, in urlopen
+    httplib_response = self._make_request(
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 376, in _make_request
+    self._validate_conn(conn)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 996, in _validate_conn
+    conn.connect()
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 352, in connect
+    self.sock = ssl_wrap_socket(
+  File "/usr/lib/python3/dist-packages/urllib3/util/ssl_.py", line 370, in ssl_wrap_socket
+    return context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3/dist-packages/urllib3/contrib/pyopenssl.py", line 491, in wrap_socket
+    raise ssl.SSLError("bad handshake: %r" % e)
+ssl.SSLError: ("bad handshake: SysCallError(104, 'ECONNRESET')",)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 439, in send
+    resp = conn.urlopen(
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 719, in urlopen
+    retries = retries.increment(
+  File "/usr/lib/python3/dist-packages/urllib3/util/retry.py", line 436, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.bmob.cn', port=443): Max retries exceeded with url: /1/classes/rasp_ip/019785abb1 (Caused by SSLError(SSLError("bad handshake: SysCallError(104, 'ECONNRESET')")))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "get_my_ip.py", line 81, in <module>
+    gmi.run()
+  File "get_my_ip.py", line 76, in run
+    self.send_ip_to_bmob()
+  File "get_my_ip.py", line 42, in send_ip_to_bmob
+    BMOB().putData('019785abb1', 'rasp_ip', data)
+  File "/home/ubuntu/shgithub/python/pythonFunc/bmob/bmob.py", line 125, in putData
+    requests.put(url, headers=headers, data=data)
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 131, in put
+    return request('put', url, data=data, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 60, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 646, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 514, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='api.bmob.cn', port=443): Max retries exceeded with url: /1/classes/rasp_ip/019785abb1 (Caused by SSLError(SSLError("bad handshake: SysCallError(104, 'ECONNRESET')")))
