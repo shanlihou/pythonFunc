@@ -26,6 +26,16 @@ mimedic = [
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     # GET
     def do_GET(self):
+        querypath = urlparse(self.path)
+        filepath, _ = querypath.path, querypath.query
+        print(filepath, _)
+
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write('{"hello": 123}'.encode('utf-8'))
+
+    def _do_GET_(self):
         sendReply = False
         querypath = urlparse(self.path)
         filepath, _ = querypath.path, querypath.query
