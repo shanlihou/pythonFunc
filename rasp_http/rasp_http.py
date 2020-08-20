@@ -4,7 +4,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from os import path
 from urllib.parse import urlparse
+import sqlite3
 
+DB_PATH = '~/shgithub/python/ios_spider/crawler.sqlite3.db'
 curdir = path.dirname(path.realpath(__file__))
 sep = '/'
 
@@ -22,6 +24,15 @@ mimedic = [
     ('.avi', 'video/x-msvideo'),
 ]
 
+def get_data():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    c = cursor.execute('select * from JAVBUS_DATA')
+    for row in c:
+        print(row)
+        break
+    cursor.close()
+    conn.close()
 
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     # GET
@@ -61,6 +72,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
 
 
 def run():
+    get_data()
     port = 8000
     print('starting server, port', port)
 
