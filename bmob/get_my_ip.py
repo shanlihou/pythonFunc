@@ -81,4 +81,4 @@ class GetMyIp(object):
 
 if __name__ == '__main__':
     gmi = GetMyIp()
-    gmi.run()
+    print(gmi.get_bmob_ip())

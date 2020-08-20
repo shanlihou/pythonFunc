@@ -4,7 +4,11 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from os import path
 from urllib.parse import urlparse
+<<<<<<< HEAD
 import sqlite3
+=======
+import json
+>>>>>>> 14be24449c420070e505c3c80ccec8393f7e7650
 
 DB_PATH = '~/shgithub/python/ios_spider/crawler.sqlite3.db'
 curdir = path.dirname(path.realpath(__file__))
@@ -45,6 +49,23 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write('{"hello": 123}'.encode('utf-8'))
+
+    def do_POST(self):
+        print(self.headers)
+        print(self.command)
+        req_datas = self.rfile.read(
+            int(self.headers['content-length']))  # 重点在此步!
+        print(req_datas.decode())
+        data = {
+            'result_code': '2',
+            'result_desc': 'Success',
+            'timestamp': '',
+            'data': {'message_id': '25d55ad283aa400af464c76d713c07ad'}
+        }
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode('utf-8'))
 
     def _do_GET_(self):
         sendReply = False
