@@ -31,10 +31,14 @@ def get_content(urlPath, is_save=False):
 
 
 class BtOne(object):
-    def __init__(self, url):
+    def __init__(self, url, size):
         content = get_content(url, True)
 #         content = get_save('one.html')
         self.mag = self.parse_mag(content)
+        self.size = size
+
+    def __str__(self):
+        return '{},{}'.format(self.mag, self.size)
 
     def parse_mag(self, content):
         pat = re.compile(r'(magnet:\?xt=urn:btih:[^"><]+)["<>]')
@@ -46,8 +50,12 @@ def parse_content(content):
     pat = re.compile('(https://.+magnet[^"]+)"')
     ret = pat.findall(content)
     soup = BeautifulSoup(content, "html.parser")
-    div = soup.select('div', class_='data-list')
-    print(div)
+    div = soup.select('div[class="data-list"]')
+    for _div in div:
+        for ret in _div.select('div[class="row"]'):
+            a = ret.select('a')[0]
+            n_div = a.find_next_siblings('div')[0]
+            yield BtOne(a['href'], n_div.string)
 #     for url in ret:
 #         #bo = BtOne(url)
 
@@ -58,11 +66,13 @@ def getAllMagnet(code):
     code = urllib.parse.quote(code)
     url = 'https://{}/search/{}'.format(URIBASE, code)
     content = get_content(url, True)
+    for bo in parse_content(content):
+        print(bo)
 
 
 if __name__ == '__main__':
-    parse_content(get_save())
-#     bo = BtOne(1)
-#     getAllMagnet('复仇者')
+    #     parse_content(get_save())
+    #     bo = BtOne(1)
+    getAllMagnet('复仇者')
 #     if (len(sys.argv) == 2):
 #         getAllMagnet(sys.argv[1])
