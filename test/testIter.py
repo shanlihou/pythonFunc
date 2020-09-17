@@ -50,7 +50,12 @@ class Test(object):
     @classmethod
     def test(cls):
         ret = cls.matchPlayDic(['a', 'b', 'c', 'e'], 0, cls.dic)
+        
+        
         print(ret)
+        aa = [1, 2, 3, 4]
+        bb = aa[3:]
+        print(bb)
 
 
 if __name__ == '__main__':
