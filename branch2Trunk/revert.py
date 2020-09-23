@@ -75,9 +75,14 @@ if __name__ == '__main__':
     opt = 0
     if opt == 0:
         print('1--------------------------------')
+        os.system(r'svn up E:\trunk_server')
+        print('2--------------------------------')
         rev = Revert(r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
         rev.test()
         os.system(r'svn up E:\svn\Dev\Client')
+        #print('3--------------------------------')
+        #$rev = Revert(r'E:\svn\Dev\Client')
+        #rev.test()
 
 #         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
 #         rev.test()
@@ -101,8 +106,6 @@ if __name__ == '__main__':
 #             r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')
 #         rev.test()
 
-        print('6--------------------------------')
-        os.system(r'svn up E:\trunk_server')
     elif opt == 1:
         rev = Revert(r'E:\svn\Dev\Client')
         rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts',
