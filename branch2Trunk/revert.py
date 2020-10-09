@@ -77,12 +77,27 @@ if __name__ == '__main__':
         print('1--------------------------------')
         os.system(r'svn up E:\trunk_server')
         print('2--------------------------------')
-        rev = Revert(r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
+        rev = Revert(
+            r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
         rev.test()
+        print('3--------------------------------')
+        rev = Revert(r'E:\svn\Dev\Client\Assets\StreamingAssets\Lua\KBEngine')
+        rev.test()
+
+        print('4--------------------------------')
+        rev = Revert(
+            r'E:\trunk_server\kbengine\assets\scripts\kbengine_unity3d_plugins')
+        rev.test()
+
+        print('5--------------------------------')
+        rev = Revert(r'E:\trunk_server\kbengine\assets\scripts\kbengine_lua')
+        rev.test()
+
+        print('6--------------------------------')
         os.system(r'svn up E:\svn\Dev\Client')
-        #print('3--------------------------------')
+        # print('3--------------------------------')
         #$rev = Revert(r'E:\svn\Dev\Client')
-        #rev.test()
+        # rev.test()
 
 #         rev = Revert(r'C:\Users\Administrator\AppData\Local\clientC')
 #         rev.test()
@@ -95,12 +110,12 @@ if __name__ == '__main__':
 #         rev = Revert(
 #             r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts\kbengine_unity3d_plugins')
 #         rev.test()
-# 
+#
 #         print('4--------------------------------')
 #         rev = Revert(
 #             r'E:\server\scripts\kbengine_unity3d_plugins')
 #         rev.test()
-# 
+#
 #         print('5--------------------------------')
 #         rev = Revert(
 #             r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts\kbengine_unity3d_plugins')

@@ -1,3 +1,5 @@
+import testImport
+
 def getRankBySortedList(sortList, keyFunc):
     rank = 0
     curRank = 0
@@ -56,6 +58,7 @@ class Test(object):
         aa = [1, 2, 3, 4]
         bb = aa[3:]
         print(bb)
+        testImport.abcd()
 
 
 if __name__ == '__main__':

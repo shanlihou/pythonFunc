@@ -1,0 +1,2 @@
+def abcd():
+    print('abcd')
