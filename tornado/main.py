@@ -20,8 +20,10 @@ def elasticRequest(uri, callback, method='GET', data=None, headers=None):
     )
     response = yield tornado.gen.Task(http_client.fetch, req)
     if response.error:
+        print(response)
         data = response.body.decode('utf-8')
         jsonData = json.loads(data)
+        print(jsonData)
         root_cause = jsonData.get('error', {}).get('root_cause', [])
         for cause in root_cause:
             if cause['type'] == 'resource_already_exists_exception':
@@ -37,10 +39,10 @@ class FriendSearchMixin(object):
     headers = {'Content-Type': 'application/json'}
 
     def __init__(self):
-        self.ip = '192.168.16.252'
+        self.ip = '192.168.16.223'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(20305) + '_friend'
+        self.indexName = str(889914) + '_friend'
         self.typeName = 'Avatar'
 
     def cat(self):
@@ -73,11 +75,11 @@ class FriendSearchMixin(object):
                 'gbId': gbId}
 
         data = json.dumps(data)
-        uri = self.join(self.uriBase, self.indexName, self.typeName, str(id))
+        uri = self.join(self.uriBase, self.indexName, '_doc', str(id))
 
         def func(response):
             print('add:', response.body)
-        elasticRequest(uri, func, 'PUT', data, self.headers)
+        elasticRequest(uri, func, 'POST', data, self.headers)
 
     def testPost(self, name, gbId, id):
         data = {'name': name,
@@ -92,21 +94,19 @@ class FriendSearchMixin(object):
 
     def initElastic(self):
         data = '''{
-  "mappings": {
-    "%s": {
-      "properties": {
-        "name": {
-          "type": "text",
-          "analyzer": "smartcn",
-          "search_analyzer": "smartcn"
-        },
-        "gbId": {
-          "type": "long"
+    "mappings": {
+        "properties": {
+            "name": {
+                "type": "text",
+                "analyzer": "smartcn",
+                "search_analyzer": "smartcn"
+            },
+            "gbId": {
+                "type": "long"
+            }
         }
-      }
     }
-  }
-}''' % self.typeName
+}'''
 
         def func(*args):
             print(args)
@@ -214,8 +214,9 @@ class FriendSearchMixin(object):
         #self.initElastic()
         # self.setting()
         # self.cat()
-        # self.addAvatarInfo('包青一天大旧人', 2299822224)
-        self.searchAvatarName('一抹')
+        self.addAvatarInfo('包青一天大旧人', 2299822224, 1)
+        #self.initElastic()
+        #self.searchAvatarName('一抹')
         # self.analyze()
         #self.addAvatarInfo('zhang liang', 99124, 13422)
         #self.testPost('zhang san feng', 33423, 9013)
