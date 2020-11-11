@@ -43,7 +43,7 @@ class FriendSearchMixin(object):
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
         self.indexName = str(889914) + '_friend'
-        self.typeName = 'Avatar'
+        self.typeName = '_doc'
 
     def cat(self):
         url = self.join(self.uriBase, '_cat/indices?v')
@@ -134,6 +134,8 @@ class FriendSearchMixin(object):
             print(jsonData)
             print(jsonData['_source'])
         elasticRequest(uri, _func)
+        
+    def getPluginInfo
 
     def getAll(self):
         uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
@@ -214,9 +216,9 @@ class FriendSearchMixin(object):
         #self.initElastic()
         # self.setting()
         # self.cat()
-        self.addAvatarInfo('包青一天大旧人', 2299822224, 1)
+        #self.addAvatarInfo('悠然狂魔', 2299822224, 1)
         #self.initElastic()
-        #self.searchAvatarName('一抹')
+        self.searchAvatarName('悠然')
         # self.analyze()
         #self.addAvatarInfo('zhang liang', 99124, 13422)
         #self.testPost('zhang san feng', 33423, 9013)
