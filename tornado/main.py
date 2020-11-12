@@ -3,10 +3,13 @@ import tornado.ioloop
 import time
 import tornado.gen
 import sched
+import base64
 import json
 # from tornado import gen
 from tornado.httpclient import AsyncHTTPClient
 import threading
+authStr = 'elastic:123456'
+authB64 = base64.b64encode(bytes(authStr, 'ascii'))
 
 
 @tornado.gen.coroutine
@@ -36,13 +39,16 @@ def elasticRequest(uri, callback, method='GET', data=None, headers=None):
 
 
 class FriendSearchMixin(object):
-    headers = {'Content-Type': 'application/json'}
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic %s' % authB64.decode('ascii')
+    }
 
     def __init__(self):
-        self.ip = '192.168.16.223'
+        self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(889914) + '_friend'
+        self.indexName = str(20217) + '_friend_ik'
         self.typeName = '_doc'
 
     def cat(self):
@@ -134,8 +140,6 @@ class FriendSearchMixin(object):
             print(jsonData)
             print(jsonData['_source'])
         elasticRequest(uri, _func)
-        
-    def getPluginInfo
 
     def getAll(self):
         uri = self.join(self.uriBase, self.indexName, self.typeName, '_search')
@@ -164,7 +168,7 @@ class FriendSearchMixin(object):
             body = resp.body.decode('utf-8')
             jsonData = json.loads(body)
             hits = jsonData['hits']['hits']
-            #print(hits)
+            # print(hits)
             for data in hits:
                 print('\n\n')
                 print(data)
@@ -199,7 +203,7 @@ class FriendSearchMixin(object):
     def analyze(self, ):
         uri = self.join(self.uriBase, self.indexName, '_analyze')
         data = {'field': 'name',
-                'text': '一叶传说'}
+                'text': '悠然狂魔'}
         data = json.dumps(data)
 
         def func(resp):
@@ -213,21 +217,22 @@ class FriendSearchMixin(object):
         return '/'.join(args)
 
     def test(self):
-        #self.initElastic()
+        # self.initElastic()
         # self.setting()
         # self.cat()
-        #self.addAvatarInfo('悠然狂魔', 2299822224, 1)
-        #self.initElastic()
-        self.searchAvatarName('悠然')
+        # self.addAvatarInfo('悠然狂魔', 2299822224, 1)
+        # self.initElastic()
+        # self.searchAvatarName('悠然')
         # self.analyze()
-        #self.addAvatarInfo('zhang liang', 99124, 13422)
-        #self.testPost('zhang san feng', 33423, 9013)
-        #self.searchAvatarName('一世')
+        # self.addAvatarInfo('zhang liang', 99124, 13422)
+        # self.testPost('zhang san feng', 33423, 9013)
+        # self.searchAvatarName('一世')
+        self.analyze()
         # self.clearDB()
         print('end---')
-        #self.indexObId(559108)
+        # self.indexObId(559108)
         # self.delete(557056)
-        #self.getAll()
+        # self.getAll()
 
 
 if __name__ == "__main__":
