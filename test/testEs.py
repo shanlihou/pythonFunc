@@ -90,9 +90,7 @@ class EsTest(object):
             checks = [i for i in tup if i.endswith('_friend_ik')]
             if checks:
                 index_name = checks[0]
-                print(index_name)
-                ret = self.check_index_ok(index_name)
-                print(ret)
+                self.check_and_create(index_name)
 
     def check_and_create(self, index_name):
         if not self.check_index_ok(index_name):
@@ -103,7 +101,7 @@ class EsTest(object):
 def main():
     et = EsTest()
 #     et.del_index(INDEX)
-    et.check_and_create(INDEX)
+    et.deal_all()
 
 
 if __name__ == '__main__':
