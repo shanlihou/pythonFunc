@@ -1,55 +1,41 @@
 # coding = utf-8
 import time
+import os
+import LogOne
+import Filter
+import utils
+import functools
 
 
-UNIQUE_BY_ACCOUNT = True
+class ResultDay(object):
+    def __init__(self, day):
+        self.day = day
+        self.stay_dict = {}
 
+    def add_new(self, new):
+        self.new = new
 
-def get_time_stamp(time_str):
-    time_st = time.strptime(time_str, '%Y-%m-%d %H:%M:%S')
-    return time.mktime(time_st)
+    def add_stay(self, day, stay):
+        self.stay_dict[day] = stay
 
-
-def get_day(time_str):
-    time_st = time.strptime(time_str, '%Y-%m-%d %H:%M:%S')
-    return time_st.tm_mday
-
-
-class Filter(object):
-    @classmethod
-    
-    @classmethod
-    def filter_outside(cls, filename):
-        with open(filename, encoding='utf-8') as fr:
-            
-
-
-class LogOne(object):
-    def __init__(self, log_type, server_id, time_str, app_id, plant_id,
-                 area_id, zone_id, open_id, client_ver, sec_report_data,
-                 sys_software, *args):
-        self.gbid = args[6]
-        self.name = args[7]
-        self.time_str = time_str
-        self.timestamp = get_time_stamp(time_str)
-        self.account = open_id
-        self.day = get_day(time_str)
-
-    def get_day(self):
-        return self.day
-
-    def unique_key(self):
-        if UNIQUE_BY_ACCOUNT:
-            return self.account
+    def get_row(self, row_idx):
+        if row_idx == 0:
+            return str(self.day)
+        elif row_idx == 1:
+            return str(self.new)
         else:
-            return self.gbid
+            ret = self.stay_dict.get(row_idx - 1 + self.day, 0)
+            return str(ret) if ret else ''
+
+    def get_stay_by_day_index(self, day_idx):
+        return self.new, self.stay_dict.get(self.day + day_idx, 0)
 
 
 class DaysManager(object):
     def __init__(self):
         self.days_dict = {}
 
-    def add_one(self, log_one: LogOne):
+    def add_one(self, log_one: LogOne.LogOne):
         day = log_one.get_day()
         self.days_dict.setdefault(day, {})
         self.days_dict[day].setdefault(log_one.unique_key(), log_one)
@@ -64,46 +50,78 @@ class DaysManager(object):
 
         return sum
 
-    def output(self, day_index):
+    def output(self):
         days = list(self.days_dict.keys())
-        if day_index >= len(days):
-            return
+        days.sort()
+        max_day = days[-1]
+        old_avatar_set = set()
+        rds = []
+        for day in days:
+            day_dict = self.days_dict[day]
+            new_count = 0
+            new_set = set()
+            rd = ResultDay(day)
+            for unique_key in day_dict:
+                if unique_key not in old_avatar_set:
+                    new_count += 1
+                    old_avatar_set.add(unique_key)
+                    new_set.add(unique_key)
 
-        day = days[day_index]
-        ret_list = []
-        for idx in range(day_index + 1, len(days)):
-            cur = days[idx]
-            ret_list.append({
-                'day': cur,
-                'idx': idx,
-                'count': self.get_stay_num(day, cur)
-            })
+            rd.add_new(len(new_set))
 
-        return ret_list
+            stay_set = new_set
+            for calc_day in range(day + 1, max_day + 1):
+                day_dict = self.days_dict[calc_day]
+                stay_set = set(i for i in day_dict if i in stay_set)
+                rd.add_stay(calc_day, len(stay_set))
+
+            rds.append(rd)
+
+        return rds
+
+    def out_as_csv(self, filename):
+        rds = self.output()
+        with open(filename, 'w') as fw:
+            row = 0
+            while 1:
+                strs = [rd.get_row(row) for rd in rds]
+                if not any(strs):
+                    break
+
+                fw.write(','.join(strs) + '\n')
+
+                row += 1
+
+        with open('{}.full.csv'.format(filename), 'w') as fw:
+            day_idx = 1
+            line1 = []
+            line2 = []
+            while 1:
+                tmp = [rd.get_stay_by_day_index(day_idx) for rd in rds]
+                tmp = functools.reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]), tmp)
+                if not tmp[1]:
+                    break
+
+                line1.append(tmp[0])
+                line2.append(tmp[1])
+                day_idx += 1
+
+            fw.write(','.join(map(str, line1)) + '\n')
+            fw.write(','.join(map(str, line2)) + '\n')
 
     def debug(self):
         for k, v in self.days_dict.items():
             print(k, len(v))
 
 
-def filter_tlog(filename, filter_str):
-    fw = open(filename + '.{}.log'.format(filter_str), 'w')
-    with open(filename, encoding='utf-8') as fr:
-        for line in fr:
-            if line.startswith(filter_str):
-                fw.write(line)
-
-
-def parse_tlog(filename):
+def parse_tlog(filename, out_name):
     dm = DaysManager()
     with open(filename) as fr:
         for line in fr:
-            tup = line.strip().split('|')
-            log_one = LogOne(*tup)
+            log_one = LogOne.LogOne.get_log_obj_from_line(line)
             dm.add_one(log_one)
 
-    out = dm.output(1)
-    print(out)
+    dm.out_as_csv(out_name)
 #     dm.debug()
 
 
@@ -111,8 +129,27 @@ def main():
     #     filter_tlog(r'E:\shLog\xzj.log', 'SecLogin')
     #     ret = get_time_stamp('2020-11-13 19:26:20')
     #     print(ret)
-#     parse_tlog(r'E:\shLog\tlog\xzj.log.SecLogin.log')
-    Filter.filter_outside(r'E:\shLog\tlog\xzj.log.SecLogin.log')
+    #     parse_tlog(r'E:\shLog\tlog\xzj.log.SecLogin.log')
+    whole_log = r'E:\shLog\tlog\xzj.log.SecLogin.log'
+    filter_inner_name = r'E:\shLog\tlog\dev_openids.txt'
+    filter_out_name = r'E:\shLog\tlog\11-11.txt'
+    filt = Filter.Filter(whole_log, filter_inner_name, filter_out_name)
+
+    # --------------------------------------
+    tmp_log_name = filt.filter_inner()
+    out_name = utils.get_out_name(whole_log, 'out', 'inner.csv')
+    parse_tlog(tmp_log_name, out_name)
+
+    # --------------------------------------
+    tmp_log_name = filt.filter_out_first()
+    out_name = utils.get_out_name(whole_log, 'out', 'out_first.csv')
+    parse_tlog(tmp_log_name, out_name)
+
+    # --------------------------------------
+    tmp_log_name = filt.filter_out_second()
+    out_name = utils.get_out_name(whole_log, 'out', 'out_second.csv')
+    parse_tlog(tmp_log_name, out_name)
+
 
 if __name__ == '__main__':
     main()
