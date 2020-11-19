@@ -1,5 +1,6 @@
 import time
 import os
+import const
 
 
 def get_time_stamp(time_str):
@@ -12,14 +13,18 @@ def get_day(time_str):
     return time_st.tm_mday
 
 
-def get_out_name(filename, dir_name, out_name):
-    dirname = os.path.dirname(filename)
-    newdir = os.path.join(dirname, dir_name)
-    fw_name = os.path.join(newdir, out_name)
-
+def get_dir(dir_name):
+    new_dir = '{}\\{}'.format(const.ROOT_NAME, dir_name)
     try:
-        os.mkdir(newdir)
+        os.mkdir(new_dir)
     except Exception as e:
         pass
+
+    return new_dir
+
+
+def get_out_name(dir_name, out_name):
+    new_dir = get_dir(dir_name)
+    fw_name = os.path.join(new_dir, out_name)
 
     return fw_name

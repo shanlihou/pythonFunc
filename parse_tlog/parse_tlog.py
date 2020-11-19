@@ -5,6 +5,7 @@ import LogOne
 import Filter
 import utils
 import functools
+import const
 
 
 class ResultDay(object):
@@ -130,24 +131,23 @@ def main():
     #     ret = get_time_stamp('2020-11-13 19:26:20')
     #     print(ret)
     #     parse_tlog(r'E:\shLog\tlog\xzj.log.SecLogin.log')
-    whole_log = r'E:\shLog\tlog\xzj.log.SecLogin.log'
-    filter_inner_name = r'E:\shLog\tlog\dev_openids.txt'
-    filter_out_name = r'E:\shLog\tlog\11-11.txt'
-    filt = Filter.Filter(whole_log, filter_inner_name, filter_out_name)
+    fname = Filter.Filter.filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
+
+    filt = Filter.Filter(fname, LogOne.LogOne)
 
     # --------------------------------------
     tmp_log_name = filt.filter_inner()
-    out_name = utils.get_out_name(whole_log, 'out', 'inner.csv')
+    out_name = utils.get_out_name('out', 'inner.csv')
     parse_tlog(tmp_log_name, out_name)
 
     # --------------------------------------
     tmp_log_name = filt.filter_out_first()
-    out_name = utils.get_out_name(whole_log, 'out', 'out_first.csv')
+    out_name = utils.get_out_name('out', 'out_first.csv')
     parse_tlog(tmp_log_name, out_name)
 
     # --------------------------------------
     tmp_log_name = filt.filter_out_second()
-    out_name = utils.get_out_name(whole_log, 'out', 'out_second.csv')
+    out_name = utils.get_out_name('out', 'out_second.csv')
     parse_tlog(tmp_log_name, out_name)
 
 

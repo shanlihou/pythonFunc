@@ -1,5 +1,6 @@
 import utils
 import const
+import Filter
 
 
 class LogOneBase(object):
@@ -9,7 +10,7 @@ class LogOneBase(object):
         self.day = utils.get_day(time_str)
         self.account = open_id
         self.gbid = gbid
-    
+
     def get_day(self):
         return self.day
 
@@ -35,8 +36,10 @@ class LogOne(LogOneBase):
 
 
 class LogVitality(LogOneBase):
-    def __init__(self, log_type, server_id, time_str, _1, open_id, _2, _3, gbid, _4, activity):
-        super().__init__(time_str, open_id, gbid)
+    def __init__(self, log_type, server_id, time_str, _1, gbid, _2, _3, uuid, _4, activity):
+        account = Filter.Filter.get_gbid_2_account_dic()[gbid]
+        super().__init__(time_str, account, gbid)
+        self.act = activity.strip().split(' ')[-1]
 
     @staticmethod
     def get_log_obj_from_line(line):
