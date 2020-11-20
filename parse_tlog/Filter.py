@@ -50,8 +50,16 @@ class Filter(object):
         fw = open(fw_name, 'w')
         with open(filename, encoding='utf-8') as fr:
             for line in fr:
-                if line.startswith(filter_str):
-                    fw.write(line)
+                if not line.startswith(filter_str):
+                    continue
+
+                tup = line.strip().split('|')
+                time_str = tup[2]
+                day = utils.get_day(time_str)
+                if day < 12:
+                    continue
+
+                fw.write(line)
 
         fw.close()
         return fw_name
@@ -78,6 +86,9 @@ class Filter(object):
         with open(self.filename) as fr:
             for line in fr:
                 lo = self.log_class.get_log_obj_from_line(line)
+                if not lo:
+                    continue
+
                 if lo.account not in self.inner_openid_set:
                     continue
 
@@ -93,6 +104,9 @@ class Filter(object):
         with open(self.filename) as fr:
             for line in fr:
                 lo = self.log_class.get_log_obj_from_line(line)
+                if not lo:
+                    continue
+
                 if lo.account not in self.outer_openid_set:
                     continue
 
@@ -108,6 +122,9 @@ class Filter(object):
         with open(self.filename) as fr:
             for line in fr:
                 lo = self.log_class.get_log_obj_from_line(line)
+                if not lo:
+                    continue
+
                 if lo.account in self.outer_openid_set or lo.account in self.inner_openid_set:
                     continue
 
@@ -123,6 +140,10 @@ class Filter(object):
         with open(self.filename) as fr:
             for line in fr:
                 lo = LogOne.LogVitality.get_log_obj_from_line(line)
+                if not lo:
+                    print('error:', line)
+                    continue
+
                 if lo.act != actId:
                     continue
 
@@ -131,6 +152,19 @@ class Filter(object):
         fw.close()
         return fw_name
 
+    @staticmethod
+    def filter_sys_log(tag_name):
+        new_dir = utils.get_dir('tmp')
+        basename = os.path.basename(const.SYS_LOG_NAME)
+        fw_name = os.path.join(new_dir, '{}.{}.log'.format(basename, tag_name))
+        fw = open(fw_name, 'w')
+        with open(const.SYS_LOG_NAME, encoding='utf-8') as fr:
+            for line in fr:
+                if tag_name in line:
+                    fw.write(line)
+
+        fw.close()
+        return fw_name
 
 if __name__ == '__main__':
     print(Filter.get_gbid_2_account_dic())

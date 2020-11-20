@@ -1,6 +1,8 @@
 import utils
 import const
 import Filter
+import json
+import time
 
 
 class LogOneBase(object):
@@ -44,4 +46,45 @@ class LogVitality(LogOneBase):
     @staticmethod
     def get_log_obj_from_line(line):
         tup = line.strip().split('|')
-        return LogVitality(*tup)
+        try:
+            return LogVitality(*tup)
+        except:
+            return None
+
+
+class LogOut(LogOneBase):
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id,
+                 area_id, zone_id, open_id, client_ver, sec_report_data,
+                 sys_software, *args):
+        gbid = args[6]
+        level = args[9]
+        super().__init__(time_str, open_id, gbid)
+        self.level = level
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return LogOut(*tup)
+        except:
+            return None
+
+
+class LogSys(LogOneBase):
+    def __init__(self, data_dict):
+        self.gbid = data_dict['gbId']
+        timestamp = data_dict['timestamp'] // 1000
+        time_st = time.localtime(timestamp)
+
+        self.timestamp = timestamp
+        self.day = time_st.tm_mday
+        self.account = Filter.Filter.get_gbid_2_account_dic()[str(self.gbid)]
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        json_data = json.loads(line)
+        try:
+            return LogSys(json_data)
+        except:
+            pass
+

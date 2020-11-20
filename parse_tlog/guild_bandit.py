@@ -66,7 +66,7 @@ if __name__ == '__main__':
     print(fname)
     f = Filter.Filter(fname, LogOne.LogVitality)
     parse_by_act(f, 32000002)
-    parse_by_act(f, 32000004)
+    # parse_by_act(f, 32000004)
     # f = Filter.Filter(whole_log, filter_inner_name, filter_out_name)
     # f.filter_tlog(r'E:\shLog\tlog\xzj.log', 'LOG_VITALITY')
     # f.filter_guild_bandit()
