@@ -9,8 +9,8 @@ import pickle
 class Filter(object):
     def __init__(self, filename, log_class):
         self.filename = filename
-        self.inner_openid_set = self.get_openid_info(const.INNER_FILTER_NAME)
-        self.outer_openid_set = self.get_openid_info(const.OUT_FILTER_NAME)
+        self.inner_openid_set = utils.get_openid_info(const.INNER_FILTER_NAME)
+        self.outer_openid_set = utils.get_openid_info(const.OUT_FILTER_NAME)
         self.basename = os.path.basename(filename)
         self.newdir = os.path.join(const.ROOT_NAME, 'tmp')
         self.log_class = log_class
@@ -19,38 +19,34 @@ class Filter(object):
         except Exception as e:
             pass
 
-    @classmethod
-    @functools.lru_cache(1)
-    def get_gbid_2_account_dic(cls):
+    @staticmethod
+    def filter_guild_train():
         tmp_dir = utils.get_dir('tmp')
-        save_path = os.path.join(tmp_dir, 'gbid_2_account')
-        if os.path.exists(save_path):
-            return pickle.load(open(save_path, 'rb'))
+        fw_name = os.path.join(tmp_dir, 'guild_train_tlog.log')
+        if os.path.exists(fw_name):
+            return fw_name
 
-        ret_dic = {}
-
-        sec_name = cls.filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
-        with open(sec_name) as fr:
+        fw = open(fw_name, 'w')
+        with open(const.ORI_FILE_NAME, encoding='utf-8') as fr:
             for line in fr:
-                lo = LogOne.LogOne.get_log_obj_from_line(line)
-                ret_dic[lo.gbid] = lo.account
+                if 'guild train upgrade' in line and line.startswith('LOG_GUILD_CONTRIBUTION'):
+                    fw.write(line)
 
-        pickle.dump(ret_dic, open(save_path, 'wb'))
-
-        return ret_dic
+        fw.close()
+        return fw_name
 
     @staticmethod
-    def filter_tlog(filename, filter_str):
+    def filter_login_log(filename):
         basename = os.path.basename(filename)
         dirname = utils.get_dir('tmp')
-        fw_name = os.path.join(dirname, '{}.{}.log'.format(basename, filter_str))
+        fw_name = os.path.join(dirname, '{}.{}.log'.format(basename, 'hour_stay'))
         if os.path.exists(fw_name):
             return fw_name
 
         fw = open(fw_name, 'w')
         with open(filename, encoding='utf-8') as fr:
             for line in fr:
-                if not line.startswith(filter_str):
+                if not (line.startswith('SecLogin') or line.startswith('SecLogout')):
                     continue
 
                 tup = line.strip().split('|')
@@ -64,28 +60,13 @@ class Filter(object):
         fw.close()
         return fw_name
 
-    def get_openid_info(self, filename):
-        openid_set = set()
-        with open(filename, encoding='utf-8') as fr:
-            for line in fr:
-                if ' ' in line:
-                    tup = line.strip().split(' ')
-                else:
-                    tup = line.strip().split('\t')
-
-#                 print(tup)
-                if len(tup) > 2:
-                    openid_set.add(tup[2])
-
-        return openid_set
-
     def filter_inner(self):
         fw_name = '{}\\{}.{}.log'.format(self.newdir, self.basename, 'inner')
 
         fw = open(fw_name, 'w')
         with open(self.filename) as fr:
             for line in fr:
-                lo = self.log_class.get_log_obj_from_line(line)
+                lo = LogOne.get_log_from_line(line)
                 if not lo:
                     continue
 
@@ -103,7 +84,7 @@ class Filter(object):
         fw = open(fw_name, 'w')
         with open(self.filename) as fr:
             for line in fr:
-                lo = self.log_class.get_log_obj_from_line(line)
+                lo = LogOne.get_log_from_line(line)
                 if not lo:
                     continue
 
@@ -121,7 +102,7 @@ class Filter(object):
         fw = open(fw_name, 'w')
         with open(self.filename) as fr:
             for line in fr:
-                lo = self.log_class.get_log_obj_from_line(line)
+                lo = LogOne.get_log_from_line(line)
                 if not lo:
                     continue
 
@@ -167,4 +148,4 @@ class Filter(object):
         return fw_name
 
 if __name__ == '__main__':
-    print(Filter.get_gbid_2_account_dic())
+    print(utils.get_gbid_2_account_dic())

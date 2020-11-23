@@ -3,6 +3,7 @@ import const
 import Filter
 import json
 import time
+import math
 
 
 class LogOneBase(object):
@@ -25,11 +26,54 @@ class LogOneBase(object):
 
 
 class LogOne(LogOneBase):
+    IS_LOGIN = True
     def __init__(self, log_type, server_id, time_str, app_id, plant_id,
                  area_id, zone_id, open_id, client_ver, sec_report_data,
                  sys_software, *args):
         super().__init__(time_str, open_id, args[6])
         self.name = args[7]
+        self.end_time = 0
+        self.day_set = set()
+        self.day_set.add(self.day)
+        self.school = utils.get_gbid_school_dict().get(self.gbid)
+        self.login_info = [{
+            'timestamp': self.timestamp,
+            'is_login': True,
+        }]
+
+    def is_stay_by_dur(self, day_count):
+        first_day = min(self.day_set)
+        for i in range(1, day_count + 1):
+            day = first_day + i
+            if day not in self.day_set:
+                # if len(self.day_set) > 1:
+                #     print(self.day_set, day, first_day)
+                return False
+
+        return True
+
+    def add_day(self, day, is_login, timestamp):
+        self.day_set.add(day)
+        last_info = self.login_info[-1]
+        if last_info['is_login'] and not is_login:
+            last_st = time.localtime(last_info['timestamp'])
+            cur_st = time.localtime(timestamp)
+            for i in range(last_st.tm_mday, cur_st.tm_mday + 1):
+                self.day_set.add(i)
+
+        self.login_info.append({
+            'timestamp': timestamp,
+            'is_login': is_login
+        })
+
+    def add_log_out_time(self, timestamp):
+        if self.end_time:
+            return
+
+        self.end_time = timestamp
+
+    def get_duration(self):
+        return int((self.end_time - self.timestamp) // 60)
 
     @staticmethod
     def get_log_obj_from_line(line):
@@ -39,7 +83,7 @@ class LogOne(LogOneBase):
 
 class LogVitality(LogOneBase):
     def __init__(self, log_type, server_id, time_str, _1, gbid, _2, _3, uuid, _4, activity):
-        account = Filter.Filter.get_gbid_2_account_dic()[gbid]
+        account = utils.get_gbid_2_account_dic()[gbid]
         super().__init__(time_str, account, gbid)
         self.act = activity.strip().split(' ')[-1]
 
@@ -53,6 +97,7 @@ class LogVitality(LogOneBase):
 
 
 class LogOut(LogOneBase):
+    IS_LOGIN = False
     def __init__(self, log_type, server_id, time_str, app_id, plant_id,
                  area_id, zone_id, open_id, client_ver, sec_report_data,
                  sys_software, *args):
@@ -78,7 +123,7 @@ class LogSys(LogOneBase):
 
         self.timestamp = timestamp
         self.day = time_st.tm_mday
-        self.account = Filter.Filter.get_gbid_2_account_dic()[str(self.gbid)]
+        self.account = utils.get_gbid_2_account_dic()[str(self.gbid)]
 
     @staticmethod
     def get_log_obj_from_line(line):
@@ -87,4 +132,52 @@ class LogSys(LogOneBase):
             return LogSys(json_data)
         except:
             pass
+
+
+class LogLevel(LogOneBase):
+    def __init__(self, log_type, server_id, time_str, _1, gbid, school, *args):
+        account = utils.get_gbid_2_account_dic()[gbid]
+        super().__init__(time_str, account, gbid)
+        self.school = school
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return LogLevel(*tup)
+        except Exception as e:
+            return None
+
+
+class LogGuildContrib(LogOneBase):
+    def __init__(self, log_type, server_id, time_str, _1, gbid, num, delta, uuid, src, desc):
+        account = utils.get_gbid_2_account_dic()[gbid]
+        super().__init__(time_str, account, gbid)
+        self.delta = abs(int(delta))
+        self.score = utils.get_delta2score_dict()[self.delta]
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return LogGuildContrib(*tup)
+        except Exception as e:
+            return None
+
+
+def get_log_from_line(line):
+    if line.startswith('SecLogin'):
+        return LogOne.get_log_obj_from_line(line)
+    elif line.startswith('SecLogout'):
+        return LogOut.get_log_obj_from_line(line)
+    elif line.startswith('LOG_VITALITY'):
+        return LogVitality.get_log_obj_from_line(line)
+    elif line.startswith('LOG_GUILD_CONTRIBUTION'):
+        return LogGuildContrib.get_log_obj_from_line(line)
+    elif line.startswith('LOG_LEVEL'):
+        return LogLevel.get_log_obj_from_line(line)
+    elif line.startswith(' '):
+        return LogSys.get_log_obj_from_line(line)
+    else:
+        return None
 

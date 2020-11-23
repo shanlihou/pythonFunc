@@ -54,7 +54,7 @@ class LogOut(object):
 
 
 if __name__ == '__main__':
-    fname = Filter.Filter.filter_tlog(const.ORI_FILE_NAME, 'SecLogout')
+    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'SecLogout')
     print(fname)
 
     f = Filter.Filter(fname, LogOne.LogOut)

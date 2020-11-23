@@ -6,6 +6,7 @@ import Filter
 import utils
 import functools
 import const
+import csv_output
 
 
 class ResultDay(object):
@@ -35,11 +36,18 @@ class ResultDay(object):
 class DaysManager(object):
     def __init__(self):
         self.days_dict = {}
+        self.uk_dict = {} # type: dict[int, LogOne.LogOne]
 
     def add_one(self, log_one: LogOne.LogOne):
         day = log_one.get_day()
+        uk = log_one.unique_key()
         self.days_dict.setdefault(day, {})
         self.days_dict[day].setdefault(log_one.unique_key(), log_one)
+
+        if uk in self.uk_dict:
+            self.uk_dict[uk].add_day(day, log_one.IS_LOGIN, log_one.timestamp)
+        else:
+            self.uk_dict[uk] = log_one
 
     def get_stay_num(self, day1, day2):
         dict1 = self.days_dict[day1]
@@ -70,11 +78,15 @@ class DaysManager(object):
 
             rd.add_new(len(new_set))
 
-            stay_set = new_set
-            for calc_day in range(day + 1, max_day + 1):
-                day_dict = self.days_dict[calc_day]
-                stay_set = set(i for i in day_dict if i in stay_set)
-                rd.add_stay(calc_day, len(stay_set))
+            for i in range(1, 8):
+                calc_day = day + i
+                stay_num = 0
+                for uk in new_set:
+                    lo = self.uk_dict[uk]
+                    if lo.is_stay_by_dur(i):
+                        stay_num += 1
+
+                rd.add_stay(calc_day, stay_num)
 
             rds.append(rd)
 
@@ -110,19 +122,61 @@ class DaysManager(object):
             fw.write(','.join(map(str, line1)) + '\n')
             fw.write(','.join(map(str, line2)) + '\n')
 
+    def out_school_csv(self, filename):
+        csv = csv_output.CSVOutPut()
+
+        schools = set(utils.get_gbid_school_dict().values())
+        school_dict = {}
+        for uk, lo in self.uk_dict.items():
+            school_dict.setdefault(lo.school, {})
+            school_dict[lo.school][uk] = lo
+
+        for index, school in enumerate(schools):
+            csv.set(0, index, school)
+            csv.set(1, index, len(school_dict[school]))
+
+            stay_1 = 0
+            for lo in school_dict[school].values():
+                if lo.is_stay_by_dur(1):
+                    stay_1 += 1
+
+            stay_2 = 0
+            for lo in school_dict[school].values():
+                if lo.is_stay_by_dur(2):
+                    stay_2 += 1
+
+            csv.set(2, index, stay_1)
+            csv.set(3, index, stay_2)
+
+        csv.output(filename)
+
     def debug(self):
         for k, v in self.days_dict.items():
             print(k, len(v))
 
 
-def parse_tlog(filename, out_name):
+def get_dm(filename):
     dm = DaysManager()
     with open(filename) as fr:
         for line in fr:
-            log_one = LogOne.LogOne.get_log_obj_from_line(line)
+            log_one = LogOne.get_log_from_line(line)
             dm.add_one(log_one)
 
+    return dm
+
+
+def parse_tlog(filename, out_name):
+    dm = get_dm(filename)
+
     dm.out_as_csv(out_name)
+    dm.out_school_csv(out_name + '.school.csv')
+
+    # uk = str(5860530770676540844)
+    # if uk in dm.uk_dict:
+    #     lo =dm.uk_dict[uk]
+    #     print(lo.day_set)
+    #     print(lo.school)
+    #     print(lo.is_stay_by_dur(3))
 #     dm.debug()
 
 
@@ -131,9 +185,10 @@ def main():
     #     ret = get_time_stamp('2020-11-13 19:26:20')
     #     print(ret)
     #     parse_tlog(r'E:\shLog\tlog\xzj.log.SecLogin.log')
-    fname = Filter.Filter.filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
+    # fname = utils.filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
+    fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
 
-    filt = Filter.Filter(fname, LogOne.LogOne)
+    filt = Filter.Filter(fname, None)
 
     # --------------------------------------
     tmp_log_name = filt.filter_inner()

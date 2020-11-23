@@ -62,7 +62,7 @@ def parse_by_act(filt, act_id):
 
 if __name__ == '__main__':
     # whole_log = r'E:\shLog\tlog\xzj.log.LOG_GUILD_BANDIT.log'
-    fname = Filter.Filter.filter_tlog(const.ORI_FILE_NAME, 'LOG_VITALITY')
+    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'LOG_VITALITY')
     print(fname)
     f = Filter.Filter(fname, LogOne.LogVitality)
     parse_by_act(f, 32000002)

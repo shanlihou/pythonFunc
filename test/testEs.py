@@ -100,8 +100,8 @@ class EsTest(object):
 
 def main():
     et = EsTest()
-#     et.del_index(INDEX)
-    et.deal_all()
+    et.check_and_create('20106_friend_ik')
+    #et.deal_all()
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ class CSVOutPut(object):
         while y >= len(row):
             row.append('')
 
-        row[y] = value
+        row[y] = str(value)
 
     def get(self, x, y):
         if x >= len(self.table):
