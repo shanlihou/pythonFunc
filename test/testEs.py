@@ -100,7 +100,7 @@ class EsTest(object):
 
 def main():
     et = EsTest()
-    et.check_and_create('20106_friend_ik')
+    et.check_and_create('20204_friend_ik')
     #et.deal_all()
 
 

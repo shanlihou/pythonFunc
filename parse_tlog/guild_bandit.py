@@ -24,7 +24,6 @@ class ActDays(object):
         full_csv_name = os.path.join(dirname, csv_name)
         days_list = list(self.days.keys())
         days_list.sort()
-        print(days_list)
         with open(full_csv_name, 'w') as fw:
             days_str = ','.join(map(str, days_list))
             fw.write(days_str + '\n')

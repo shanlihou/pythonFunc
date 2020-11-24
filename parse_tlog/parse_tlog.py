@@ -38,6 +38,15 @@ class DaysManager(object):
         self.days_dict = {}
         self.uk_dict = {} # type: dict[int, LogOne.LogOne]
 
+    def get_day_uk_dict(self):
+        ret_dict = {}
+        for uk, lo in self.uk_dict.items():
+            for day in lo.day_set:
+                ret_dict.setdefault(day, set())
+                ret_dict[day].add(uk)
+
+        return ret_dict
+
     def add_one(self, log_one: LogOne.LogOne):
         day = log_one.get_day()
         uk = log_one.unique_key()

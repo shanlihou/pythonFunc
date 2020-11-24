@@ -5,7 +5,6 @@ import sys
 import functools
 import pickle
 import math
-import LogOne
 
 
 def get_openid_info(filename):
@@ -83,7 +82,6 @@ def filter_tlog(filename, filter_str):
 
 @functools.lru_cache(1)
 def get_gbid_2_account_dic():
-    import LogOne
     tmp_dir = get_dir('tmp')
     save_path = os.path.join(tmp_dir, 'gbid_2_account')
     if os.path.exists(save_path):
@@ -94,8 +92,8 @@ def get_gbid_2_account_dic():
     sec_name = filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
     with open(sec_name) as fr:
         for line in fr:
-            lo = LogOne.LogOne.get_log_obj_from_line(line)
-            ret_dic[lo.gbid] = lo.account
+            tup = line.strip().split('|')
+            ret_dic[tup[17]] = tup[7]
 
     pickle.dump(ret_dic, open(save_path, 'wb'))
 
@@ -114,12 +112,16 @@ def get_out_first_day_score_dict():
     basename = os.path.basename(const.DAY_SCORE)
     day_score_dict = __import__(basename.split('.')[0]).a
 
+    gbid_2_account_dic = get_gbid_2_account_dic()
     score_dict = {}
     for k, avatar2score in day_score_dict.items():
         day = int(k.split('-')[-1])
         day_dict = {}
         for gbid, score in avatar2score.items():
-            account = get_gbid_2_account_dic()[gbid]
+            if gbid not in gbid_2_account_dic:
+                continue
+
+            account = gbid_2_account_dic[gbid]
             if account not in get_out_first_account_set():
                 continue
 
@@ -134,7 +136,8 @@ def get_out_first_day_score_dict():
         size = math.ceil(len(day_list) * 0.75)
         day_set = set()
         for i in range(size):
-            day_set.add(day_list[i][0])
+            account = gbid_2_account_dic[day_list[i][0]]
+            day_set.add(account)
 
         score_dict[day] = day_set
 
@@ -168,14 +171,18 @@ def get_gbid_school_dict():
     if os.path.exists(save_path):
         return pickle.load(open(save_path, 'rb'))
 
-
     fname = filter_tlog(const.ORI_FILE_NAME, 'LOG_LEVEL')
     ret_dict = {}
     with open(fname) as fr:
         for line in fr:
-            lo = LogOne.get_log_from_line(line)
-            ret_dict[lo.gbid] = lo.school
+            tup = line.strip().split('|')
+            ret_dict[tup[4]] = tup[5]
 
     pickle.dump(ret_dict, open(save_path, 'wb'))
 
     return ret_dict
+
+if __name__ == '__main__':
+    dic = get_gbid_2_account_dic()
+    a = str(8444550292332504680)
+    print(a in dic)
