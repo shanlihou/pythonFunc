@@ -109,11 +109,7 @@ class MergeLog(object):
         self.fw = open(r'e:\shlog\merge.log', 'w', encoding='utf-8')
 
     def isok(self, strin):
-        for filterstr in self.filters:
-            if filterstr in strin:
-                return True
-        else:
-            return False
+        return True
 
     def push_if_pop(self, val):
         if not self.isok(val.line):
@@ -158,8 +154,8 @@ class MergeLog(object):
 
 def main():
     ml = MergeLog([
-        r'E:\shLog\黄成伟测试离开帮会\logger_baseapp.log',
-        r'E:\shLog\黄成伟测试离开帮会\logger_cellapp.log',
+        r'E:\trunk_server\kbengine\assets\logs\logger_baseapp.log',
+        r'E:\trunk_server\kbengine\assets\logs\logger_cellapp.log',
     ])
     ml.test()
 
