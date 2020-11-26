@@ -1,3 +1,4 @@
+# coding=utf-8
 import requests
 import base64
 import json
@@ -8,6 +9,10 @@ authB64 = base64.b64encode(bytes(ori, 'ascii'))
 INDEX = '20217_friend_ik'
 # INDEX = '20104_friend_ik'
 
+HEADERS = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Basic %s' % authB64.decode('ascii'),
+}
 
 INIT_STR = '''{
     "mappings": {
@@ -83,6 +88,58 @@ class EsTest(object):
         #         self.del_index(index_name)
         self.create_index(index_name)
 
+    def ana(self, name):
+        url = '{}/{}/{}'.format(URI_BASE, INDEX, '_analyze')
+        data = {'field': 'name',
+                'text': name}
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic %s' % authB64.decode('ascii'),
+        }
+        ret = requests.post(url, data=json.dumps(data), headers=headers)
+        print(ret.text)
+
+    @staticmethod
+    def join(*args):
+        return '/'.join(args)
+
+    def search(self, name):
+        #         data = {
+        #             'query': {
+        #                 'match': {
+        #                     'name': {
+        #                         'query': name,
+        #                         'analyzer': 'ik_max_word',
+        #                     }
+        #                 }
+        #             },
+        #             'size': 100
+        #         }
+        #         data = {
+        #             "query": {
+        #                 "match_phrase_prefix": {
+        #                     "name": name
+        #                 }
+        #             }
+        #         }
+
+        data = {
+            "query": {
+                "match_phrase": {
+                    "name": {
+                        'query': name,
+                        'analyzer': 'ik_smart'
+                    }
+                }
+            }
+        }
+        data = json.dumps(data)
+        uri = self.join(URI_BASE, INDEX, '_doc', '_search')
+        ret = requests.post(uri, data=data, headers=HEADERS)
+        print(ret.text)
+        jsonData = json.loads(ret.text)
+        print(jsonData['hits'])
+
     def deal_all(self):
         indexes = self.get_indexes()
         for i in indexes.split('\n'):
@@ -100,8 +157,10 @@ class EsTest(object):
 
 def main():
     et = EsTest()
-    et.check_and_create('20204_friend_ik')
-    #et.deal_all()
+#     et.check_and_create('20204_friend_ik')
+    et.ana('二三四五')
+    et.search('二三四五')
+    # et.deal_all()
 
 
 if __name__ == '__main__':
