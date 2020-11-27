@@ -6,7 +6,7 @@ import json
 URI_BASE = 'http://{}:{}'.format('192.168.16.252', 9200)
 ori = 'elastic:123456'
 authB64 = base64.b64encode(bytes(ori, 'ascii'))
-INDEX = '20217_friend_ik'
+INDEX = '20305_friend_ik'
 # INDEX = '20104_friend_ik'
 
 HEADERS = {
@@ -104,17 +104,17 @@ class EsTest(object):
         return '/'.join(args)
 
     def search(self, name):
-        #         data = {
-        #             'query': {
-        #                 'match': {
-        #                     'name': {
-        #                         'query': name,
-        #                         'analyzer': 'ik_max_word',
-        #                     }
-        #                 }
-        #             },
-        #             'size': 100
-        #         }
+        data = {
+            'query': {
+                'match': {
+                    'name': {
+                        'query': name,
+                        'analyzer': 'ik_max_word',
+                    }
+                }
+            },
+            'size': 6
+        }
         #         data = {
         #             "query": {
         #                 "match_phrase_prefix": {
@@ -123,16 +123,17 @@ class EsTest(object):
         #             }
         #         }
 
-        data = {
-            "query": {
-                "match_phrase": {
-                    "name": {
-                        'query': name,
-                        'analyzer': 'ik_smart'
-                    }
-                }
-            }
-        }
+#         data = {
+#             "query": {
+#                 "match_phrase": {
+#                     "name": {
+#                         'query': name,
+#                         'analyzer': 'ik_max_word',
+#                         'slop': 2,
+#                     }
+#                 }
+#             }
+#         }
         data = json.dumps(data)
         uri = self.join(URI_BASE, INDEX, '_doc', '_search')
         ret = requests.post(uri, data=data, headers=HEADERS)
@@ -145,8 +146,10 @@ class EsTest(object):
         for i in indexes.split('\n'):
             tup = i.split(' ')
             checks = [i for i in tup if i.endswith('_friend_ik')]
+            print(checks)
             if checks:
                 index_name = checks[0]
+                self.del_index(index_name)
                 self.check_and_create(index_name)
 
     def check_and_create(self, index_name):
@@ -157,10 +160,10 @@ class EsTest(object):
 
 def main():
     et = EsTest()
-#     et.check_and_create('20204_friend_ik')
-    et.ana('二三四五')
-    et.search('二三四五')
-    # et.deal_all()
+    et.check_and_create('20007_friend_ik')
+    #et.ana('一二三四五六七')
+    #et.search('傻妞')
+#    et.deal_all()
 
 
 if __name__ == '__main__':
