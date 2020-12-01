@@ -160,7 +160,8 @@ class EsTest(object):
 
 def main():
     et = EsTest()
-    et.check_and_create('20007_friend_ik')
+    #et.check_and_create('20007_friend_ik')
+    et.del_index('20217_friend_ik')
     #et.ana('一二三四五六七')
     #et.search('傻妞')
 #    et.deal_all()
