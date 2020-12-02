@@ -94,7 +94,7 @@ if __name__ == '__main__':
         rev.test()
 
         print('6--------------------------------')
-        os.system(r'svn up E:\svn\Dev\Client')
+        os.system(r'svn up --accept tc E:\svn\Dev\Client')
         # print('3--------------------------------')
         #$rev = Revert(r'E:\svn\Dev\Client')
         # rev.test()
