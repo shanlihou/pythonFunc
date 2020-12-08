@@ -44,16 +44,16 @@ class JingFenHandler(xml.sax.ContentHandler):
         ents = self.entries[3:]
         ents_str = ', '.join(ents)
         ret_str = 'def make{}({}):\n'.format(self.name, ents_str) + \
-                '{}logData = [{}]\n'.format(' ' * 4, ents_str) + \
-                '{}TLOG(gameconst.GameLog.LOG_{}, logData)\n'.format(' ' * 4, self.get_val_name_str())
+            '{}logData = [{}]\n'.format(' ' * 4, ents_str) + \
+            '{}TLOG(gameconst.GameLog.LOG_{}, logData)\n'.format(
+            ' ' * 4, self.get_val_name_str())
         print(ret_str)
-
 
 
 if __name__ == '__main__':
     parser = xml.sax.make_parser()
     parser.setFeature(xml.sax.handler.feature_namespaces, 0)
-    h = JingFenHandler('PlayerFriendsList')
+    h = JingFenHandler('SnsFlow')
     parser.setContentHandler(h)
     parser.parse(filename)
     h.gen()
