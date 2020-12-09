@@ -29,12 +29,14 @@ class Scp(object):
         print(1)
         os.chdir(r'D:\shKbeWin\kbe\src')
         fl = self.get_file_list()
-        print(2)
+        print(fl)
+        fl = [i for i in fl if not i.startswith('server\\tools\\')]
+        for i in fl:
+            print(i)
         self.scp(fl)
 
 
 def main():
-    print('main')
     scp = Scp()
     scp.test()
 
