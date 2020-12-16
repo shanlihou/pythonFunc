@@ -9,7 +9,7 @@ class Scp(object):
         ret_list = []
         for line in ret:
             line = line.strip()
-            if line.endswith('.cpp') or line.endswith('.h'):
+            if line.endswith('.cpp') or line.endswith('.h') or line.endswith('.c'):
                 find = pat.search(line)
                 if find:
                     ret_list.append(find.group())
@@ -29,8 +29,8 @@ class Scp(object):
         print(1)
         os.chdir(r'D:\shKbeWin\kbe\src')
         fl = self.get_file_list()
-        print(fl)
         fl = [i for i in fl if not i.startswith('server\\tools\\')]
+        print(fl)
         for i in fl:
             print(i)
         self.scp(fl)
