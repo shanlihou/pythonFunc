@@ -28,7 +28,17 @@ def cache(dir_name):
     json.dump(write_dic, open('tmp\\cache_name.txt', 'w'))
 
 
+def cache_recover(root_name):
+    json_data = json.load(open('tmp\\cache_name.txt'))
+    print(json_data)
+    for dst, v in json_data.items():
+        print(dst, v)
+        src = os.path.join('tmp', v)
+        shutil.copyfile(src, dst)
+
+
 if __name__ == '__main__':
-    dir_name = r'E:\trunk_server\kbengine\assets\scripts'
-    ret = cache(dir_name)
-    print(ret)
+    # dir_name = r'E:\trunk_server\kbengine\assets\scripts'
+    # ret = cache_recover(dir_name)
+    # print(ret)
+    pass
