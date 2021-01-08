@@ -29,7 +29,7 @@ class Scp(object):
         print(1)
         os.chdir(r'D:\shKbeWin\kbe\src')
         fl = self.get_file_list()
-        fl = [i for i in fl if not i.startswith('server\\tools\\')]
+        fl = [i for i in fl if not i.startswith('server\\tools\\') and 'entitydef' in i]
         print(fl)
         for i in fl:
             print(i)
