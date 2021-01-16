@@ -20,9 +20,10 @@ def log_iter(root):
 
 def main(root):
     it = log_iter(root)
-    for i in range(500):
-        val = next(it, None)
-        print(val)
+    with open('out.txt', 'w') as fw:
+        for i in range(600):
+            val = next(it, None)
+            fw.write('\n'.join(val) + '\n')
 
 
 if __name__ == '__main__':
