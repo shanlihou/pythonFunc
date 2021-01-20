@@ -157,13 +157,37 @@ class EsTest(object):
             self.del_index(index_name)
             self.create_index(index_name)
 
+    def all_info(self):
+        indexes = self.get_indexes()
+        for i in indexes.split('\n'):
+            tup = i.split(' ')
+            checks = [i for i in tup if i.endswith('_friend_ik')]
+            if checks:
+                index_name = checks[0]
+                print(index_name, self.get_info(index_name))
+
+    def get_info(self, index_name):
+        url = '{}/{}'.format(URI_BASE, index_name)
+        headers = {
+            'Authorization': 'Basic %s' % authB64.decode('ascii'),
+        }
+        ret = requests.get(url, headers=headers)
+        try:
+            jsonData = json.loads(ret.text)
+            if jsonData[index_name]['mappings']['properties']['name']['analyzer'] == 'ik_max_word':
+                return True
+        except Exception as e:
+            print(e)
+            return False
+
 
 def main():
     et = EsTest()
-    #et.check_and_create('20007_friend_ik')
-    et.del_index('20217_friend_ik')
-    #et.ana('一二三四五六七')
-    #et.search('傻妞')
+    et.all_info()
+    # et.check_and_create('20007_friend_ik')
+    # et.del_index('20217_friend_ik')
+    # et.ana('一二三四五六七')
+    # et.search('傻妞')
 #    et.deal_all()
 
 
