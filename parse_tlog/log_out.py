@@ -50,13 +50,8 @@ class LogOut(object):
         csv.output(out_name)
 
 
-
-
-
 if __name__ == '__main__':
     fname = utils.filter_tlog(const.ORI_FILE_NAME, 'SecLogout')
-    print(fname)
-
     f = Filter.Filter(fname, LogOne.LogOut)
 
     fname = f.filter_inner()
@@ -64,12 +59,7 @@ if __name__ == '__main__':
     lo.parse()
     lo.out_as_csv('log_out_inner.csv')
 
-    fname = f.filter_out_first()
+    fname = f.filter_out()
     lo = LogOut(fname)
     lo.parse()
     lo.out_as_csv('log_out_out_first.csv')
-
-    fname = f.filter_out_second()
-    lo = LogOut(fname)
-    lo.parse()
-    lo.out_as_csv('log_out_out_second.csv')

@@ -13,7 +13,7 @@ class HourStay(object):
         self.days = {}
 
     def parse(self):
-        with open(self.filename) as fr:
+        with open(self.filename, encoding='utf-8') as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
                 uk = lo.unique_key()
@@ -72,14 +72,7 @@ if __name__ == '__main__':
     hs.parse()
     hs.out_as_csv('hour_inner.csv')
 
-
-    fname = f.filter_out_first()
-    hs = HourStay(fname)
-    hs.parse()
-    hs.out_as_csv('hour_out_first.csv')
-
-
-    fname = f.filter_out_second()
+    fname = f.filter_out()
     hs = HourStay(fname)
     hs.parse()
     hs.out_as_csv('hour_out_second.csv')

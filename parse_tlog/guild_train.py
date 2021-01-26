@@ -77,9 +77,9 @@ class GuildTrain(object):
 
 
 if __name__ == '__main__':
-    fname = Filter.Filter.filter_guild_train()
+    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'LOG_GUILD_TRAIN')
     f = Filter.Filter(fname, None)
-    fname = f.filter_out_first()
+    fname = f.filter_out()
 
     gt = GuildTrain(fname)
     gt.parse()

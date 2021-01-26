@@ -164,6 +164,40 @@ class LogGuildContrib(LogOneBase):
         except Exception as e:
             return None
 
+class RoundFlow(LogOneBase):
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, ibattle_type, battle_id, round_time, result, rank, *args):
+        super().__init__(time_str, open_id, role_id)
+        self.battle_type = ibattle_type
+        self.round_time = round_time
+        self.result = result
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return RoundFlow(*tup)
+        except Exception as e:
+            print(e)
+            return None
+
+
+class LogGuildTrain(LogOneBase):
+    def __init__(self, log_type, _1, time_str, _2, gbid, train_id, level, score):
+        account = utils.get_gbid_2_account_dic()[gbid]
+        super().__init__(time_str, account, gbid)
+        self.train_id = train_id
+        self.level = level
+        self.score = score
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return LogGuildTrain(*tup)
+        except Exception as e:
+            print(e)
+            return None
+
 
 def get_log_from_line(line):
     if line.startswith('SecLogin'):
@@ -176,6 +210,10 @@ def get_log_from_line(line):
         return LogGuildContrib.get_log_obj_from_line(line)
     elif line.startswith('LOG_LEVEL'):
         return LogLevel.get_log_obj_from_line(line)
+    elif line.startswith('RoundFlow'):
+        return RoundFlow.get_log_obj_from_line(line)
+    elif line.startswith('LOG_GUILD_TRAIN'):
+        return
     elif line.startswith(' '):
         return LogSys.get_log_obj_from_line(line)
     else:

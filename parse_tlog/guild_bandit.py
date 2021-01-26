@@ -11,9 +11,10 @@ class ActDays(object):
         self.days = {}
 
     def parse(self):
+        print(f'self.filename:{self.filename}')
         with open(self.filename, encoding='utf-8') as fr:
             for line in fr:
-                lo = LogOne.LogVitality.get_log_obj_from_line(line)
+                lo = LogOne.RoundFlow.get_log_obj_from_line(line)
                 self.days.setdefault(lo.get_day(), {})
                 day_dict = self.days[lo.get_day()]
                 day_dict.setdefault(lo.unique_key(), [])
@@ -47,24 +48,18 @@ def parse_file(filename, outname):
 
 def parse_by_act(filt, act_id):
     fname = filt.filter_by_act(act_id)
-
-    f = Filter.Filter(fname, LogOne.LogVitality)
+    f = Filter.Filter(fname, LogOne.RoundFlow)
     fname = f.filter_inner()
     parse_file(fname, '{}.{}.csv'.format(act_id, 'inner'))
 
-    fname = f.filter_out_first()
-    parse_file(fname, '{}.{}.csv'.format(act_id, 'out_first'))
-
-    fname = f.filter_out_second()
-    parse_file(fname, '{}.{}.csv'.format(act_id, 'out_second'))
-
+    fname = f.filter_out()
+    parse_file(fname, '{}.{}.csv'.format(act_id, 'outter'))
 
 if __name__ == '__main__':
     # whole_log = r'E:\shLog\tlog\xzj.log.LOG_GUILD_BANDIT.log'
-    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'LOG_VITALITY')
-    print(fname)
-    f = Filter.Filter(fname, LogOne.LogVitality)
-    parse_by_act(f, 32000002)
+    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'RoundFlow')
+    f = Filter.Filter(fname, LogOne.RoundFlow)
+    parse_by_act(f, 9)
     # parse_by_act(f, 32000004)
     # f = Filter.Filter(whole_log, filter_inner_name, filter_out_name)
     # f.filter_tlog(r'E:\shLog\tlog\xzj.log', 'LOG_VITALITY')

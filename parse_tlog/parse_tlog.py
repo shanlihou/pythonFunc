@@ -166,7 +166,8 @@ class DaysManager(object):
 
 def get_dm(filename):
     dm = DaysManager()
-    with open(filename) as fr:
+    print(f'filename:{filename}')
+    with open(filename, encoding='utf-8') as fr:
         for line in fr:
             log_one = LogOne.get_log_from_line(line)
             dm.add_one(log_one)
@@ -201,17 +202,12 @@ def main():
 
     # --------------------------------------
     tmp_log_name = filt.filter_inner()
-    out_name = utils.get_out_name('out', 'inner.csv')
+    out_name = utils.get_out_name('out', 'daily_inner.csv')
     parse_tlog(tmp_log_name, out_name)
 
     # --------------------------------------
-    tmp_log_name = filt.filter_out_first()
-    out_name = utils.get_out_name('out', 'out_first.csv')
-    parse_tlog(tmp_log_name, out_name)
-
-    # --------------------------------------
-    tmp_log_name = filt.filter_out_second()
-    out_name = utils.get_out_name('out', 'out_second.csv')
+    tmp_log_name = filt.filter_out()
+    out_name = utils.get_out_name('out', 'daily_outer.csv')
     parse_tlog(tmp_log_name, out_name)
 
 

@@ -10,10 +10,9 @@ class Filter(object):
     def __init__(self, filename, log_class):
         self.filename = filename
         self.inner_openid_set = utils.get_openid_info(const.INNER_FILTER_NAME)
-        self.outer_openid_set = utils.get_openid_info(const.OUT_FILTER_NAME)
+        # self.outer_openid_set = utils.get_openid_info(const.OUT_FILTER_NAME)
         self.basename = os.path.basename(filename)
         self.newdir = os.path.join(const.ROOT_NAME, 'tmp')
-        self.log_class = log_class
         try:
             os.mkdir(self.newdir)
         except Exception as e:
@@ -63,7 +62,7 @@ class Filter(object):
     def filter_inner(self):
         fw_name = '{}\\{}.{}.log'.format(self.newdir, self.basename, 'inner')
 
-        fw = open(fw_name, 'w')
+        fw = open(fw_name, 'w', encoding='utf-8')
         with open(self.filename) as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
@@ -96,17 +95,17 @@ class Filter(object):
         fw.close()
         return fw_name
 
-    def filter_out_second(self):
+    def filter_out(self):
         fw_name = '{}\\{}.{}.log'.format(
-            self.newdir, self.basename, 'out_second')
-        fw = open(fw_name, 'w')
+            self.newdir, self.basename, 'outter')
+        fw = open(fw_name, 'w', encoding='utf-8')
         with open(self.filename) as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
                 if not lo:
                     continue
 
-                if lo.account in self.outer_openid_set or lo.account in self.inner_openid_set:
+                if lo.account in self.inner_openid_set:
                     continue
 
                 fw.write(line)
@@ -114,18 +113,19 @@ class Filter(object):
         fw.close()
         return fw_name
 
-    def filter_by_act(self, actId):
-        actId = str(actId)
-        fw_name = os.path.join(self.newdir, '{}.{}.log'.format(self.basename, actId))
+    def filter_by_act(self, battle_type):
+        battle_type = str(battle_type)
+        fw_name = os.path.join(self.newdir, '{}.{}.log'.format(self.basename, battle_type))
         fw = open(fw_name, 'w')
+        print(fw_name)
         with open(self.filename) as fr:
             for line in fr:
-                lo = LogOne.LogVitality.get_log_obj_from_line(line)
+                lo = LogOne.RoundFlow.get_log_obj_from_line(line)
                 if not lo:
-                    print('error:', line)
+                    print('error1:', line)
                     continue
 
-                if lo.act != actId:
+                if lo.battle_type != battle_type:
                     continue
 
                 fw.write(line)

@@ -71,8 +71,6 @@ def filter_tlog(filename, filter_str):
             tup = line.strip().split('|')
             time_str = tup[2]
             day = get_day(time_str)
-            if day < 12:
-                continue
 
             fw.write(line)
 
