@@ -157,6 +157,8 @@ class DaysManager(object):
             csv.set(2, index, stay_1)
             csv.set(3, index, stay_2)
 
+        for k,v  in school_dict.items():
+            print(k, len(v))
         csv.output(filename)
 
     def debug(self):
@@ -171,7 +173,7 @@ def get_dm(filename):
         for line in fr:
             log_one = LogOne.get_log_from_line(line)
             dm.add_one(log_one)
-
+    print(f'len:{len(dm.uk_dict)}')
     return dm
 
 

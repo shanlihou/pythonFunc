@@ -35,7 +35,8 @@ class LogOne(LogOneBase):
         self.end_time = 0
         self.day_set = set()
         self.day_set.add(self.day)
-        self.school = utils.get_gbid_school_dict().get(self.gbid)
+        # self.school = utils.get_gbid_school_dict().get(self.gbid)
+        self.school = args[8]
         self.login_info = [{
             'timestamp': self.timestamp,
             'is_login': True,
