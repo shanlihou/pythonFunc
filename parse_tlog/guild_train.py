@@ -34,44 +34,24 @@ class GuildTrain(object):
                 lo = LogOne.get_log_from_line(line)
                 day = lo.get_day()
                 uk = lo.unique_key()
-                if uk not in utils.get_out_first_day_score_dict()[day]:
-                    continue
 
-                self.uk_dict[uk] = self.uk_dict.get(uk, 0) + lo.score
-                self.uk_day_dict.setdefault(uk, {})
-                self.uk_day_dict[uk][day] = self.uk_dict[uk]
+                self.uk_day_dict.setdefault(day, {})
+                self.uk_day_dict[day][uk] = max(self.uk_day_dict[day].get(uk, 0), int(lo.score))
 
     def out_as_csv(self, filename):
         out_dir = utils.get_dir('out')
         out_name = os.path.join(out_dir, filename)
 
         csv = csv_output.CSVOutPut()
-
-        fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
-        dm = parse_tlog.get_dm(fname)
-        day_uk_dict = dm.get_day_uk_dict()
-        day_list = list(day_uk_dict.keys())
-        day_list.sort()
-        day_score_dict = utils.get_out_first_day_score_dict()
-        for index, day in enumerate(day_list):
+        index = 0
+        for day, day_dict in self.uk_day_dict.items():
+            sum_score = sum(day_dict.values())
             csv.set(0, index, day)
 
-            uk_set = day_uk_dict[day]
-            sum_score = 0
-            avatar_num = 0
-
-            for uk in uk_set:
-                if uk not in day_score_dict[day]:
-                    continue
-
-                score = self.get_score_by_day(uk, day)
-                sum_score += score
-                avatar_num += 1
-
-            csv.set(1, index, sum_score / avatar_num)
+            csv.set(1, index, sum_score / len(day_dict))
             csv.set(2, index, sum_score)
-            csv.set(3, index, avatar_num)
-
+            csv.set(3, index, len(day_dict))
+            index += 1
 
         csv.output(out_name)
 

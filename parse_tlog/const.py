@@ -1,5 +1,6 @@
 UNIQUE_BY_ACCOUNT = True
 DAY_INDEX = 1
+FIRST_DAY = 26
 ORI_FILE_NAME = r'E:\shLog\tlog\xzj.log'
 DAY_SCORE = r''
 GUILD_TRAIN_NAME = r''
@@ -9,3 +10,4 @@ INNER_FILTER_NAME = r'E:\shLog\tlog\dev_openids.txt'
 OUT_FILTER_NAME = r''
 DATA_FOLDER = r'E:\trunk_server\kbengine\assets\scripts\data'
 GUILD_TRAIN_TABLE = ''
+SEX_FILE = 'sex.txt'

@@ -38,6 +38,11 @@ def get_day(time_str):
     return time_st.tm_mday
 
 
+def get_day_by_timestamp(timestamp):
+    time_st = time.localtime(timestamp)
+    return time_st.tm_mday
+
+
 def get_dir(dir_name):
     new_dir = '{}\\{}'.format(const.ROOT_NAME, dir_name)
     try:
@@ -145,6 +150,29 @@ def get_out_first_day_score_dict():
 
 
 @functools.lru_cache(1)
+def get_sex_dict():
+    tmp_dir = get_dir('tmp')
+    save_path = os.path.join(tmp_dir, 'gbid_2_sex')
+    if os.path.exists(save_path):
+        return pickle.load(open(save_path, 'rb'))
+
+    ret_dic = {}
+
+    sec_name = os.path.join(const.ROOT_NAME, const.SEX_FILE)
+    with open(sec_name) as fr:
+        for line in fr:
+            tup = line.strip().split('|')
+            tup = [i.strip() for i in tup if i]
+            if len(tup) == 2 and tup[0].isdigit() and tup[1].isdigit():
+                ret_dic[tup[0]] = tup[1]
+
+    pickle.dump(ret_dic, open(save_path, 'wb'))
+
+    return ret_dic
+
+
+
+@functools.lru_cache(1)
 def get_delta2score_dict():
     import sys
     sys.path.append(const.DATA_FOLDER)
@@ -181,6 +209,5 @@ def get_gbid_school_dict():
     return ret_dict
 
 if __name__ == '__main__':
-    dic = get_gbid_2_account_dic()
-    a = str(8444550292332504680)
-    print(a in dic)
+    dic = get_sex_dict()
+    print(dic)

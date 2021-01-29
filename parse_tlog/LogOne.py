@@ -37,6 +37,7 @@ class LogOne(LogOneBase):
         self.day_set.add(self.day)
         # self.school = utils.get_gbid_school_dict().get(self.gbid)
         self.school = args[8]
+        self.level = args[9]
         self.login_info = [{
             'timestamp': self.timestamp,
             'is_login': True,
@@ -214,7 +215,7 @@ def get_log_from_line(line):
     elif line.startswith('RoundFlow'):
         return RoundFlow.get_log_obj_from_line(line)
     elif line.startswith('LOG_GUILD_TRAIN'):
-        return
+        return LogGuildTrain.get_log_obj_from_line(line)
     elif line.startswith(' '):
         return LogSys.get_log_obj_from_line(line)
     else:

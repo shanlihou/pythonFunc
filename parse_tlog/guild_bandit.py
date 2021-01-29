@@ -17,8 +17,8 @@ class ActDays(object):
                 lo = LogOne.RoundFlow.get_log_obj_from_line(line)
                 self.days.setdefault(lo.get_day(), {})
                 day_dict = self.days[lo.get_day()]
-                day_dict.setdefault(lo.unique_key(), [])
-                day_dict[lo.unique_key()].append(lo)
+                day_dict.setdefault(lo.gbid, [])
+                day_dict[lo.gbid].append(lo)
 
     def out_as_csv(self, csv_name):
         dirname = utils.get_dir('out')

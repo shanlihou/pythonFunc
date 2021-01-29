@@ -42,7 +42,7 @@ class Filter(object):
         if os.path.exists(fw_name):
             return fw_name
 
-        fw = open(fw_name, 'w')
+        fw = open(fw_name, 'w', encoding='utf-8')
         with open(filename, encoding='utf-8') as fr:
             for line in fr:
                 if not (line.startswith('SecLogin') or line.startswith('SecLogout')):
@@ -99,7 +99,7 @@ class Filter(object):
         fw_name = '{}\\{}.{}.log'.format(
             self.newdir, self.basename, 'outter')
         fw = open(fw_name, 'w', encoding='utf-8')
-        with open(self.filename) as fr:
+        with open(self.filename, encoding='utf-8') as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
                 if not lo:
