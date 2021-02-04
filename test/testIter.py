@@ -1,4 +1,6 @@
 import testImport
+import time
+
 
 def getRankBySortedList(sortList, keyFunc):
     rank = 0
@@ -46,14 +48,13 @@ class Test(object):
 
         if not ret:
             ret = cls.matchPlayDic(itemList, index + 1, dic)
-            
+
         return ret
-    
+
     @classmethod
     def test(cls):
         ret = cls.matchPlayDic(['a', 'b', 'c', 'e'], 0, cls.dic)
-        
-        
+
         print(ret)
         aa = [1, 2, 3, 4]
         bb = aa[3:]
@@ -61,13 +62,23 @@ class Test(object):
         testImport.abcd()
 
 
-if __name__ == '__main__':
-    aa = [2, 5, 64, 4, 32, 3, 4, 9, 3, 5, 6, 3, 2, 3]
-    #print(len(filter(lambda x: x >5,aa)))
-    print([0] * 10)
+CORRECT_TIME = time.localtime(0).tm_hour
 
-    aa = sorted(aa, reverse=True)
-    for index, i in enumerate(getRankBySortedList(aa, lambda x: x)):
-        print(index, i, aa[index])
-    
-    Test.test()
+
+def getDayOffsetFromEpoch(now):
+    return now // 86400
+
+
+def getDay(now):
+    gameTS = now + (CORRECT_TIME - 5) * 3600
+    return getDayOffsetFromEpoch(gameTS)
+
+
+if __name__ == '__main__':
+    t = int(time.time())
+    t = (2021, 2, 4, 5, 0, 0, 1, 48, 0)
+    t = time.mktime(t)
+    print(t)
+    print(time.localtime(t))
+    print(getDay(t - 5))
+    print(getDay(t + 5))
