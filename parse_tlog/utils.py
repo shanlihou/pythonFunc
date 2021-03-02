@@ -5,6 +5,7 @@ import sys
 import functools
 import pickle
 import math
+import re
 
 
 def get_openid_info(filename):
@@ -207,6 +208,28 @@ def get_gbid_school_dict():
     pickle.dump(ret_dict, open(save_path, 'wb'))
 
     return ret_dict
+
+
+@functools.lru_cache(1)
+def get_11_gbid_qq_dict():
+    tmp_dir = get_dir('tmp')
+    save_path = os.path.join(tmp_dir, '11_gbid_qq_dict')
+    if os.path.exists(save_path):
+        return pickle.load(open(save_path, 'rb'))
+
+    fname = os.path.join(const.ROOT_NAME, const.PLAYER_11_file)
+    ret_dict = {}
+    pat = re.compile('\s+')
+    with open(fname) as fr:
+        for line in fr:
+            tup = pat.split(line.strip())
+            ret_dict[tup[2]] = tup[0]
+
+    pickle.dump(ret_dict, open(save_path, 'wb'))
+
+    return ret_dict
+
+
 
 if __name__ == '__main__':
     dic = get_sex_dict()
