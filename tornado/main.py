@@ -48,7 +48,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(20217) + '_friend_ik'
+        self.indexName = str(20115) + '_friend_ik'
         self.typeName = '_doc'
 
     def cat(self):
@@ -203,7 +203,7 @@ class FriendSearchMixin(object):
     def analyze(self, ):
         uri = self.join(self.uriBase, self.indexName, '_analyze')
         data = {'field': 'name',
-                'text': '悠然狂魔'}
+                'text': '夜作殊'}
         data = json.dumps(data)
 
         def func(resp):
@@ -222,12 +222,12 @@ class FriendSearchMixin(object):
         # self.cat()
         # self.addAvatarInfo('悠然狂魔', 2299822224, 1)
         # self.initElastic()
-        # self.searchAvatarName('悠然')
-        # self.analyze()
+        self.searchAvatarName('夜作殊')
+        self.analyze()
         # self.addAvatarInfo('zhang liang', 99124, 13422)
         # self.testPost('zhang san feng', 33423, 9013)
         # self.searchAvatarName('一世')
-        self.analyze()
+        #self.analyze()
         # self.clearDB()
         print('end---')
         # self.indexObId(559108)
