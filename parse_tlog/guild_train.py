@@ -29,7 +29,7 @@ class GuildTrain(object):
         return cur_score
 
     def parse(self):
-        with open(self.filename) as fr:
+        with utils.utf8_open(self.filename) as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
                 day = lo.get_day()

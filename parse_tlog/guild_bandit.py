@@ -6,13 +6,14 @@ import utils
 
 
 class ActDays(object):
+
     def __init__(self, filename):
         self.filename = filename
         self.days = {}
 
     def parse(self):
         print(f'self.filename:{self.filename}')
-        with open(self.filename, encoding='utf-8') as fr:
+        with utils.utf8_open(self.filename, encoding='utf-8') as fr:
             for line in fr:
                 lo = LogOne.RoundFlow.get_log_obj_from_line(line)
                 self.days.setdefault(lo.get_day(), {})
@@ -25,7 +26,7 @@ class ActDays(object):
         full_csv_name = os.path.join(dirname, csv_name)
         days_list = list(self.days.keys())
         days_list.sort()
-        with open(full_csv_name, 'w') as fw:
+        with utils.utf8_open(full_csv_name, 'w') as fw:
             days_str = ','.join(map(str, days_list))
             fw.write(days_str + '\n')
 
@@ -34,7 +35,6 @@ class ActDays(object):
 
             def sum_times(day_dict):
                 return sum(map(len, day_dict.values()))
-
 
             times = ','.join(map(lambda day: str(sum_times(self.days[day])), days_list))
             fw.write(times + '\n')
@@ -54,6 +54,7 @@ def parse_by_act(filt, act_id):
 
     fname = f.filter_out()
     parse_file(fname, '{}.{}.csv'.format(act_id, 'outter'))
+
 
 if __name__ == '__main__':
     # whole_log = r'E:\shLog\tlog\xzj.log.LOG_GUILD_BANDIT.log'

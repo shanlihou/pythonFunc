@@ -60,7 +60,7 @@ class ParseAll(object):
         self.parse(filename)
 
     def parse(self, filename):
-        with open(filename, encoding='utf-8') as fr:
+        with utils.utf8_open(filename, encoding='utf-8') as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
                 if lo.gbid in self.gbid_dic:
@@ -75,7 +75,7 @@ class ParseAll(object):
 
     def output(self, filename):
         out_name = utils.get_out_name('out', filename)
-        with open(out_name, 'w', encoding='utf-8') as fw:
+        with utils.utf8_open(out_name, 'w', encoding='utf-8') as fw:
             for val in self.gbid_dic.values():
                 val.deal_login()
                 fw.write(val.get_avatar_info() + '\n')

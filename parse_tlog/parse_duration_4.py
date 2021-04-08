@@ -15,9 +15,9 @@ def main():
     player_dic = {}
     player_name_dic = {}
     out_name = utils.get_out_name('out', '1_20.txt')
-    fw = open(out_name, 'w')
+    fw = utils.utf8_open(out_name, 'w')
     mark_set = set()
-    with open(fname, encoding='utf-8') as fr:
+    with utils.utf8_open(fname, encoding='utf-8') as fr:
         for line in fr:
             log_one = LogOne.get_log_from_line(line)
             player_dic.setdefault(log_one.account, set())

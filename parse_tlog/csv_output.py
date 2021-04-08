@@ -1,3 +1,5 @@
+import utils
+
 class CSVOutPut(object):
     def __init__(self):
         self.table = []
@@ -23,7 +25,7 @@ class CSVOutPut(object):
         return row[y]
 
     def get_width(self):
-        return max([len(i) for i in self.table])
+        return max([len(i) for i in self.table]) if self.table else 0
 
     def get_height(self):
         return len(self.table)
@@ -31,7 +33,7 @@ class CSVOutPut(object):
     def output(self, filename):
         width = self.get_width()
         height = self.get_height()
-        with open(filename, 'w') as fw:
+        with utils.utf8_open(filename, 'w') as fw:
             for i in range(height):
                 out_str = ','.join([self.get(i, j) for j in range(width)])
                 fw.write(out_str + '\n')

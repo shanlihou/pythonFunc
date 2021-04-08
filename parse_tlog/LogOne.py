@@ -7,6 +7,7 @@ import math
 
 
 class LogOneBase(object):
+
     def __init__(self, time_str, open_id, gbid):
         self.time_str = time_str
         self.timestamp = utils.get_time_stamp(time_str)
@@ -24,9 +25,9 @@ class LogOneBase(object):
             return self.gbid
 
 
-
 class LogOne(LogOneBase):
     IS_LOGIN = True
+
     def __init__(self, log_type, server_id, time_str, app_id, plant_id,
                  area_id, zone_id, open_id, client_ver, sec_report_data,
                  sys_software, *args):
@@ -84,6 +85,7 @@ class LogOne(LogOneBase):
 
 
 class LogVitality(LogOneBase):
+
     def __init__(self, log_type, server_id, time_str, _1, gbid, _2, _3, uuid, _4, activity):
         account = utils.get_gbid_2_account_dic()[gbid]
         super().__init__(time_str, account, gbid)
@@ -100,6 +102,7 @@ class LogVitality(LogOneBase):
 
 class LogOut(LogOneBase):
     IS_LOGIN = False
+
     def __init__(self, log_type, server_id, time_str, app_id, plant_id,
                  area_id, zone_id, open_id, client_ver, sec_report_data,
                  sys_software, *args):
@@ -107,6 +110,8 @@ class LogOut(LogOneBase):
         level = args[9]
         super().__init__(time_str, open_id, gbid)
         self.level = level
+        self.app_id = app_id
+        self.battle_point = args[10]
 
     @staticmethod
     def get_log_obj_from_line(line):
@@ -115,9 +120,13 @@ class LogOut(LogOneBase):
             return LogOut(*tup)
         except:
             return None
+        
+    def __str__(self):
+        return f'LogOut gbid:{self.gbid}'
 
 
 class LogSys(LogOneBase):
+
     def __init__(self, data_dict):
         self.gbid = data_dict['gbId']
         timestamp = data_dict['timestamp'] // 1000
@@ -137,6 +146,7 @@ class LogSys(LogOneBase):
 
 
 class LogLevel(LogOneBase):
+
     def __init__(self, log_type, server_id, time_str, _1, gbid, school, *args):
         account = utils.get_gbid_2_account_dic()[gbid]
         super().__init__(time_str, account, gbid)
@@ -152,6 +162,7 @@ class LogLevel(LogOneBase):
 
 
 class LogGuildContrib(LogOneBase):
+
     def __init__(self, log_type, server_id, time_str, _1, gbid, num, delta, uuid, src, desc):
         account = utils.get_gbid_2_account_dic()[gbid]
         super().__init__(time_str, account, gbid)
@@ -166,7 +177,9 @@ class LogGuildContrib(LogOneBase):
         except Exception as e:
             return None
 
+
 class RoundFlow(LogOneBase):
+
     def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, ibattle_type, battle_id, round_time, result, rank, *args):
         super().__init__(time_str, open_id, role_id)
         self.battle_type = ibattle_type
@@ -184,11 +197,11 @@ class RoundFlow(LogOneBase):
 
 
 class LogGuildTrain(LogOneBase):
-    def __init__(self, log_type, _1, time_str, _2, gbid, train_id, level, score):
-        account = utils.get_gbid_2_account_dic()[gbid]
-        super().__init__(time_str, account, gbid)
+
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, train_level, train_id, score):
+        super().__init__(time_str, open_id, role_id)
         self.train_id = train_id
-        self.level = level
+        self.level = train_level
         self.score = score
 
     @staticmethod
@@ -199,7 +212,40 @@ class LogGuildTrain(LogOneBase):
         except Exception as e:
             print(e)
             return None
+        
+        
+class PlayerLogOut(LogOneBase):
 
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, *args):
+        super().__init__(time_str, open_id, role_id)
+        self.level = level
+        self.battle_point = irole_ce
+        self.login_channel = args[10]
+
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return PlayerLogOut(*tup)
+        except Exception as e:
+            print(e)
+            return None
+        
+
+class GuideFlowLog(LogOneBase):
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, guide_id, is_can_skip):
+        super().__init__(time_str, open_id, role_id)
+        self.guide_id = guide_id
+        
+    @staticmethod
+    def get_log_obj_from_line(line):
+        tup = line.strip().split('|')
+        try:
+            return GuideFlowLog(*tup)
+        except Exception as e:
+            print(e)
+            return None
+    
 
 def get_log_from_line(line):
     if line.startswith('SecLogin'):
@@ -214,8 +260,12 @@ def get_log_from_line(line):
         return LogLevel.get_log_obj_from_line(line)
     elif line.startswith('RoundFlow'):
         return RoundFlow.get_log_obj_from_line(line)
-    elif line.startswith('LOG_GUILD_TRAIN'):
+    elif line.startswith('GuildTrainFlow'):
         return LogGuildTrain.get_log_obj_from_line(line)
+    elif line.startswith('PlayerLogout'):
+        return PlayerLogOut.get_log_obj_from_line(line)
+    elif line.startswith('GuideFlow'):
+        return GuideFlowLog.get_log_obj_from_line(line)
     elif line.startswith(' '):
         return LogSys.get_log_obj_from_line(line)
     else:

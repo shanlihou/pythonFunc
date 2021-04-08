@@ -10,6 +10,7 @@ import csv_output
 
 
 class ResultDay(object):
+
     def __init__(self, day):
         self.day = day
         self.stay_dict = {}
@@ -34,9 +35,10 @@ class ResultDay(object):
 
 
 class DaysManager(object):
+
     def __init__(self):
         self.days_dict = {}
-        self.uk_dict = {} # type: dict[int, LogOne.LogOne]
+        self.uk_dict = {}  # type: dict[int, LogOne.LogOne]
 
     def get_day_uk_dict(self):
         ret_dict = {}
@@ -55,8 +57,10 @@ class DaysManager(object):
 
         if uk in self.uk_dict:
             self.uk_dict[uk].add_day(day, log_one.IS_LOGIN, log_one.timestamp)
-        else:
+        elif isinstance(log_one, LogOne.LogOne):
             self.uk_dict[uk] = log_one
+        else:
+            print(f'invalid log_one:{log_one}')
 
     def get_stay_num(self, day1, day2):
         dict1 = self.days_dict[day1]
@@ -103,7 +107,7 @@ class DaysManager(object):
 
     def out_as_csv(self, filename):
         rds = self.output()
-        with open(filename, 'w') as fw:
+        with utils.utf8_open(filename, 'w') as fw:
             row = 0
             while 1:
                 strs = [rd.get_row(row) for rd in rds]
@@ -114,7 +118,7 @@ class DaysManager(object):
 
                 row += 1
 
-        with open('{}.full.csv'.format(filename), 'w') as fw:
+        with utils.utf8_open('{}.full.csv'.format(filename), 'w') as fw:
             day_idx = 1
             line1 = []
             line2 = []
@@ -157,7 +161,7 @@ class DaysManager(object):
             csv.set(2, index, stay_1)
             csv.set(3, index, stay_2)
 
-        for k,v  in school_dict.items():
+        for k, v in school_dict.items():
             print(k, len(v))
         csv.output(filename)
 
@@ -169,7 +173,7 @@ class DaysManager(object):
 def get_dm(filename):
     dm = DaysManager()
     print(f'filename:{filename}')
-    with open(filename, encoding='utf-8') as fr:
+    with utils.utf8_open(filename, encoding='utf-8') as fr:
         for line in fr:
             log_one = LogOne.get_log_from_line(line)
             dm.add_one(log_one)

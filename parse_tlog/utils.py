@@ -8,9 +8,65 @@ import math
 import re
 
 
+def get_dir(dir_name):
+    new_dir = '{}\\{}'.format(const.ROOT_NAME, dir_name)
+    try:
+        os.mkdir(new_dir)
+    except Exception as e:
+        pass
+
+    return new_dir
+
+
+def get_out_name(dir_name, out_name):
+    new_dir = get_dir(dir_name)
+    fw_name = os.path.join(new_dir, out_name)
+
+    return fw_name
+
+
+def get_day(time_str):
+    time_st = time.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+    return time_st.tm_mday
+
+
+def filter_by_day():
+    fw_name = get_out_name('tmp', const.FILTER_BY_DAY_NAME)
+    if os.path.exists(fw_name):
+        return fw_name
+
+    fw = utf8_open(fw_name, 'w', encoding='utf-8')
+    with open(const.ORI_FILE_NAME, encoding='utf-8') as fr:
+        for line in fr:
+            tup = line.strip().split('|')
+            try:
+                time_str = tup[2]
+                day = get_day(time_str)
+            except:
+                continue
+
+            if const.FIRST_DAY <= day <= const.FIRST_DAY + const.COST_DAYS - 1:
+                fw.write(line)
+
+    fw.close()
+    return fw_name
+
+
+def utf8_open(*args, **kwargs):
+    # print(f'utf8_open:{args}')
+    args = list(args)
+    if args[0] == const.ORI_FILE_NAME:
+        args[0] = filter_by_day()
+
+    if len(args) == 2 and 'b' in args[1]:
+        return open(*args, **kwargs)
+
+    return open(*args, encoding='utf-8')
+
+
 def get_openid_info(filename):
     openid_set = set()
-    with open(filename, encoding='utf-8') as fr:
+    with utf8_open(filename, encoding='utf-8') as fr:
         for line in fr:
             if ' ' in line:
                 tup = line.strip().split(' ')
@@ -34,31 +90,9 @@ def get_time_stamp(time_str):
     return time.mktime(time_st)
 
 
-def get_day(time_str):
-    time_st = time.strptime(time_str, '%Y-%m-%d %H:%M:%S')
-    return time_st.tm_mday
-
-
 def get_day_by_timestamp(timestamp):
     time_st = time.localtime(timestamp)
     return time_st.tm_mday
-
-
-def get_dir(dir_name):
-    new_dir = '{}\\{}'.format(const.ROOT_NAME, dir_name)
-    try:
-        os.mkdir(new_dir)
-    except Exception as e:
-        pass
-
-    return new_dir
-
-
-def get_out_name(dir_name, out_name):
-    new_dir = get_dir(dir_name)
-    fw_name = os.path.join(new_dir, out_name)
-
-    return fw_name
 
 
 def filter_tlog(filename, filter_str):
@@ -68,8 +102,9 @@ def filter_tlog(filename, filter_str):
     if os.path.exists(fw_name):
         return fw_name
 
-    fw = open(fw_name, 'w')
-    with open(filename, encoding='utf-8') as fr:
+    fw = utf8_open(fw_name, 'w', encoding='utf-8')
+    filter_str += '|'
+    with utf8_open(filename, encoding='utf-8') as fr:
         for line in fr:
             if not line.startswith(filter_str):
                 continue
@@ -89,17 +124,17 @@ def get_gbid_2_account_dic():
     tmp_dir = get_dir('tmp')
     save_path = os.path.join(tmp_dir, 'gbid_2_account')
     if os.path.exists(save_path):
-        return pickle.load(open(save_path, 'rb'))
+        return pickle.load(utf8_open(save_path, 'rb'))
 
     ret_dic = {}
 
     sec_name = filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
-    with open(sec_name) as fr:
+    with utf8_open(sec_name) as fr:
         for line in fr:
             tup = line.strip().split('|')
             ret_dic[tup[17]] = tup[7]
 
-    pickle.dump(ret_dic, open(save_path, 'wb'))
+    pickle.dump(ret_dic, utf8_open(save_path, 'wb'))
 
     return ret_dic
 
@@ -109,7 +144,7 @@ def get_out_first_day_score_dict():
     tmp_dir = get_dir('tmp')
     save_path = os.path.join(tmp_dir, 'out_first_day_score_dict')
     if os.path.exists(save_path):
-        return pickle.load(open(save_path, 'rb'))
+        return pickle.load(utf8_open(save_path, 'rb'))
 
     dirname = os.path.dirname(const.DAY_SCORE)
     sys.path.append(dirname)
@@ -145,8 +180,7 @@ def get_out_first_day_score_dict():
 
         score_dict[day] = day_set
 
-
-    pickle.dump(score_dict, open(save_path, 'wb'))
+    pickle.dump(score_dict, utf8_open(save_path, 'wb'))
     return score_dict
 
 
@@ -155,22 +189,21 @@ def get_sex_dict():
     tmp_dir = get_dir('tmp')
     save_path = os.path.join(tmp_dir, 'gbid_2_sex')
     if os.path.exists(save_path):
-        return pickle.load(open(save_path, 'rb'))
+        return pickle.load(utf8_open(save_path, 'rb'))
 
     ret_dic = {}
 
     sec_name = os.path.join(const.ROOT_NAME, const.SEX_FILE)
-    with open(sec_name) as fr:
+    with utf8_open(sec_name) as fr:
         for line in fr:
             tup = line.strip().split('|')
             tup = [i.strip() for i in tup if i]
             if len(tup) == 2 and tup[0].isdigit() and tup[1].isdigit():
                 ret_dic[tup[0]] = tup[1]
 
-    pickle.dump(ret_dic, open(save_path, 'wb'))
+    pickle.dump(ret_dic, utf8_open(save_path, 'wb'))
 
     return ret_dic
-
 
 
 @functools.lru_cache(1)
@@ -196,18 +229,36 @@ def get_gbid_school_dict():
     tmp_dir = get_dir('tmp')
     save_path = os.path.join(tmp_dir, 'gbid_2_school_dict')
     if os.path.exists(save_path):
-        return pickle.load(open(save_path, 'rb'))
+        return pickle.load(utf8_open(save_path, 'rb'))
 
     fname = filter_tlog(const.ORI_FILE_NAME, 'LOG_LEVEL')
     ret_dict = {}
-    with open(fname) as fr:
+    with utf8_open(fname) as fr:
         for line in fr:
             tup = line.strip().split('|')
             ret_dict[tup[4]] = tup[5]
 
-    pickle.dump(ret_dict, open(save_path, 'wb'))
+    pickle.dump(ret_dict, utf8_open(save_path, 'wb'))
 
     return ret_dict
+
+
+@functools.lru_cache(1)
+def get_avatar_count():
+    count_name = get_out_name('tmp', 'avatar_count')
+    if os.path.exists(count_name):
+        return pickle.load(utf8_open(count_name, 'rb'))
+
+    fname = filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
+    _set = set()
+    with utf8_open(fname) as fr:
+        for line in fr:
+            tup = line.split('|')
+            gbid = tup[17]
+            _set.add(gbid)
+            
+    pickle.dump(len(_set), utf8_open(count_name, 'wb'))
+    return len(_set)
 
 
 @functools.lru_cache(1)
@@ -215,20 +266,19 @@ def get_11_gbid_qq_dict():
     tmp_dir = get_dir('tmp')
     save_path = os.path.join(tmp_dir, '11_gbid_qq_dict')
     if os.path.exists(save_path):
-        return pickle.load(open(save_path, 'rb'))
+        return pickle.load(utf8_open(save_path, 'rb'))
 
     fname = os.path.join(const.ROOT_NAME, const.PLAYER_11_file)
     ret_dict = {}
     pat = re.compile('\s+')
-    with open(fname) as fr:
+    with utf8_open(fname) as fr:
         for line in fr:
             tup = pat.split(line.strip())
             ret_dict[tup[2]] = tup[0]
 
-    pickle.dump(ret_dict, open(save_path, 'wb'))
+    pickle.dump(ret_dict, utf8_open(save_path, 'wb'))
 
     return ret_dict
-
 
 
 if __name__ == '__main__':

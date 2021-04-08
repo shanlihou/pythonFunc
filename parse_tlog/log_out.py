@@ -12,7 +12,7 @@ class LogOut(object):
         self.days = {}
 
     def parse(self):
-        with open(self.filename) as fr:
+        with utils.utf8_open(self.filename) as fr:
             for line in fr:
                 lo = LogOne.LogOut.get_log_obj_from_line(line)
                 self.days.setdefault(lo.get_day(), {})

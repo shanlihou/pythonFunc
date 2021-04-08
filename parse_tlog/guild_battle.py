@@ -11,7 +11,7 @@ class GuildBattle(object):
         self.days = {}
 
     def parse(self):
-        with open(self.filename) as fr:
+        with utils.utf8_open(self.filename) as fr:
             for line in fr:
                 ls = LogOne.LogSys.get_log_obj_from_line(line)
                 if not ls:
@@ -29,7 +29,7 @@ class GuildBattle(object):
         days_list = list(self.days.keys())
         days_list.sort()
         print(days_list)
-        with open(full_csv_name, 'w') as fw:
+        with utils.utf8_open(full_csv_name, 'w') as fw:
             days_str = ','.join(map(str, days_list))
             fw.write(days_str + '\n')
 
@@ -64,8 +64,3 @@ if __name__ == '__main__':
     gb = GuildBattle(fname)
     gb.parse()
     gb.out_as_csv('guild_battle_out_second.csv')
-    # fw = open(os.path.join(const.ROOT_NAME, 'test'), 'w')
-    # with open(const.ORI_FILE_NAME, encoding='utf-8') as fr:
-    #     for line in fr:
-    #         if '8444550049438682317' in line:
-    #             fw.write(line)

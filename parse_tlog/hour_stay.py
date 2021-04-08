@@ -13,7 +13,7 @@ class HourStay(object):
         self.days = {}
 
     def parse(self):
-        with open(self.filename, encoding='utf-8') as fr:
+        with utils.utf8_open(self.filename, encoding='utf-8') as fr:
             for line in fr:
                 lo = LogOne.get_log_from_line(line)
                 uk = lo.unique_key()
