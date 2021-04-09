@@ -9,6 +9,7 @@ import guild_train
 import hour_stay
 import left_newbie_header
 import guide_flow
+import bandit_boss
 
 
 if __name__ == '__main__':
@@ -59,3 +60,6 @@ if __name__ == '__main__':
 
     print('-------------------------------------- 新手节点')
     guide_flow.guide_flow()
+
+    print('-------------------------------------- 帮盗boss')
+    bandit_boss.bandit_boss()

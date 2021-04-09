@@ -4,9 +4,21 @@ import Filter
 import json
 import time
 import math
+import re
+import functools
+
+
+LOG_DIC = {}
+
+
+def log_wrapper(cls):
+    if cls.FILTER_STR:
+        LOG_DIC[cls.FILTER_STR] = cls
+    return cls
 
 
 class LogOneBase(object):
+    FILTER_STR = None
 
     def __init__(self, time_str, open_id, gbid):
         self.time_str = time_str
@@ -24,8 +36,19 @@ class LogOneBase(object):
         else:
             return self.gbid
 
+    @classmethod
+    def get_log_obj_from_line(cls, line):
+        tup = line.strip().split('|')
+        try:
+            return cls(*tup)
+        except Exception as e:
+            print(e)
+            return None
 
+
+@log_wrapper
 class LogOne(LogOneBase):
+    FILTER_STR = 'SecLogin'
     IS_LOGIN = True
 
     def __init__(self, log_type, server_id, time_str, app_id, plant_id,
@@ -84,7 +107,9 @@ class LogOne(LogOneBase):
         return LogOne(*tup)
 
 
+@log_wrapper
 class LogVitality(LogOneBase):
+    FILTER_STR = 'LOG_VITALITY'
 
     def __init__(self, log_type, server_id, time_str, _1, gbid, _2, _3, uuid, _4, activity):
         account = utils.get_gbid_2_account_dic()[gbid]
@@ -100,7 +125,9 @@ class LogVitality(LogOneBase):
             return None
 
 
+@log_wrapper
 class LogOut(LogOneBase):
+    FILTER_STR = 'SecLogout'
     IS_LOGIN = False
 
     def __init__(self, log_type, server_id, time_str, app_id, plant_id,
@@ -125,6 +152,7 @@ class LogOut(LogOneBase):
         return f'LogOut gbid:{self.gbid}'
 
 
+@log_wrapper
 class LogSys(LogOneBase):
 
     def __init__(self, data_dict):
@@ -145,7 +173,9 @@ class LogSys(LogOneBase):
             pass
 
 
+@log_wrapper
 class LogLevel(LogOneBase):
+    FILTER_STR = 'LOG_LEVEL'
 
     def __init__(self, log_type, server_id, time_str, _1, gbid, school, *args):
         account = utils.get_gbid_2_account_dic()[gbid]
@@ -161,7 +191,9 @@ class LogLevel(LogOneBase):
             return None
 
 
+@log_wrapper
 class LogGuildContrib(LogOneBase):
+    FILTER_STR = 'LOG_GUILD_CONTRIBUTION'
 
     def __init__(self, log_type, server_id, time_str, _1, gbid, num, delta, uuid, src, desc):
         account = utils.get_gbid_2_account_dic()[gbid]
@@ -178,7 +210,9 @@ class LogGuildContrib(LogOneBase):
             return None
 
 
+@log_wrapper
 class RoundFlow(LogOneBase):
+    FILTER_STR = 'RoundFlow'
 
     def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, ibattle_type, battle_id, round_time, result, rank, *args):
         super().__init__(time_str, open_id, role_id)
@@ -196,7 +230,9 @@ class RoundFlow(LogOneBase):
             return None
 
 
+@log_wrapper
 class LogGuildTrain(LogOneBase):
+    FILTER_STR = 'GuildTrainFlow'
 
     def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, train_level, train_id, score):
         super().__init__(time_str, open_id, role_id)
@@ -213,8 +249,10 @@ class LogGuildTrain(LogOneBase):
             print(e)
             return None
         
-        
+
+@log_wrapper
 class PlayerLogOut(LogOneBase):
+    FILTER_STR = 'PlayerLogout'
 
     def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, *args):
         super().__init__(time_str, open_id, role_id)
@@ -230,44 +268,56 @@ class PlayerLogOut(LogOneBase):
         except Exception as e:
             print(e)
             return None
-        
 
+
+@log_wrapper
 class GuideFlowLog(LogOneBase):
+    FILTER_STR = 'GuideFlow'
+
     def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, guide_id, is_can_skip):
         super().__init__(time_str, open_id, role_id)
         self.guide_id = guide_id
         
-    @staticmethod
-    def get_log_obj_from_line(line):
-        tup = line.strip().split('|')
-        try:
-            return GuideFlowLog(*tup)
-        except Exception as e:
-            print(e)
-            return None
-    
+
+@log_wrapper
+class ItemFlow(LogOneBase):
+    FILTER_STR = 'ItemFlow'
+
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, *args):
+        super().__init__(time_str, open_id, role_id)
+        self.item_id = args[3]
+        self.src = int(args[7])
+        self.detail = args[9]
+
+
+@log_wrapper
+class ResourceFlow(LogOneBase):
+    FILTER_STR = 'ResourceFlow'
+
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, *args):
+        super().__init__(time_str, open_id, role_id)
+        self.resource_id = int(args[1])
+        self.count = int(args[3])
+        self.src = int(args[4])
+
+
+@functools.lru_cache(1)
+def get_pat():
+    pat_str = '|'.join(LOG_DIC.keys())
+    pat_str = f'^({pat_str})\\|'
+    return re.compile(pat_str)
+
 
 def get_log_from_line(line):
-    if line.startswith('SecLogin'):
-        return LogOne.get_log_obj_from_line(line)
-    elif line.startswith('SecLogout'):
-        return LogOut.get_log_obj_from_line(line)
-    elif line.startswith('LOG_VITALITY'):
-        return LogVitality.get_log_obj_from_line(line)
-    elif line.startswith('LOG_GUILD_CONTRIBUTION'):
-        return LogGuildContrib.get_log_obj_from_line(line)
-    elif line.startswith('LOG_LEVEL'):
-        return LogLevel.get_log_obj_from_line(line)
-    elif line.startswith('RoundFlow'):
-        return RoundFlow.get_log_obj_from_line(line)
-    elif line.startswith('GuildTrainFlow'):
-        return LogGuildTrain.get_log_obj_from_line(line)
-    elif line.startswith('PlayerLogout'):
-        return PlayerLogOut.get_log_obj_from_line(line)
-    elif line.startswith('GuideFlow'):
-        return GuideFlowLog.get_log_obj_from_line(line)
+    find = get_pat().search(line)
+    if find:
+        return LOG_DIC[find.group(1)].get_log_obj_from_line(line)
     elif line.startswith(' '):
         return LogSys.get_log_obj_from_line(line)
     else:
         return None
 
+if __name__ == '__main__':
+    pat = get_pat()
+    find = pat.search('ItemFlow|')
+    print(find)

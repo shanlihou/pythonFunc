@@ -172,7 +172,7 @@ class DaysManager(object):
 
 def get_dm(filename):
     dm = DaysManager()
-    print(f'filename:{filename}')
+    print(filename)
     with utils.utf8_open(filename, encoding='utf-8') as fr:
         for line in fr:
             log_one = LogOne.get_log_from_line(line)
@@ -197,11 +197,6 @@ def parse_tlog(filename, out_name):
 
 
 def main():
-    #     filter_tlog(r'E:\shLog\xzj.log', 'SecLogin')
-    #     ret = get_time_stamp('2020-11-13 19:26:20')
-    #     print(ret)
-    #     parse_tlog(r'E:\shLog\tlog\xzj.log.SecLogin.log')
-    # fname = utils.filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
     fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
 
     filt = Filter.Filter(fname, None)
