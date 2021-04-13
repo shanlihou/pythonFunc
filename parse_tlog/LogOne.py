@@ -66,6 +66,7 @@ class LogOne(LogOneBase):
             'timestamp': self.timestamp,
             'is_login': True,
         }]
+        self.max_level = int(self.level)
 
     def is_stay_by_dur(self, day_count):
         first_day = min(self.day_set)
@@ -91,6 +92,8 @@ class LogOne(LogOneBase):
             'timestamp': timestamp,
             'is_login': is_login
         })
+
+    def updateLevelBattlePoint(self, level, battlePoint)
 
     def add_log_out_time(self, timestamp):
         if self.end_time:

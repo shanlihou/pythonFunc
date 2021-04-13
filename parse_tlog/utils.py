@@ -8,6 +8,21 @@ import math
 import re
 
 
+def get_origin_line_stream():
+    for filename in const.ORI_FILE_NAME_LIST:
+        with open(filename, 'r', encoding='utf-8') as fr:
+            while 1:
+                try:
+                    line = fr.readline()
+                except:
+                    continue
+
+                if not line:
+                    break
+
+                yield line
+
+
 def get_dir(dir_name):
     new_dir = '{}\\{}'.format(const.ROOT_NAME, dir_name)
     try:

@@ -36,20 +36,18 @@ class Filter(object):
         return fw_name
 
     @staticmethod
-    def filter_login_log(filename):
-        basename = os.path.basename(filename)
+    def filter_login_log(*args):
         dirname = utils.get_dir('tmp')
-        fw_name = os.path.join(dirname, '{}.{}.log'.format(basename, 'log_in_and_out'))
+        fw_name = utils.get_out_name('tmp', 'log_in_and_out.log')
         if os.path.exists(fw_name):
             return fw_name
 
         fw = utils.utf8_open(fw_name, 'w', encoding='utf-8')
-        with utils.utf8_open(filename, encoding='utf-8') as fr:
-            for line in fr:
-                if not (line.startswith('SecLogin') or line.startswith('SecLogout')):
-                    continue
+        for line in utils.get_origin_line_stream():
+            if not (line.startswith('SecLogin') or line.startswith('SecLogout')):
+                continue
 
-                fw.write(line)
+            fw.write(line)
 
         fw.close()
         return fw_name
