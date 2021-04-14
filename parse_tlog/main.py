@@ -13,7 +13,7 @@ import bandit_boss
 
 
 if __name__ == '__main__':
-    fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
+    fname = Filter.Filter.filter_login_log()
 
     filt = Filter.Filter(fname, None)
 
@@ -28,12 +28,12 @@ if __name__ == '__main__':
     parse_tlog.parse_tlog(tmp_log_name, out_name)
 
     print('-------------------------------------- 帮盗统计')
-    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'RoundFlow')
+    fname = utils.filter_from_origin('RoundFlow')
     f = Filter.Filter(fname, LogOne.RoundFlow)
     guild_bandit.parse_by_act(f, 9)
 
     print('-------------------------------------- 帮会修炼')
-    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'GuildTrainFlow')
+    fname = utils.filter_from_origin('GuildTrainFlow')
     f = Filter.Filter(fname, None)
     fname = f.filter_out()
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     gt.out_as_csv('guild_train_out_first.csv')
 
     print('-------------------------------------- 日留')
-    fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
+    fname = Filter.Filter.filter_login_log()
     f = Filter.Filter(fname, None)
 
     fname = f.filter_inner()

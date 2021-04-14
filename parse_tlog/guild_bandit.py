@@ -58,7 +58,7 @@ def parse_by_act(filt, act_id):
 
 if __name__ == '__main__':
     # whole_log = r'E:\shLog\tlog\xzj.log.LOG_GUILD_BANDIT.log'
-    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'RoundFlow')
+    fname = utils.filter_from_origin('RoundFlow')
     f = Filter.Filter(fname, LogOne.RoundFlow)
     parse_by_act(f, 9)
     # parse_by_act(f, 32000004)

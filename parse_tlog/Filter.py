@@ -27,16 +27,15 @@ class Filter(object):
             return fw_name
 
         fw = utils.utf8_open(fw_name, 'w')
-        with utils.utf8_open(const.ORI_FILE_NAME, encoding='utf-8') as fr:
-            for line in fr:
-                if 'guild train upgrade' in line and line.startswith('LOG_GUILD_CONTRIBUTION'):
-                    fw.write(line)
+        for line in utils.get_origin_line_stream():
+            if 'guild train upgrade' in line and line.startswith('LOG_GUILD_CONTRIBUTION'):
+                fw.write(line)
 
         fw.close()
         return fw_name
 
     @staticmethod
-    def filter_login_log(*args):
+    def filter_login_log():
         dirname = utils.get_dir('tmp')
         fw_name = utils.get_out_name('tmp', 'log_in_and_out.log')
         if os.path.exists(fw_name):

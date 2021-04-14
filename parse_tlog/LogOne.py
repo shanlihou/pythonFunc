@@ -68,6 +68,7 @@ class LogOne(LogOneBase):
         }]
         self.max_level = int(self.level)
 
+
     def is_stay_by_dur(self, day_count):
         first_day = min(self.day_set)
         for i in range(1, day_count + 1):
@@ -92,8 +93,6 @@ class LogOne(LogOneBase):
             'timestamp': timestamp,
             'is_login': is_login
         })
-
-    def updateLevelBattlePoint(self, level, battlePoint)
 
     def add_log_out_time(self, timestamp):
         if self.end_time:
@@ -223,15 +222,6 @@ class RoundFlow(LogOneBase):
         self.round_time = round_time
         self.result = result
 
-    @staticmethod
-    def get_log_obj_from_line(line):
-        tup = line.strip().split('|')
-        try:
-            return RoundFlow(*tup)
-        except Exception as e:
-            print(e)
-            return None
-
 
 @log_wrapper
 class LogGuildTrain(LogOneBase):
@@ -243,15 +233,6 @@ class LogGuildTrain(LogOneBase):
         self.level = train_level
         self.score = score
 
-    @staticmethod
-    def get_log_obj_from_line(line):
-        tup = line.strip().split('|')
-        try:
-            return LogGuildTrain(*tup)
-        except Exception as e:
-            print(e)
-            return None
-        
 
 @log_wrapper
 class PlayerLogOut(LogOneBase):
@@ -263,14 +244,16 @@ class PlayerLogOut(LogOneBase):
         self.battle_point = irole_ce
         self.login_channel = args[10]
 
-    @staticmethod
-    def get_log_obj_from_line(line):
-        tup = line.strip().split('|')
-        try:
-            return PlayerLogOut(*tup)
-        except Exception as e:
-            print(e)
-            return None
+
+@log_wrapper
+class PlayerLogin(LogOneBase):
+    FILTER_STR = 'PlayerLogin'
+
+    def __init__(self, log_type, server_id, time_str, app_id, plant_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, *args):
+        super().__init__(time_str, open_id, role_id)
+        self.level = level
+        self.battle_point = irole_ce
+        self.login_channel = args[9]
 
 
 @log_wrapper
@@ -302,6 +285,21 @@ class ResourceFlow(LogOneBase):
         self.resource_id = int(args[1])
         self.count = int(args[3])
         self.src = int(args[4])
+
+
+@log_wrapper
+class GuildFlow(LogOneBase):
+    FILTER_STR = 'GuildFlow'
+
+    def __init__(self, log_type, server_id, time_str, app_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, act_type, guild_uuid, guild_name, guild_level, member_num, member_num_max=0):
+        super().__init__(time_str, open_id, role_id)
+        self.name = role_name
+        self.act_type = act_type
+        self.guild_uuid = guild_uuid
+        self.guild_name = guild_name
+        self.guild_level = guild_level
+        self.member_num = member_num
+        self.member_num_max = member_num_max
 
 
 @functools.lru_cache(1)

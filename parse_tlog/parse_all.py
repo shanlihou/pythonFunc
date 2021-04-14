@@ -83,7 +83,7 @@ class ParseAll(object):
 
 
 if __name__ == '__main__':
-    fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
+    fname = Filter.Filter.filter_login_log()
 
     filt = Filter.Filter(fname, None)
     tmp_log_name = filt.filter_out()

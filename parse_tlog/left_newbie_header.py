@@ -22,7 +22,7 @@ class NewBieLeft(object):
 
 def get_header():
     dic = {}
-    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'PlayerLogout')
+    fname = utils.filter_from_origin('PlayerLogout')
     with utils.utf8_open(fname) as fr:
         for line in fr:
             lo = LogOne.get_log_from_line(line)
@@ -34,7 +34,7 @@ def get_header():
                 dic[uk].update_level(lo.level, lo.battle_point)
             else:
                 dic[uk] = NewBieLeft(uk, lo.level, lo.login_channel, lo.battle_point)
-                
+
     csv = csv_output.CSVOutPut()
     csv.set(0, 0, 'GOPENID')
     csv.set(0, 1, '等级')
@@ -44,7 +44,7 @@ def get_header():
     for lo in dic.values():
         if lo.level > const.MAX_LEFT_LEVEL:
             continue
-        
+
         csv.set(idx, 0, f'{lo.open_id}\'')
         csv.set(idx, 1, lo.level)
         csv.set(idx, 2, lo.battle_point)

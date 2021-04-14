@@ -51,17 +51,16 @@ def filter_by_day():
         return fw_name
 
     fw = utf8_open(fw_name, 'w', encoding='utf-8')
-    with open(const.ORI_FILE_NAME, encoding='utf-8') as fr:
-        for line in fr:
-            tup = line.strip().split('|')
-            try:
-                time_str = tup[2]
-                day = get_day(time_str)
-            except:
-                continue
+    for line in get_origin_line_stream():
+        tup = line.strip().split('|')
+        try:
+            time_str = tup[2]
+            day = get_day(time_str)
+        except:
+            continue
 
-            if const.FIRST_DAY <= day <= const.FIRST_DAY + const.COST_DAYS - 1:
-                fw.write(line)
+        if const.FIRST_DAY <= day <= const.FINAL_DAY:
+            fw.write(line)
 
     fw.close()
     return fw_name
@@ -70,9 +69,6 @@ def filter_by_day():
 def utf8_open(*args, **kwargs):
     # print(f'utf8_open:{args}')
     args = list(args)
-    if args[0] == const.ORI_FILE_NAME:
-        args[0] = filter_by_day()
-
     if len(args) == 2 and 'b' in args[1]:
         return open(*args, **kwargs)
 
@@ -134,6 +130,28 @@ def filter_tlog(filename, filter_str):
     return fw_name
 
 
+def filter_from_origin(filter_str):
+    dirname = get_dir('tmp')
+    fw_name = os.path.join(dirname, '{}.{}.log'.format('from_ori', filter_str))
+    if os.path.exists(fw_name):
+        return fw_name
+
+    fw = utf8_open(fw_name, 'w', encoding='utf-8')
+    filter_str += '|'
+    for line in get_origin_line_stream():
+        if not line.startswith(filter_str):
+            continue
+
+        tup = line.strip().split('|')
+        time_str = tup[2]
+        day = get_day(time_str)
+
+        fw.write(line)
+
+    fw.close()
+    return fw_name
+
+
 @functools.lru_cache(1)
 def get_gbid_2_account_dic():
     tmp_dir = get_dir('tmp')
@@ -143,7 +161,7 @@ def get_gbid_2_account_dic():
 
     ret_dic = {}
 
-    sec_name = filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
+    sec_name = filter_from_origin('SecLogin')
     with utf8_open(sec_name) as fr:
         for line in fr:
             tup = line.strip().split('|')
@@ -246,7 +264,7 @@ def get_gbid_school_dict():
     if os.path.exists(save_path):
         return pickle.load(utf8_open(save_path, 'rb'))
 
-    fname = filter_tlog(const.ORI_FILE_NAME, 'LOG_LEVEL')
+    fname = filter_from_origin('LOG_LEVEL')
     ret_dict = {}
     with utf8_open(fname) as fr:
         for line in fr:
@@ -264,7 +282,7 @@ def get_avatar_count():
     if os.path.exists(count_name):
         return pickle.load(utf8_open(count_name, 'rb'))
 
-    fname = filter_tlog(const.ORI_FILE_NAME, 'SecLogin')
+    fname = filter_from_origin('SecLogin')
     _set = set()
     with utf8_open(fname) as fr:
         for line in fr:

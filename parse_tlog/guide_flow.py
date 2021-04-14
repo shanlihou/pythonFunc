@@ -6,7 +6,7 @@ import csv_output
 
 
 def guide_flow():
-    fname = utils.filter_tlog(const.ORI_FILE_NAME, 'GuideFlow')
+    fname = utils.filter_from_origin('GuideFlow')
     id_dic = {}
     avatar_count = utils.get_avatar_count()
     with utils.utf8_open(fname) as fr:

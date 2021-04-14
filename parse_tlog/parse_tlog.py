@@ -57,7 +57,6 @@ class DaysManager(object):
 
         if uk in self.uk_dict:
             self.uk_dict[uk].add_day(day, log_one.IS_LOGIN, log_one.timestamp)
-            self.uk_dict[uk].
         elif isinstance(log_one, LogOne.LogOne):
             self.uk_dict[uk] = log_one
         else:
@@ -198,7 +197,7 @@ def parse_tlog(filename, out_name):
 
 
 def main():
-    fname = Filter.Filter.filter_login_log(const.ORI_FILE_NAME)
+    fname = Filter.Filter.filter_login_log()
 
     filt = Filter.Filter(fname, None)
 
