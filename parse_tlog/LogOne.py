@@ -302,6 +302,18 @@ class GuildFlow(LogOneBase):
         self.member_num_max = member_num_max
 
 
+@log_wrapper
+class LingxuAttackFlow(LogOneBase):
+    FILTER_STR = 'LingxuAttackFlow'
+
+    def __init__(self, log_type, server_id, time_str, app_id, plat_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce, lingxu_type, completion, occupy):
+        super().__init__(time_str, open_id, role_id)
+        self.name = role_name
+        self.lingxu_type = lingxu_type
+        self.completion = completion
+        self.occupy = occupy
+
+
 @functools.lru_cache(1)
 def get_pat():
     pat_str = '|'.join(LOG_DIC.keys())
