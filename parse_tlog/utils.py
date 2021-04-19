@@ -314,6 +314,11 @@ def get_11_gbid_qq_dict():
     return ret_dict
 
 
+def get_whole_days():
+    return const.FINAL_DAY - const.FIRST_DAY + 1
+
+
+
 if __name__ == '__main__':
     dic = get_sex_dict()
     print(dic)

@@ -58,3 +58,20 @@ def get_login_out_log_new():
 
     fw.close()
     return fw_name
+
+
+def filter_by_log_one_all():
+    fw_name = utils.get_out_name('tmp', 'log_one.log')
+    if os.path.exists(fw_name):
+        return fw_name
+
+    fw = utils.utf8_open(fw_name, 'w')
+    for line in utils.get_origin_line_stream():
+        lo = LogOne.get_log_from_line(line)
+        if not lo:
+            continue
+
+        fw.write(line)
+
+    fw.close()
+    return fw_name

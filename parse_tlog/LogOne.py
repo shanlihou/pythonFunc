@@ -42,7 +42,7 @@ class LogOneBase(object):
         try:
             return cls(*tup)
         except Exception as e:
-            print(e)
+            print(cls, e)
             return None
 
 
