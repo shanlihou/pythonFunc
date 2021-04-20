@@ -280,7 +280,7 @@ def get_avatar_dic(): # 获得一个dic,里面每个玩家包含有自己登陆�
                 elif lo.FILTER_STR == 'PlayerLogin' or lo.FILTER_STR == 'PlayerLogout':
                     avatar_val.add_level(lo.level)
                     avatar_val.add_battle_point(lo.battle_point)
-                    avatar_val.add_channel(lo.channel)
+                    avatar_val.add_channel(lo.login_channel)
 
 
         pickle.dump(avatar_dic, open(out_name, 'wb'))
@@ -318,9 +318,28 @@ def parse_tlog():
 
 
 def get_avatar_login_5_days():
+    # 获得登陆五天的玩家的相关信息
     avatar_dic = get_avatar_dic()
+    csv = csv_output.CSVOutPut()
+    csv.set(0, 0, 'OPENID')
+    csv.set(0, 1, '等级')
+    csv.set(0, 2, '战力')
+    csv.set(0, 3, '渠道号')
+    csv.set(0, 4, '登陆天')
+    idx = 1
+    for avatar_val in avatar_dic.values():
+        if len(avatar_val.days) < 5:
+            continue
 
+        csv.set(idx, 0, avatar_val.open_id)
+        csv.set(idx, 1, avatar_val.level)
+        csv.set(idx, 2, avatar_val.battle_point)
+        csv.set(idx, 3, avatar_val.channel)
+        csv.set(idx, 4, '|'.join(map(str, (avatar_val.days))))
+        idx += 1
 
+    out_name = utils.get_out_name('out', 'login_5_days.csv')
+    csv.output(out_name)
 
     # uk = str(5860530770676540844)
     # if uk in dm.uk_dict:
@@ -329,6 +348,39 @@ def get_avatar_login_5_days():
     #     print(lo.school)
     #     print(lo.is_stay_by_dur(3))
 #     dm.debug()
+
+def get_openid_info_by_txt():
+    # 根据openids.txt提供特定玩家信息
+    avatar_dic = get_avatar_dic()
+    csv = csv_output.CSVOutPut()
+    csv.set(0, 0, 'openid')
+    csv.set(0, 1, '次留')
+    csv.set(0, 2, '三留')
+    csv.set(0, 3, '七留')
+    csv.set(0, 4, '首周登录天数')
+    csv.set(0, 5, '战力')
+    csv.set(0, 6, '等级')
+    csv.set(0, 7, '哪一天登陆')
+    idx = 0
+    with utils.utf8_open(const.OPEN_IDS_TXT) as fr:
+        for line in fr:
+            idx += 1
+            line = line.strip()
+            if line in avatar_dic:
+                a = avatar_dic[line]
+                csv.set(idx, 0, line)
+                csv.set(idx, 1, 1 if a.is_stay_by(1) else 0)
+                csv.set(idx, 2, 1 if a.is_stay_by(2) else 0)
+                csv.set(idx, 3, 1 if a.is_stay_by(6) else 0)
+                csv.set(idx, 4, len(a.days))
+                csv.set(idx, 5, a.battle_point)
+                csv.set(idx, 6, a.level)
+                csv.set(idx, 7, '|'.join(map(str, a.days)))
+
+            else:
+                print(line)
+    out_name = utils.get_out_name('out', 'avatar_info_by_open_id_txt.csv')
+    csv.output(out_name)
 
 
 def main():
@@ -345,7 +397,7 @@ def main():
     # tmp_log_name = filt.filter_out()
     # out_name = utils.get_out_name('out', 'daily_outer.csv')
     # parse_tlog(tmp_log_name, out_name)
-    parse_tlog()
+    get_openid_info_by_txt()
 
 
 if __name__ == '__main__':

@@ -14,5 +14,6 @@ DATA_FOLDER = r'E:\trunk_server\kbengine\assets\scripts\data'
 GUILD_TRAIN_TABLE = ''
 MAX_LEFT_LEVEL = 11
 ORI_FILE_NAME_LIST = [r'E:\shLog\tlog\xzj.log.1', r'E:\shLog\tlog\xzj.log.2']
+OPEN_IDS_TXT = r'E:\shLog\tlog\openids.txt'
 # SEX_FILE = 'sex.txt'
 # PLAYER_11_file = r'11-11.txt'
