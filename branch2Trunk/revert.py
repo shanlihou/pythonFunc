@@ -74,26 +74,28 @@ class Revert(object):
 if __name__ == '__main__':
     opt = 0
     if opt == 0:
+        print('-1--------------------------------')
+        rev = Revert(
+            r'E:\trunk_server\kbengine\assets\scripts\kbengine_unity3d_plugins')
+        rev.test()
+
+        print('0--------------------------------')
+        rev = Revert(r'E:\trunk_server\kbengine\assets\scripts\kbengine_lua')
+        rev.test()
+        
         print('1--------------------------------')
         os.system(r'svn up E:\trunk_server')
+        
         print('2--------------------------------')
         rev = Revert(
             r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
         rev.test()
+        
         print('3--------------------------------')
         rev = Revert(r'E:\svn\Dev\Client\Assets\StreamingAssets\Lua\KBEngine')
         rev.test()
 
         print('4--------------------------------')
-        rev = Revert(
-            r'E:\trunk_server\kbengine\assets\scripts\kbengine_unity3d_plugins')
-        rev.test()
-
-        print('5--------------------------------')
-        rev = Revert(r'E:\trunk_server\kbengine\assets\scripts\kbengine_lua')
-        rev.test()
-
-        print('6--------------------------------')
         os.system(r'svn up --accept tc E:\svn\Dev\Client')
         # print('3--------------------------------')
         #$rev = Revert(r'E:\svn\Dev\Client')
