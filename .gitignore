@@ -30,3 +30,4 @@ decrypt
 *.iml
 node_modules
 *sh_download
+.*
