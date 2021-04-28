@@ -1,0 +1,46 @@
+{
+    "notify_strategy": {
+        "BTCUSDT": {
+            "name": "BTCUSDT",
+            "cmp": "down",
+            "init_val": 54000,
+            "rate": 500,
+            "degree": 0
+        },
+        "ETHUSDT": {
+            "name": "ETHUSDT",
+            "cmp": "down",
+            "init_val": 2600,
+            "rate": 100,
+            "degree": 0
+        },
+        "BNBUSDT": {
+            "name": "BNBUSDT",
+            "cmp": "down",
+            "init_val": 550,
+            "rate": 10,
+            "degree": 0
+        },
+        "DOGEUSDT": {
+            "name": "DOGEUSDT",
+            "cmp": "down",
+            "init_val": 0.275,
+            "rate": 0.01,
+            "degree": 0
+        },
+        "LTCUSDT": {
+            "name": "LTCUSDT",
+            "cmp": "down",
+            "init_val": 250,
+            "rate": 5,
+            "degree": 0
+        },
+        "XRPUSDT": {
+            "name": "XRPUSDT",
+            "cmp": "down",
+            "init_val": 1.3,
+            "rate": 0.05,
+            "degree": 0
+        }
+    }
+}
