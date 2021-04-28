@@ -16,11 +16,10 @@ else:
         logname = 'bmob.log'
 
 logging.basicConfig(
-    level=logging.DEBUG,              # 瀹氫箟杈撳嚭鍒版枃浠剁殑log绾у埆锛�
-    # 瀹氫箟杈撳嚭log鐨勬牸寮�
+    level=logging.DEBUG,
     format='%(asctime)s  %(filename)s : %(levelname)s  %(message)s',
-    datefmt='%Y-%m-%d %A %H:%M:%S',                                     # 鏃堕棿
-    filename=logname,                # log鏂囦欢鍚�
+    datefmt='%Y-%m-%d %A %H:%M:%S',
+    filename=logname,
     filemode='a+')
 
 
@@ -36,9 +35,10 @@ def singleton(cls):
 
 @singleton
 class BMOB(object):
-    def __init__(self, priKey=None, pubKey=None):
-        self.appId = 'f959535a39bb9dec9ac4dab32e5961c5'
-        self.apiKey = '17342bb32e2df845778bb70391b1c4a6'
+    def __init__(self, userInfo, priKey, pubKey):
+        json_data = json.load(open(userInfo))
+        self.appId = json_data['app_id']
+        self.apiKey = json_data['api_key']
         self.base = 'https://api.bmob.cn/1/classes/'
         self.saveFile = 'testSave'
         if not priKey:
@@ -89,6 +89,24 @@ class BMOB(object):
         pubKey = retDict['results'][0]['pubKey']
         self.pubKey = rsa.PublicKey.load_pkcs1_openssl_pem(pubKey)
 
+    def big_enc(self, data):
+        json_str = json.dumps(data)
+        length = len(json_str)
+        end = 0
+        enc_list = []
+        while end < length:
+            _end = min(length, end + 117)
+            enc_str = self.encrypt(json_str[end:_end])
+            enc_list.append(enc_str)
+            end = _end
+
+        return '889914'.join(enc_list)
+
+    def big_dec(self, data):
+        datas = data.split('889914')
+        datas = (self.decrypt(i) for i in datas)
+        return ''.join(datas)
+
     def encrypt(self, data):
         data = data.encode('utf-8')
         enc_data = rsa.encrypt(data, self.pubKey)
@@ -129,6 +147,7 @@ class BMOB(object):
         url = self.base + table
         ret = requests.post(url, headers=headers, data=data)
         logging.info('add data content:{}'.format(ret.content))
+        return ret.content
 
     def putData(self, objId, table, data):
         headers = self.getHeaders()

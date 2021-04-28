@@ -6,27 +6,34 @@ import mail
 import comparer
 import config_manager
 
-BYTE_COIN_LISTEN = {
-    'BTCUSDT': comparer.ComparerDown(54000, 500),
-    'ETHUSDT': comparer.ComparerDown(2600, 100),
-    'BNBUSDT': comparer.ComparerDown(550, 10),
-    'DOGEUSDT': comparer.ComparerDown(0.275, 0.01),
-    'LTCUSDT': comparer.ComparerDown(250, 5),
-    'XRPUSDT': comparer.ComparerDown(1.3, 0.05),
-}
+
+def reset(cm, listener, byte_coin_cmper):
+    listener.clear()
+    byte_coin_cmper.clear()
+    for k, v in cm.config['notify_strategy'].items():
+        listener.append(biance.BinanceAvgPrice(k))
+        cmp = comparer.get_comp_from_dic(v)
+        byte_coin_cmper[k] = cmp
 
 
 def main():
+    cm = config_manager.ConfigManager()
     _mail = mail.get_default_user_mail()
     listener = []
-    for key in BYTE_COIN_LISTEN:
-        listener.append(biance.BinanceAvgPrice(key))
+    byte_coin_cmper = {}
+    reset(cm, listener, byte_coin_cmper)
 
     while 1:
         try:
+            if not cm.load_config_and_check():
+                reset(cm, listener, byte_coin_cmper)
+        except Exception as e:
+            print(f'load error:{e}')
+
+        try:
             for _lis in listener:
                 cur = float(_lis.get())
-                cmp = BYTE_COIN_LISTEN[_lis.symbol]
+                cmp = byte_coin_cmper[_lis.symbol]
                 send_str = f'coin[{_lis.symbol}] cur is:{cur}, cmp is:{cmp}'
                 print(send_str)
                 if cmp.compare(cur):
@@ -37,11 +44,10 @@ def main():
         time.sleep(60)
 
 
-def testConfig():
-    b = config_manager.ConfigManager()
-    b.test()
-    ret = comparer.get_comp_from_dic(b.config['notify_strategy'][0])
-    print(ret)
+def update_config():
+    cm = config_manager.ConfigManager()
+    cm.set_default_config()
+
 
 if __name__ == '__main__':
-    testConfig()
+    update_config()
