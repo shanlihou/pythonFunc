@@ -11,7 +11,7 @@ def reset(cm, listener, byte_coin_cmper):
     listener.clear()
     byte_coin_cmper.clear()
     for k, v in cm.config['notify_strategy'].items():
-        listener.append(biance.BinanceAvgPrice(k))
+        listener.append(biance.BinanceKlines(k))
         cmp = comparer.get_comp_from_dic(v)
         byte_coin_cmper[k] = cmp
 
@@ -32,15 +32,15 @@ def main():
 
         try:
             for _lis in listener:
-                cur = float(_lis.get())
+                klines = _lis.get()
                 cmp = byte_coin_cmper[_lis.symbol]
-                send_str = f'coin[{_lis.symbol}] cur is:{cur}, cmp is:{cmp}'
+                send_str = f'coin[{_lis.symbol}] {klines}, cmp is:{cmp}'
                 print(send_str)
-                if cmp.compare(cur):
+                if cmp.compare(klines.end_rice):
                     _mail.send_mail('472888366@qq.com', send_str, send_str)
         except Exception as e:
             print(f'meet error:{e}')
-        print('------------------------------------------------------\n')
+        print(f'{time.time()}------------------------------------------------------\n')
         time.sleep(60)
 
 

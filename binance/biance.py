@@ -1,6 +1,7 @@
 import requests
 import attr
 import json
+import common_struct
 
 
 http_proxy  = "http://127.0.0.1:7890"
@@ -81,8 +82,17 @@ class BinanceTrades(BinanceBase):
 class BinanceKlines(BinanceBase):
     API = '/api/v1/klines'
     symbol = attr.ib(default='BTCUSDT')
-    interval = attr.ib(default='1m')
-    limit = attr.ib(default=20)
+    interval = attr.ib(default='30m')
+    limit = attr.ib(default=1)
+
+    @staticmethod
+    def parse_response(data):
+        json_data = json.loads(data)
+        for i in json_data:
+            klines = common_struct.KLines(*i)
+            return klines
+
+        return None
 
 
 @attr.s
@@ -114,6 +124,5 @@ class BinanceTickerBookTicker(BinanceBase):
 
 
 if __name__ == '__main__':
-    b = BinanceAvgPrice()
-    print(b.params())
-    print(b.get())
+    b = BinanceKlines()
+    b.get()
