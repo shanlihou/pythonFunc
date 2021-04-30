@@ -1,4 +1,5 @@
 import testImport
+import random
 import time
 
 
@@ -82,3 +83,12 @@ if __name__ == '__main__':
     print(time.localtime(t))
     print(getDay(t - 5))
     print(getDay(t + 5))
+    aa = {}
+    for i in range(10):
+        aa[i] = random.random()
+
+    _it = iter(aa.keys())
+    aa.pop(5)
+    aa.pop(9)
+    for i in _it:
+        print(i)

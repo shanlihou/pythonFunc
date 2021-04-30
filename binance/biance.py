@@ -2,6 +2,7 @@ import requests
 import attr
 import json
 import common_struct
+from common import const
 
 
 http_proxy  = "http://127.0.0.1:7890"
@@ -19,14 +20,28 @@ HOST = 'https://api.binance.com'
 
 class BinanceBase(object):
     API = ''
+    def __attrs_post_init__(self):
+        json_data = json.load(open(const.USER_INFO))
+        self.api_key = json_data['api_key']
+        self.secret_key = json_data['secret_key']
 
     @staticmethod
     def get_url(api):
         return f'{HOST}{api}'
 
+    def get_header(self):
+        return {
+            'X-MBX-APIKEY': self.api_key
+        }
+
     def get(self):
         url = self.get_url(self.API)
         ret = requests.get(url, proxies=proxyDict, params=self.params())
+        return self.parse_response(ret.text)
+
+    def post(self):
+        url = self.get_url(self.API)
+        ret = requests.post(url, proxies=proxyDict, params=self.params(), headers=self.get_header())
         return self.parse_response(ret.text)
 
     @staticmethod
@@ -123,6 +138,13 @@ class BinanceTickerBookTicker(BinanceBase):
     symbol = attr.ib(default='BTCUSDT')
 
 
+@attr.s
+class BinanceTickerOrderTest(BinanceBase):
+    API = '/api/v3/order/test'
+    symbol = attr.ib(default='BTCUSDT')
+
+
 if __name__ == '__main__':
-    b = BinanceKlines()
-    b.get()
+    b = BinanceTickerOrderTest()
+    ret = b.post()
+    print(ret)

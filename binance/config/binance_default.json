@@ -3,7 +3,7 @@
         "BTCUSDT": {
             "name": "BTCUSDT",
             "cmp": "down",
-            "init_val": 54000,
+            "init_val": 53000,
             "rate": 500,
             "degree": 0
         },
@@ -24,7 +24,7 @@
         "DOGEUSDT": {
             "name": "DOGEUSDT",
             "cmp": "down",
-            "init_val": 0.275,
+            "init_val": 0.3,
             "rate": 0.01,
             "degree": 0
         },
@@ -45,14 +45,14 @@
         "SOLUSDT": {
             "name": "SOLUSDT",
             "cmp": "down",
-            "init_val": 42,
+            "init_val": 41,
             "rate": 1,
             "degree": 0
         },
         "EOSUSDT": {
             "name": "EOSUSDT",
             "cmp": "down",
-            "init_val": 5.8,
+            "init_val": 5.6,
             "rate": 0.1,
             "degree": 0
         }

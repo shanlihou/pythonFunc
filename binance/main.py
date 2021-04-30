@@ -49,5 +49,10 @@ def update_config():
     cm.set_default_config()
 
 
+def test_order():
+    pass
+
+
+
 if __name__ == '__main__':
-    update_config()
+    main()
