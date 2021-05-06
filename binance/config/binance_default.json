@@ -14,13 +14,6 @@
             "rate": 10,
             "degree": 0
         },
-        "BNBUSDT": {
-            "name": "BNBUSDT",
-            "cmp": "down",
-            "init_val": 550,
-            "rate": 10,
-            "degree": 0
-        },
         "DOGEUSDT": {
             "name": "DOGEUSDT",
             "cmp": "down",
@@ -28,31 +21,24 @@
             "rate": 0.01,
             "degree": 0
         },
-        "LTCUSDT": {
-            "name": "LTCUSDT",
+        "BCHUSDT": {
+            "name": "BCHUSDT",
             "cmp": "down",
-            "init_val": 250,
-            "rate": 5,
+            "init_val": 1358,
+            "rate": 50,
             "degree": 0
         },
-        "XRPUSDT": {
-            "name": "XRPUSDT",
+        "YFIIUSDT": {
+            "name": "YFIIUSDT",
             "cmp": "down",
-            "init_val": 1.3,
-            "rate": 0.05,
+            "init_val": 2700,
+            "rate": 100,
             "degree": 0
         },
-        "SOLUSDT": {
-            "name": "SOLUSDT",
+        "THETAUSDT": {
+            "name": "THETAUSDT",
             "cmp": "down",
-            "init_val": 41,
-            "rate": 1,
-            "degree": 0
-        },
-        "EOSUSDT": {
-            "name": "EOSUSDT",
-            "cmp": "down",
-            "init_val": 5.6,
+            "init_val": 11.18,
             "rate": 0.1,
             "degree": 0
         }
