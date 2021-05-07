@@ -40,7 +40,7 @@ def main():
                     _mail.send_mail('472888366@qq.com', send_str, send_str)
         except Exception as e:
             print(f'meet error:{e}')
-        print(f'{time.time()}------------------------------------------------------\n')
+        print(f'{time.localtime(time.time())}------------------------------------------------------\n')
         time.sleep(60)
 
 

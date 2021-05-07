@@ -17,28 +17,21 @@
         "DOGEUSDT": {
             "name": "DOGEUSDT",
             "cmp": "down",
-            "init_val": 0.3,
+            "init_val": 0.55,
             "rate": 0.01,
             "degree": 0
         },
-        "BCHUSDT": {
+        "UNIUSDT": {
             "name": "BCHUSDT",
             "cmp": "down",
-            "init_val": 1358,
-            "rate": 50,
-            "degree": 0
-        },
-        "YFIIUSDT": {
-            "name": "YFIIUSDT",
-            "cmp": "down",
-            "init_val": 2700,
-            "rate": 100,
+            "init_val": 41.05,
+            "rate": 1,
             "degree": 0
         },
         "THETAUSDT": {
             "name": "THETAUSDT",
             "cmp": "down",
-            "init_val": 11.18,
+            "init_val": 11.05,
             "rate": 0.1,
             "degree": 0
         }
