@@ -3,35 +3,35 @@
         "BTCUSDT": {
             "name": "BTCUSDT",
             "cmp": "down",
-            "init_val": 53000,
+            "init_val": 57000,
             "rate": 500,
             "degree": 0
         },
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "down",
-            "init_val": 2710,
+            "init_val": 3450,
             "rate": 10,
             "degree": 0
         },
         "DOGEUSDT": {
             "name": "DOGEUSDT",
-            "cmp": "down",
-            "init_val": 0.55,
+            "cmp": "double",
+            "init_val": 0.68,
             "rate": 0.01,
             "degree": 0
         },
         "UNIUSDT": {
-            "name": "BCHUSDT",
+            "name": "UNIUSDT",
             "cmp": "down",
-            "init_val": 41.05,
-            "rate": 1,
+            "init_val": 39.5,
+            "rate": 0.1,
             "degree": 0
         },
-        "THETAUSDT": {
-            "name": "THETAUSDT",
+        "SUSHIUSDT": {
+            "name": "SUSHIUSDT",
             "cmp": "down",
-            "init_val": 11.05,
+            "init_val": 16,
             "rate": 0.1,
             "degree": 0
         }

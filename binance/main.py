@@ -4,6 +4,7 @@ import time
 import biance
 import mail
 import comparer
+import sys
 import config_manager
 
 
@@ -55,4 +56,8 @@ def test_order():
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'up':
+            update_config()
+        else:
+            main()
