@@ -16,22 +16,22 @@
         },
         "DOGEUSDT": {
             "name": "DOGEUSDT",
-            "cmp": "double",
-            "init_val": 0.68,
+            "cmp": "down",
+            "init_val": 0.5,
             "rate": 0.01,
             "degree": 0
         },
-        "UNIUSDT": {
-            "name": "UNIUSDT",
+        "ETCUSDT": {
+            "name": "ETCUSDT",
             "cmp": "down",
-            "init_val": 39.5,
-            "rate": 0.1,
+            "init_val": 125,
+            "rate": 1,
             "degree": 0
         },
-        "SUSHIUSDT": {
-            "name": "SUSHIUSDT",
+        "EOSUSDT": {
+            "name": "EOSUSDT",
             "cmp": "down",
-            "init_val": 16,
+            "init_val": 10.5,
             "rate": 0.1,
             "degree": 0
         }
