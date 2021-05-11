@@ -3,7 +3,7 @@
         "BTCUSDT": {
             "name": "BTCUSDT",
             "cmp": "down",
-            "init_val": 57000,
+            "init_val": 55000,
             "rate": 500,
             "degree": 0
         },
@@ -21,18 +21,18 @@
             "rate": 0.01,
             "degree": 0
         },
-        "ETCUSDT": {
-            "name": "ETCUSDT",
+        "TRXUSDT": {
+            "name": "TRXUSDT",
             "cmp": "down",
-            "init_val": 125,
-            "rate": 1,
+            "init_val": 0.13,
+            "rate": 0.01,
             "degree": 0
         },
-        "EOSUSDT": {
-            "name": "EOSUSDT",
+        "SHIBUSDT": {
+            "name": "SHIBUSDT",
             "cmp": "down",
-            "init_val": 10.5,
-            "rate": 0.1,
+            "init_val": 0.13,
+            "rate": 1,
             "degree": 0
         }
     }
