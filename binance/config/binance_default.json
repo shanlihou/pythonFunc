@@ -3,29 +3,15 @@
         "BTCUSDT": {
             "name": "BTCUSDT",
             "cmp": "down",
-            "init_val": 55000,
+            "init_val": 45000,
             "rate": 500,
             "degree": 0
         },
         "ETHUSDT": {
             "name": "ETHUSDT",
-            "cmp": "down",
-            "init_val": 4220,
-            "rate": 10,
-            "degree": 0
-        },
-        "ETCUSDT": {
-            "name": "ETCUSDT",
-            "cmp": "down",
-            "init_val": 107,
-            "rate": 1,
-            "degree": 0
-        },
-        "UNIUSDT": {
-            "name": "UNIUSDT",
-            "cmp": "down",
-            "init_val": 41,
-            "rate": 1,
+            "cmp": "double",
+            "init_val": 3984,
+            "rate": 30,
             "degree": 0
         }
     }
