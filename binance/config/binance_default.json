@@ -3,14 +3,14 @@
         "BTCUSDT": {
             "name": "BTCUSDT",
             "cmp": "down",
-            "init_val": 45000,
+            "init_val": 50000,
             "rate": 500,
             "degree": 0
         },
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 3984,
+            "init_val": 3845,
             "rate": 30,
             "degree": 0
         }
