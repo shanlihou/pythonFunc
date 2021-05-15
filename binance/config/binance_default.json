@@ -10,8 +10,22 @@
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 3845,
+            "init_val": 4050,
             "rate": 30,
+            "degree": 0
+        },
+        "DOGEUSDT": {
+            "name": "DOGEUSDT",
+            "cmp": "down",
+            "init_val": 0.545,
+            "rate": 0.01,
+            "degree": 0
+        },
+        "ETCUSDT": {
+            "name": "ETCUSDT",
+            "cmp": "down",
+            "init_val": 107,
+            "rate": 1,
             "degree": 0
         }
     }

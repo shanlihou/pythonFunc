@@ -6,19 +6,31 @@ import mail
 import comparer
 import sys
 import config_manager
+import json
 
 
 def reset(cm, listener, byte_coin_cmper):
     listener.clear()
     byte_coin_cmper.clear()
-    for k, v in cm.config['notify_strategy'].items():
+    if cm is None:
+        config = json.load(open('config\\binance_default.json'))
+        config = config['notify_strategy']
+    else:
+        config = cm.config['notify_strategy']
+    for k, v in config.items():
         listener.append(biance.BinanceKlines(k))
         cmp = comparer.get_comp_from_dic(v)
         byte_coin_cmper[k] = cmp
 
 
 def main():
-    cm = config_manager.ConfigManager()
+    try:
+        cm = config_manager.ConfigManager()
+    except Exception as e:
+        print(e)
+        cm = None
+
+
     _mail = mail.get_default_user_mail()
     listener = []
     byte_coin_cmper = {}
