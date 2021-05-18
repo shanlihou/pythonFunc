@@ -15,7 +15,8 @@ proxyDict = {
               "ftp"   : ftp_proxy
             }
 
-HOST = 'https://api.binance.com'
+#HOST = 'https://api.binance.com'
+HOST = 'https://fapi.binance.com'
 
 
 class BinanceBase(object):
@@ -144,7 +145,12 @@ class BinanceTickerOrderTest(BinanceBase):
     symbol = attr.ib(default='BTCUSDT')
 
 
+@attr.s
+class BinanceTickerOpenOrders(BinanceBase):
+    API = '/fapi/v1/openOrders'
+
+
 if __name__ == '__main__':
-    b = BinanceTickerOrderTest()
-    ret = b.post()
+    b = BinanceTickerOpenOrders()
+    ret = b.get()
     print(ret)

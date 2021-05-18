@@ -1,4 +1,5 @@
 #coding: utf-8
+from common import utils
 import requests
 import time
 import biance
@@ -7,6 +8,10 @@ import comparer
 import sys
 import config_manager
 import json
+from binance_f import RequestClient
+from binance_f.constant.test import *
+from binance_f.base.printobject import *
+from binance_f.model.constant import *
 
 
 def reset(cm, listener, byte_coin_cmper):
@@ -63,13 +68,24 @@ def update_config():
 
 
 def test_order():
-    pass
-
-
+    user_info = utils.get_binance_user_info()
+    request_client = RequestClient(api_key=user_info['api_key'], secret_key=user_info['secret_key'])
+    result = request_client.get_position_v2()
+    print(result.__class__)
+    for i in result:
+        if i.symbol != 'ETHUSDT':
+            continue
+        print('i class is:', i.__class__)
+        for k, v in i.__dict__.items():
+            print(k, v)
+        print('-' * 20)
+    #PrintMix.print_data(result)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         if sys.argv[1] == 'up':
             update_config()
+        elif sys.argv[1] == 'test':
+            test_order()
         else:
             main()
