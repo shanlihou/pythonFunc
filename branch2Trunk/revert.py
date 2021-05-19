@@ -85,7 +85,7 @@ if __name__ == '__main__':
         
         print('1--------------------------------')
         os.system(r'svn up E:\trunk_server')
-        
+
         print('2--------------------------------')
         rev = Revert(
             r'E:\svn\Dev\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')

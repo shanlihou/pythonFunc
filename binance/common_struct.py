@@ -20,4 +20,4 @@ class KLines(object):
     def __str__(self):
         t_start = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.open_time))
         t_end = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.end_time))
-        return f'start:{t_start}, end:{t_end}, max:{self.max_rice}, min:{self.min_rice}, end:{self.end_rice}'
+        return f'start:{t_start}, max:{self.max_rice}, min:{self.min_rice}, end:{self.end_rice}, diff:{self.end_rice - self.open_rice}, open:{self.open_rice}'

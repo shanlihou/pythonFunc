@@ -2,6 +2,7 @@ import requests
 import attr
 import json
 import common_struct
+import time
 from common import const
 
 
@@ -15,8 +16,8 @@ proxyDict = {
               "ftp"   : ftp_proxy
             }
 
-#HOST = 'https://api.binance.com'
-HOST = 'https://fapi.binance.com'
+HOST = 'https://api.binance.com'
+#HOST = 'https://fapi.binance.com'
 
 
 class BinanceBase(object):
@@ -99,16 +100,17 @@ class BinanceKlines(BinanceBase):
     API = '/api/v1/klines'
     symbol = attr.ib(default='BTCUSDT')
     interval = attr.ib(default='30m')
-    limit = attr.ib(default=1)
+    limit = attr.ib(default=4)
 
     @staticmethod
     def parse_response(data):
         json_data = json.loads(data)
+        kList = []
         for i in json_data:
             klines = common_struct.KLines(*i)
-            return klines
+            kList.append(klines)
 
-        return None
+        return kList
 
 
 @attr.s
@@ -151,6 +153,9 @@ class BinanceTickerOpenOrders(BinanceBase):
 
 
 if __name__ == '__main__':
-    b = BinanceTickerOpenOrders()
-    ret = b.get()
-    print(ret)
+    while 1:
+        b = BinanceKlines('ETHUSDT')
+        ret = b.get()
+        for i in ret:
+            print(i)
+        time.sleep(10)

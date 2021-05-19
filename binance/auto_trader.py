@@ -28,14 +28,21 @@ class AutoTrader(object):
 
         return rets
 
-    def post_order(self):
+    def get_orders(self):
+        result = self.request_client.get_open_orders('ETHUSDT')
+        PrintMix.print_data(result)
+
+    def open_short(self, symbol, price, quantity):
         result = self.request_client.post_order(
-            symbol="ETHUSDT",
-            side=OrderSide.BUY,
-            ordertype=OrderType.TAKE_PROFIT_MARKET,
-            stopPrice=3460,
-            closePosition=True,
+            symbol=symbol,
+            side=OrderSide.SELL,
+            ordertype=OrderType.LIMIT,
+            price=price,
+            quantity=quantity,
+            timeInForce="GTC",
+            closePosition=False,
             positionSide="SHORT")
+
 
 
     def run(self):
@@ -43,8 +50,11 @@ class AutoTrader(object):
         for pos in poses:
             for k, v in pos.__dict__.items():
                 print(k, v)
-
-        self.post_order()
+        self.get_orders()
+        self.open_short('ETHUSDT', 3060, 0.04)
+        self.open_short('ETHUSDT', 3110, 0.08)
+        self.open_short('ETHUSDT', 3160, 0.16)
+        #self.post_order()
 
 def main():
     at = AutoTrader('ETHUSDT')

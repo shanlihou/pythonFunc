@@ -52,14 +52,17 @@ def main():
             for _lis in listener:
                 klines = _lis.get()
                 cmp = byte_coin_cmper[_lis.symbol]
-                send_str = f'coin[{_lis.symbol}] {klines}, cmp is:{cmp}'
-                print(send_str)
-                if cmp.compare(klines.end_rice):
+                send_str = f'coin[{_lis.symbol}] {klines[-1]}, cmp is:{cmp}'
+                max_vol = max(i.deal_rice for i in klines)
+                for k in klines:
+                    print(k, f', vol:{(k.deal_rice / max_vol):.2f}')
+                print(_lis.symbol, '-' * 60)
+                if cmp.compare(klines[-1].end_rice):
                     _mail.send_mail('472888366@qq.com', send_str, send_str)
         except Exception as e:
             print(f'meet error:{e}')
         print(f'{time.localtime(time.time())}------------------------------------------------------\n')
-        time.sleep(60)
+        time.sleep(30)
 
 
 def update_config():
