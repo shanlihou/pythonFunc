@@ -50,10 +50,10 @@ class AutoTrader(object):
         for pos in poses:
             for k, v in pos.__dict__.items():
                 print(k, v)
-        self.get_orders()
-        self.open_short('ETHUSDT', 3060, 0.04)
-        self.open_short('ETHUSDT', 3110, 0.08)
-        self.open_short('ETHUSDT', 3160, 0.16)
+        #self.get_orders()
+        # self.open_short('ETHUSDT', 3060, 0.04)
+        # self.open_short('ETHUSDT', 3110, 0.08)
+        # self.open_short('ETHUSDT', 3160, 0.16)
         #self.post_order()
 
 def main():
