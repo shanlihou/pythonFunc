@@ -53,9 +53,15 @@ def calc_by_final_rice(start, count, diff, final, rate):
 
 
 def main():
-    ret = calc_by_final_rice(2800, 5, 100, 0.1, 0.0001)
+    ret = calc_by_final_rice(1.87, 3, 0.15, 50, 1)
     for k, v in ret.items():
         print(k, v)
+
+    curQuantity = 0.07
+    cur = 3775 * curQuantity
+    rice = 2664
+    quantity = 0.28
+    print((cur + rice * quantity) / (curQuantity + quantity))
 
 if __name__ == '__main__':
     main()
