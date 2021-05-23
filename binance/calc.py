@@ -1,5 +1,7 @@
 
-def calc(start, count, rate, multi, isLog=False):
+MAX = 10000
+
+def calc(start, count, rate, qty, isLog=False):
     down_count = 0
     sum = 0
     rice_list = []
@@ -7,15 +9,15 @@ def calc(start, count, rate, multi, isLog=False):
     cur_quantitiy_list = []
     for i in range(count):
         if isLog:
-            print(f'cur:{start}, multi:{multi}')
+            print(f'cur:{start}, multi:{qty}')
 
         rice_list.append(start)
-        quantity_list.append(multi)
-        sum += start * multi
-        down_count += multi
+        quantity_list.append(qty)
+        sum += start * qty
+        down_count += qty
         cur_quantitiy_list.append(down_count)
 
-        multi *= 3
+        qty *= 3
         start += rate
         if isLog:
             print(f'\tafter down_count:{down_count}')
@@ -30,30 +32,55 @@ def calc(start, count, rate, multi, isLog=False):
     }
 
 
-def get_open_rice(level, target, rate):
+def get_open_rice(level, max_quantity):
     l = 0
-    r = target // rate
+    r = MAX
+
     while (l <= r):
         mid = (l + r) // 2
-        val = calc(1, level, 1, mid * rate)['quantity']
+        val = calc(1, level, 1, max_quantity / MAX * mid)['quantity']
         # print(f'l:{l}, r:{r}, mid:{mid}, rate:{rate}')
-        if val <= target:
+        if val <= max_quantity:
             l = mid + 1
         else:
             r = mid - 1
 
-    return r * rate
+    return max_quantity / MAX * mid
+
+
+def get_diff(level, start, target):
+    l = 0
+    r = MAX
+    duration = target - start
+    while l <= r:
+        mid = (l + r) // 2
+        val = duration / MAX * mid
+        ret = calc(start, level, val, 1)
+        if ret['avg_rice'] < target:
+            l = mid + 1
+        else:
+            r = mid - 1
+
+    return duration / MAX * l
 
 
 def calc_by_final_rice(start, count, diff, final, rate):
-    quality = get_open_rice(count, final, rate)
+    quality = get_open_rice(count, final)
+
+
 
     ret = calc(start, count, diff, quality)
     return ret
 
 
+def cacl_by_avg_rice(start, level, target, max_quantity):
+    diff = get_diff(level, start, target)
+    quantity = get_open_rice(level, max_quantity)
+
+    return calc(start, level, diff, quantity)
+
 def main():
-    ret = calc_by_final_rice(1.87, 3, 0.15, 50, 1)
+    ret = cacl_by_avg_rice(0.95, 3, 1.6, 59)
     for k, v in ret.items():
         print(k, v)
 
@@ -62,6 +89,7 @@ def main():
     rice = 2664
     quantity = 0.28
     print((cur + rice * quantity) / (curQuantity + quantity))
+
 
 if __name__ == '__main__':
     main()
