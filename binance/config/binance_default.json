@@ -3,28 +3,28 @@
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 2730,
+            "init_val": 2145,
             "rate": 50,
             "degree": 0
         },
         "BTCUSDT": {
             "name": "BTCUSDT",
             "cmp": "down",
-            "init_val": 39000,
+            "init_val": 34000,
             "rate": 500,
             "degree": 0
         },
         "DOGEUSDT": {
             "name": "DOGEUSDT",
             "cmp": "down",
-            "init_val": 0.38,
+            "init_val": 0.2,
             "rate": 0.01,
             "degree": 0
         },
         "MATICUSDT": {
             "name": "MATICUSDT",
             "cmp": "down",
-            "init_val": 1.7,
+            "init_val": 1.1,
             "rate": 0.1,
             "degree": 0
         }

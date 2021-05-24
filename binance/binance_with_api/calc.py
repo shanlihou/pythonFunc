@@ -84,10 +84,10 @@ def main():
     for k, v in ret.items():
         print(k, v)
 
-    curQuantity = 0.07
-    cur = 3775 * curQuantity
-    rice = 2664
-    quantity = 0.28
+    curQuantity = 0.012
+    cur = 2143 * curQuantity
+    rice = 2375
+    quantity = 0.027
     print((cur + rice * quantity) / (curQuantity + quantity))
 
 
