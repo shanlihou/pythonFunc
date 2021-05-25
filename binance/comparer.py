@@ -45,8 +45,8 @@ class ComparerUp(ComparerBase):
 
 @attr.s
 class ComparerDouble(ComparerBase):
-    up_degree = attr.ib(default=0)
-    down_degree = attr.ib(default=0)
+    up_degree = attr.ib(default=1)
+    down_degree = attr.ib(default=1)
 
     def _compare(self, val):
         return not (self.init_val - self.rate * self.down_degree < val < self.init_val + self.rate * self.up_degree)

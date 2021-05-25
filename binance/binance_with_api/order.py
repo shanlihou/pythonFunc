@@ -11,4 +11,6 @@ class Order(object):
     price = attr.ib()
     qty = attr.ib()
     type = attr.ib()
+    stop_price = attr.ib()
+    close_position = attr.ib()
 
