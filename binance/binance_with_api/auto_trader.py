@@ -11,6 +11,7 @@ from binance_f.model.constant import *
 from . import position
 from . import order
 from . import calc
+import mail
 
 
 console = sys.stdout
@@ -21,10 +22,12 @@ def self_print(print_str):
 class AutoTrader(object):
     def __init__(self) -> None:
         super().__init__()
+        self.last_amt = None
         user_info = utils.get_binance_user_info()
         self.request_client = RequestClient(api_key=user_info['api_key'], secret_key=user_info['secret_key'])
+        self.order_dic = {}
 
-    def get_positions(self, symbol, dire):
+    def get_positions(self, symbol, dire=None):
         result = self.request_client.get_position_v2()
         rets = []
         for pos in result:
@@ -52,17 +55,7 @@ class AutoTrader(object):
         rets = []
         ret = self.request_client.get_open_orders(symbol)
         for _order in ret:
-            rets.append(order.Order(
-                _order.symbol,
-                _order.orderId,
-                _order.side,
-                _order.positionSide,
-                _order.price,
-                _order.origQty,
-                _order.type,
-                _order.stopPrice,
-                _order.closePosition,
-            ))
+            rets.append(order.Order.from_order(_order))
         return rets
 
     def open_short(self, symbol, price, quantity):
@@ -76,7 +69,21 @@ class AutoTrader(object):
             closePosition=False,
             positionSide="SHORT")
 
-    def stop_profit(self, symbol, price, quantity=None):
+    def post_order(self, *args, **kwargs):
+        ret = self.request_client.post_order(*args, **kwargs)
+
+    def open_long(self, symbol, price, quantity):
+        return self.request_client.post_order(
+            symbol=symbol,
+            side=OrderSide.BUY,
+            ordertype=OrderType.LIMIT,
+            price=price,
+            quantity=quantity,
+            timeInForce="GTC",
+            closePosition=False,
+            positionSide="LONG")
+
+    def take_short(self, symbol, price, quantity=None):
         if quantity is None:
             closePosition = True
             quantity = 0
@@ -93,10 +100,37 @@ class AutoTrader(object):
             closePosition=closePosition,
             positionSide="SHORT")
 
-    def print_positions(self):
-        poses = self.get_positions('ETHUSDT', const.TradeSide.SHORT)
+    def take_long(self, symbol, price, quantity=None):
+        if quantity is None:
+            closePosition = True
+            quantity = 0
+        else:
+            closePosition = False
+
+        return self.request_client.post_order(
+            symbol=symbol,
+            side=OrderSide.SELL,
+            ordertype=OrderType.TAKE_PROFIT_MARKET,
+            stopPrice=price,
+            quantity=quantity,
+            timeInForce="GTC",
+            closePosition=closePosition,
+            positionSide="LONG")
+
+    def cancel_all_orders(self, symbol):
+        return self.request_client.cancel_all_orders(symbol=symbol)
+
+    def print_info(self, symbol):
+        poses = self.get_positions(symbol)
         for pos in poses:
             sh_log.sh_print(pos)
+
+        ret = self.get_orders(symbol)
+        ret = sorted(ret, key=lambda x: (x.pos_side, x.side, x.price))
+        for _order in ret:
+            sh_log.sh_print(_order)
+
+        self.print_balance()
 
     def get_small_order_qty(self, mark_price):
         return 5 / mark_price
@@ -116,18 +150,45 @@ class AutoTrader(object):
         ret = calc.cacl_by_avg_rice(pos.mark_price, level, pos.enter_price, small_order_qty)
         sh_log.sh_print(ret)
 
+    def print_balance(self):
+        rets = self.request_client.get_balance_v2()
+        for k, v in rets[1].__dict__.items():
+            sh_log.sh_print(k, v)
+
+    def get_all_orders(self):
+        orders = self.request_client.get_all_orders()
+        rets = []
+        for ret in orders:
+            rets.append(order.Order.from_order(ret))
+
+        return rets
+
+    def init_order_dic(self):
+        self.get_orders()
+
     def test(self):
         # self.open_short('MATICUSDT', 1.87, 3)
         #self.open_short('MATICUSDT', '1.97', 9)
         # self.open_short('MATICUSDT', '2.07', 27)
         #self.open_short('ETHUSDT', '2460', '0.027')
         #self.stop_profit('ETHUSDT', '2200', '0.07')
-        ret = self.get_orders('ETHUSDT')
-        for _order in ret:
-            sh_log.sh_print(_order)
+        #self.open_long('MATICUSDT', '1.55', 6)
+        #self.open_long('MATICUSDT', '1.05', 9)
+        #self.open_long('MATICUSDT', '0.95', 9)
+        #self.open_long('MATICUSDT', '2.23', 66)
+        #self.take_long('MATICUSDT', '2.29')
+        #self.cancel_order('MATICUSDT', '10801734381')
 
-        self.print_positions()
-        self.cancel_order('ETHUSDT', order_id=8389765498361236484)
+        #ret = self.open_short('MATICUSDT', '100', 2)
+        #ret = order.Order.from_order(ret)
+        #sh_log.sh_print(ret)
+        # self.cancel_all_orders('MATICUSDT')
+        # self.open_long('MATICUSDT', '2.22', 22)
+        # self.open_long('MATICUSDT', '2.25', 22)
+        # self.open_long('MATICUSDT', '2.295', 22)
+        #self.take_long('MATICUSDT', '2.307')
+        self.print_info('MATICUSDT')
+        #self.open_long('MATICUSDT', '0.95', 9)
         #self.cancel_order('ETHUSDT', '8389765498337130907')
 
         # self.open_short('ETHUSDT', 3060, 0.04)
@@ -136,7 +197,7 @@ class AutoTrader(object):
         #self.post_order()
         #@self.one_key_order('ETHUSDT', 'LONG', 16, 3)
 
-    def run_once(self):
+    def _eth_auto_buy(self):
         sh_log.sh_print('-' * 20 + '\n')
         poses = self.get_positions('ETHUSDT', const.TradeSide.SHORT)
         if len(poses) < 1:
@@ -154,12 +215,28 @@ class AutoTrader(object):
 
         if pos.amt < -0.075:
             if target_order is None:
-                self.stop_profit('ETHUSDT', (pos.enter_price // 1) - 5, 0.01)
+                self.take_short('ETHUSDT', (pos.enter_price // 1) - 5, 0.01)
         else:
             if target_order is None:
                 self.open_short('ETHUSDT', (pos.enter_price // 1) + 5, 0.01)
 
-    def run(self):
+    def run_once(self):
+        poses = self.get_positions('MATICUSDT', const.TradeSide.LONG)
+        pos = poses[0]
+        sh_log.sh_print(pos)
+        if self.last_amt is None:
+            self.last_amt = pos.amt
+
+        if pos.amt != self.last_amt:
+            if pos.amt < 1:
+                mail.get_default_user_mail().send_mail('472888366@qq.com', '卖出成功', '成功卖出')
+            else:
+                mail.get_default_user_mail().send_mail('472888366@qq.com', '下单成功', '成功下单')
+
+        self.last_amt = pos.amt
+
+
+    def _run(self):
         # self.test()
         while 1:
             try:
@@ -168,3 +245,6 @@ class AutoTrader(object):
                 sh_log.sh_print(e)
 
             time.sleep(10)
+
+    def run(self):
+        self._run()

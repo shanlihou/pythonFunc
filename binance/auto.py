@@ -6,7 +6,11 @@ from binance_with_api import auto_trader
 
 def main():
     at = auto_trader.AutoTrader()
-    at.run()
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'test':
+            at.test()
+        else:
+            at.run()
 
 if __name__ == '__main__':
     main()

@@ -1,3 +1,4 @@
+from os import stat
 import attr
 
 
@@ -14,3 +15,16 @@ class Order(object):
     stop_price = attr.ib()
     close_position = attr.ib()
 
+    @classmethod
+    def from_order(cls, oriOrder):
+        return cls(
+            oriOrder.symbol,
+            oriOrder.orderId,
+            oriOrder.side,
+            oriOrder.positionSide,
+            oriOrder.price,
+            oriOrder.origQty,
+            oriOrder.type,
+            oriOrder.stopPrice,
+            oriOrder.closePosition,
+        )

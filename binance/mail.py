@@ -3,6 +3,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 import json
 import attr
+import functools
 
 
 HOST = "smtp.qq.com" #不变，QQ邮箱的smtp服务器地址
@@ -26,13 +27,13 @@ class Mail(object):
         smtp.quit()
 
 
+@functools.lru_cache(1)
 def get_default_user_mail():
     user_info = json.load(open('.user_info.json'))
     for user in user_info:
         if user['email'].startswith('819'):
             mail = Mail(user['secret'], user['email'])
             return mail
-
 
 
 if __name__ == '__main__':

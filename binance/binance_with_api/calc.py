@@ -1,5 +1,16 @@
-
+import attr
 MAX = 10000
+MULTI = 3
+
+@attr.s
+class CalcRet(object):
+    sum = attr.ib()
+    quantity = attr.ib()
+    avg_rice = attr.ib()
+    rice_list = attr.ib()
+    quantity_list = attr.ib()
+    cur_quantity_list = attr.ib()
+
 
 def calc(start, count, rate, qty, isLog=False):
     down_count = 0
@@ -17,19 +28,19 @@ def calc(start, count, rate, qty, isLog=False):
         down_count += qty
         cur_quantitiy_list.append(down_count)
 
-        qty *= 3
+        qty *= MULTI
         start += rate
         if isLog:
             print(f'\tafter down_count:{down_count}')
 
-    return {
-        'sum': sum,
-        'quantity': down_count,
-        'avg_rice': sum / down_count,
-        'rice_list': rice_list,
-        'quantity_list': quantity_list,
-        'cur_quantity_list': cur_quantitiy_list,
-    }
+    return CalcRet(
+        sum,
+        down_count,
+        sum / down_count,
+        rice_list,
+        quantity_list,
+        cur_quantitiy_list,
+    )
 
 
 def get_open_qty(level, max_quantity):
@@ -64,27 +75,38 @@ def get_diff(level, start, target):
     return duration / MAX * l
 
 
-def calc_by_final_rice(start, count, diff, final, rate):
-    quality = get_open_qty(count, final)
-    ret = calc(start, count, diff, quality)
-    return ret
+def calc_by_final_rice(start, count, final_price, quantity):
+    """
+    根据最终价格统计
+    """
+    diff = (final_price - start) / (count - 1)
+    return calc(start, count, diff, quantity)
 
 
 def cacl_by_avg_rice_max(start, level, target, max_quantity):
+    """
+    根据平均价格及最大数量来计算
+    """
     diff = get_diff(level, start, target)
     quantity = get_open_qty(level, max_quantity)
     return calc(start, level, diff, quantity)
 
 
 def cacl_by_avg_rice(start, level, target, quantity):
+    """
+    根据最终平均价格来计算
+    """
     diff = get_diff(level, start, target)
     return calc(start, level, diff, quantity)
 
 
 def main():
-    ret = cacl_by_avg_rice_max(0.95, 3, 1.6, 59)
-    for k, v in ret.items():
-        print(k, v)
+    # ret = cacl_by_avg_rice_max(19, 3, 1.6, 59)
+    # for k, v in ret.items():
+    #     print(k, v)
+
+    ret = calc(2.25, 3, -0.3, 10)
+    print(ret)
 
     curQuantity = 0.7
     cur = 3770 * curQuantity
