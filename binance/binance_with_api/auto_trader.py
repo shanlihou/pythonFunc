@@ -19,6 +19,16 @@ def self_print(print_str):
     console.write(print_str + '\n')
 
 
+class OrderCallBack(object):
+    def __init__(self, od, func) -> None:
+        super().__init__()
+        self._order = od
+        self.func = func
+
+    def do_func(self, mark_price):
+        self.func(mark_price, self._order)
+
+
 class AutoTrader(object):
     def __init__(self) -> None:
         super().__init__()
@@ -59,7 +69,7 @@ class AutoTrader(object):
         return rets
 
     def open_short(self, symbol, price, quantity):
-        return self.request_client.post_order(
+        return self.post_order(
             symbol=symbol,
             side=OrderSide.SELL,
             ordertype=OrderType.LIMIT,
@@ -71,9 +81,27 @@ class AutoTrader(object):
 
     def post_order(self, *args, **kwargs):
         ret = self.request_client.post_order(*args, **kwargs)
+        od = order.Order.from_order(ret)
+        ocb = OrderCallBack(od, self.on_callback)
+        self.order_dic[od.order_id] = ocb
+
+    def on_callback(self, mark_price, one_order):
+        sh_log.sh_print('on callback', mark_price, one_order)
+
+    def do_callback(self, mark_price):
+        orders = self.get_orders('MATICUSDT')
+        id_set = set()
+        for _order in orders:
+            id_set.add(_order.order_id)
+
+        #sh_log.sh_print(id_set)
+        for order_id, ocb in list(self.order_dic.items()):
+            if order_id not in id_set:
+                ocb.do_func(mark_price)
+                self.order_dic.pop(order_id)
 
     def open_long(self, symbol, price, quantity):
-        return self.request_client.post_order(
+        return self.post_order(
             symbol=symbol,
             side=OrderSide.BUY,
             ordertype=OrderType.LIMIT,
@@ -90,7 +118,7 @@ class AutoTrader(object):
         else:
             closePosition = False
 
-        return self.request_client.post_order(
+        return self.post_order(
             symbol=symbol,
             side=OrderSide.BUY,
             ordertype=OrderType.TAKE_PROFIT_MARKET,
@@ -107,7 +135,7 @@ class AutoTrader(object):
         else:
             closePosition = False
 
-        return self.request_client.post_order(
+        return self.post_order(
             symbol=symbol,
             side=OrderSide.SELL,
             ordertype=OrderType.TAKE_PROFIT_MARKET,
@@ -126,7 +154,7 @@ class AutoTrader(object):
             sh_log.sh_print(pos)
 
         ret = self.get_orders(symbol)
-        ret = sorted(ret, key=lambda x: (x.pos_side, x.side, x.price))
+        ret = sorted(ret, key=lambda x: (x.pos_side, x.side, x.stop_price))
         for _order in ret:
             sh_log.sh_print(_order)
 
@@ -156,7 +184,7 @@ class AutoTrader(object):
             sh_log.sh_print(k, v)
 
     def get_all_orders(self):
-        orders = self.request_client.get_all_orders()
+        orders = self.request_client.get_all_orders('MATICUSDT')
         rets = []
         for ret in orders:
             rets.append(order.Order.from_order(ret))
@@ -164,7 +192,10 @@ class AutoTrader(object):
         return rets
 
     def init_order_dic(self):
-        self.get_orders()
+        orders = self.get_orders('MATICUSDT')
+        for _order in orders:
+            ocb = OrderCallBack(_order, self.on_callback)
+            self.order_dic[_order.order_id] = ocb
 
     def test(self):
         # self.open_short('MATICUSDT', 1.87, 3)
@@ -177,17 +208,26 @@ class AutoTrader(object):
         #self.open_long('MATICUSDT', '0.95', 9)
         #self.open_long('MATICUSDT', '2.23', 66)
         #self.take_long('MATICUSDT', '2.29')
-        #self.cancel_order('MATICUSDT', '10801734381')
+        #self.cancel_order('MATICUSDT', '10808389011')
 
-        #ret = self.open_short('MATICUSDT', '100', 2)
+        #ret = self.open_short('MATICUSDT', '100', 1)
         #ret = order.Order.from_order(ret)
         #sh_log.sh_print(ret)
         # self.cancel_all_orders('MATICUSDT')
-        # self.open_long('MATICUSDT', '2.22', 22)
-        # self.open_long('MATICUSDT', '2.25', 22)
-        # self.open_long('MATICUSDT', '2.295', 22)
-        #self.take_long('MATICUSDT', '2.307')
-        self.print_info('MATICUSDT')
+        # # self.open_long('MATICUSDT', '2.22', 22)
+        # # self.open_long('MATICUSDT', '2.25', 22)
+        # #self.open_long('MATICUSDT', '2.305', 66)
+        # #self.take_long('MATICUSDT', '2.32')
+        # #self.take_long('MATICUSDT', '2.305')
+        # #self.take_short('MATICUSDT', 2685, '0.03')
+        # self.take_short('MATICUSDT', '1.8', 15)
+        # self.take_short('MATICUSDT', '1.75', 15)
+        # self.take_short('MATICUSDT', '1.7', 15)
+        # self.take_short('MATICUSDT', '1.65', 15)
+        # self.take_short('MATICUSDT', '1.6', 15)
+        # self.take_short('MATICUSDT', '1.55', 15)
+        # self.take_short('MATICUSDT', '1.5', 10)
+        self.print_info('ETHUSDT')
         #self.open_long('MATICUSDT', '0.95', 9)
         #self.cancel_order('ETHUSDT', '8389765498337130907')
 
@@ -221,14 +261,15 @@ class AutoTrader(object):
                 self.open_short('ETHUSDT', (pos.enter_price // 1) + 5, 0.01)
 
     def run_once(self):
-        poses = self.get_positions('MATICUSDT', const.TradeSide.LONG)
+        poses = self.get_positions('MATICUSDT', const.TradeSide.SHORT)
         pos = poses[0]
         sh_log.sh_print(pos)
+        self.do_callback(pos.mark_price)
         if self.last_amt is None:
             self.last_amt = pos.amt
 
         if pos.amt != self.last_amt:
-            if pos.amt < 1:
+            if pos.amt < self.last_amt:
                 mail.get_default_user_mail().send_mail('472888366@qq.com', '卖出成功', '成功卖出')
             else:
                 mail.get_default_user_mail().send_mail('472888366@qq.com', '下单成功', '成功下单')
@@ -238,6 +279,7 @@ class AutoTrader(object):
 
     def _run(self):
         # self.test()
+        self.init_order_dic()
         while 1:
             try:
                 self.run_once()

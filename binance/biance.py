@@ -3,7 +3,12 @@ import attr
 import json
 import common_struct
 import time
+import functools
+
+import hmac
+from hashlib import sha256
 from common import const
+from common import utils
 
 
 http_proxy  = "http://127.0.0.1:7890"
@@ -20,10 +25,17 @@ HOST = 'https://api.binance.com'
 #HOST = 'https://fapi.binance.com'
 
 
+def get_sig(appsecret, data):
+    appsecret = appsecret.encode('utf-8')
+    data = data.encode('utf-8')
+    print(appsecret, data)
+    return hmac.new(appsecret, data, digestmod=sha256).hexdigest()
+
+
 class BinanceBase(object):
     API = ''
     def __attrs_post_init__(self):
-        json_data = json.load(open(const.USER_INFO))
+        json_data = utils.get_user_info()
         self.api_key = json_data['api_key']
         self.secret_key = json_data['secret_key']
 
@@ -44,6 +56,7 @@ class BinanceBase(object):
     def post(self):
         url = self.get_url(self.API)
         ret = requests.post(url, proxies=proxyDict, params=self.params(), headers=self.get_header())
+        print(ret.url)
         return self.parse_response(ret.text)
 
     @staticmethod
@@ -142,20 +155,28 @@ class BinanceTickerBookTicker(BinanceBase):
 
 
 @attr.s
-class BinanceTickerOrderTest(BinanceBase):
-    API = '/api/v3/order/test'
+class BinanceTickerOrder(BinanceBase):
+    API = '/api/v3/order'
     symbol = attr.ib(default='BTCUSDT')
 
-
-@attr.s
-class BinanceTickerOpenOrders(BinanceBase):
-    API = '/fapi/v1/openOrders'
+    def params(self):
+        _params = {
+            'symbol': self.symbol,
+            'side': 'BUY',
+            'type': 'LIMIT',
+            'timeInForce': 'GTC',
+            'quantity': '5',
+            'price': '20000',
+            'recvWindow': '5000',
+            'timestamp': str(int(time.time() * 1000))
+        }
+        data = '&'.join('{}={}'.format(k, v) for k, v in _params.items())
+        sig = get_sig(self.secret_key, data)
+        _params['signature'] = sig
+        return _params
 
 
 if __name__ == '__main__':
-    while 1:
-        b = BinanceKlines('ETHUSDT')
-        ret = b.get()
-        for i in ret:
-            print(i)
-        time.sleep(10)
+    btot = BinanceTickerOrder()
+    ret = btot.post()
+    print(ret)

@@ -108,10 +108,10 @@ def main():
     ret = calc(2.25, 3, -0.3, 10)
     print(ret)
 
-    curQuantity = 0.7
-    cur = 3770 * curQuantity
-    rice = 2000
-    quantity = 0.7
+    curQuantity = 0.08
+    cur = 2689 * curQuantity
+    rice = 2950
+    quantity = 0.21
     print((cur + rice * quantity) / (curQuantity + quantity))
 
 
