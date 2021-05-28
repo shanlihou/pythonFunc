@@ -2,8 +2,18 @@ from common import utils
 from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
 
 user_info = utils.get_user_info()
-client = Client(user_info['api_key'], user_info['secret_key'])
+http_proxy  = "http://127.0.0.1:7890"
+https_proxy = "http://127.0.0.1:7890"
+ftp_proxy   = "ftp://127.0.0.1:7890"
 
+proxyDict = {
+              "http"  : http_proxy,
+              "https" : https_proxy,
+              "ftp"   : ftp_proxy
+            }
+client = Client(user_info['api_key'], user_info['secret_key'], {'proxies': proxyDict})
+withdraws = client.get_withdraw_history()
+print(withdraws)
 # get market depth
 
 # socket manager using threads

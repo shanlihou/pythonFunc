@@ -105,15 +105,17 @@ def main():
     # for k, v in ret.items():
     #     print(k, v)
 
-    ret = calc(2.25, 3, -0.3, 10)
+    ret = calc(2557, 3, 100, 0.008)
     print(ret)
 
-    curQuantity = 0.08
-    cur = 2689 * curQuantity
-    rice = 2950
-    quantity = 0.21
-    print((cur + rice * quantity) / (curQuantity + quantity))
+    curQuantity = 100
+    cur_rice = 0.535
+    rice = 0.31
+    quantity = 300
+    print((cur_rice * curQuantity + rice * quantity) / (curQuantity + quantity))
 
+    val = 0.07 * 3777 + 100 * 0.535 + 66 * 2.3 + 46
+    print(val)
 
 if __name__ == '__main__':
     main()

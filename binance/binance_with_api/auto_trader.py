@@ -158,8 +158,6 @@ class AutoTrader(object):
         for _order in ret:
             sh_log.sh_print(_order)
 
-        self.print_balance()
-
     def get_small_order_qty(self, mark_price):
         return 5 / mark_price
 
@@ -213,7 +211,7 @@ class AutoTrader(object):
         #ret = self.open_short('MATICUSDT', '100', 1)
         #ret = order.Order.from_order(ret)
         #sh_log.sh_print(ret)
-        # self.cancel_all_orders('MATICUSDT')
+        #self.cancel_all_orders('ETHUSDT')
         # # self.open_long('MATICUSDT', '2.22', 22)
         # # self.open_long('MATICUSDT', '2.25', 22)
         # #self.open_long('MATICUSDT', '2.305', 66)
@@ -226,8 +224,22 @@ class AutoTrader(object):
         # self.take_short('MATICUSDT', '1.65', 15)
         # self.take_short('MATICUSDT', '1.6', 15)
         # self.take_short('MATICUSDT', '1.55', 15)
-        # self.take_short('MATICUSDT', '1.5', 10)
+
+        #self.take_short('MATICUSDT', '1.83', 100)
+        # start = 2704
+        # for i in range(10):
+        #     start -= 30
+        #     self.take_short('ETHUSDT', start, '0.008')
+
+        #self.open_long('MATICUSDT', '1.81', 10)
+        #self.open_short('ETHUSDT', '2478', '0.01')
+        #self.take_short('ETHUSDT', 2546)
+
+        self.print_info('MATICUSDT')
+        sh_log.sh_print('\n')
         self.print_info('ETHUSDT')
+        sh_log.sh_print('\n')
+        self.print_balance()
         #self.open_long('MATICUSDT', '0.95', 9)
         #self.cancel_order('ETHUSDT', '8389765498337130907')
 

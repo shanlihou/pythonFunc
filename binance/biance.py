@@ -155,9 +155,9 @@ class BinanceTickerBookTicker(BinanceBase):
 
 
 @attr.s
-class BinanceTickerOrder(BinanceBase):
+class BinanceOrder(BinanceBase):
     API = '/api/v3/order'
-    symbol = attr.ib(default='BTCUSDT')
+    symbol = attr.ib(default='MATICUSDT')
 
     def params(self):
         _params = {
@@ -166,7 +166,7 @@ class BinanceTickerOrder(BinanceBase):
             'type': 'LIMIT',
             'timeInForce': 'GTC',
             'quantity': '5',
-            'price': '20000',
+            'price': '1',
             'recvWindow': '5000',
             'timestamp': str(int(time.time() * 1000))
         }
@@ -177,6 +177,6 @@ class BinanceTickerOrder(BinanceBase):
 
 
 if __name__ == '__main__':
-    btot = BinanceTickerOrder()
+    btot = BinanceOrder()
     ret = btot.post()
     print(ret)
