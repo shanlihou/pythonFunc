@@ -206,12 +206,12 @@ class AutoTrader(object):
         #self.open_long('MATICUSDT', '0.95', 9)
         #self.open_long('MATICUSDT', '2.23', 66)
         #self.take_long('MATICUSDT', '2.29')
-        #self.cancel_order('MATICUSDT', '10808389011')
+        #self.cancel_order('ETHUSDT', '10808389011')
 
         #ret = self.open_short('MATICUSDT', '100', 1)
         #ret = order.Order.from_order(ret)
         #sh_log.sh_print(ret)
-        #self.cancel_all_orders('ETHUSDT')
+        self.cancel_all_orders('ETHUSDT')
         # # self.open_long('MATICUSDT', '2.22', 22)
         # # self.open_long('MATICUSDT', '2.25', 22)
         # #self.open_long('MATICUSDT', '2.305', 66)
@@ -226,10 +226,11 @@ class AutoTrader(object):
         # self.take_short('MATICUSDT', '1.55', 15)
 
         #self.take_short('MATICUSDT', '1.83', 100)
-        # start = 2704
-        # for i in range(10):
-        #     start -= 30
-        #     self.take_short('ETHUSDT', start, '0.008')
+        start = 2460
+        for i in range(9):
+            start += 8
+            sh_log.sh_print('cur:', start)
+            self.open_short('ETHUSDT', start, '0.003')
 
         #self.open_long('MATICUSDT', '1.81', 10)
         #self.open_short('ETHUSDT', '2478', '0.01')
