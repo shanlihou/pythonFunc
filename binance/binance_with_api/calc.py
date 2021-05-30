@@ -108,13 +108,13 @@ def main():
     ret = calc(2557, 3, 100, 0.008)
     print(ret)
 
-    curQuantity = 100
-    cur_rice = 0.535
-    rice = 0.31
-    quantity = 300
+    curQuantity = 86
+    cur_rice = 2.18
+    rice = 1.85
+    quantity = 16
     print((cur_rice * curQuantity + rice * quantity) / (curQuantity + quantity))
 
-    val = 0.07 * 3777 + 100 * 0.535 + 66 * 2.3 + 46
+    val = 0.07 * 3777 + 100 * 0.535 + 86 * 2.18 + 78
     print(val)
 
 if __name__ == '__main__':
