@@ -3,7 +3,7 @@
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 2800,
+            "init_val": 2325,
             "rate": 50,
             "degree": 0
         },

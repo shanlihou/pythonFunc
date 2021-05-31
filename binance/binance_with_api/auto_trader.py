@@ -154,7 +154,7 @@ class AutoTrader(object):
             sh_log.sh_print(pos)
 
         ret = self.get_orders(symbol)
-        ret = sorted(ret, key=lambda x: (x.pos_side, x.side, x.stop_price))
+        ret = sorted(ret, key=lambda x: (x.pos_side, x.side, x.stop_price, x.price))
         for _order in ret:
             sh_log.sh_print(_order)
 
@@ -211,7 +211,7 @@ class AutoTrader(object):
         #ret = self.open_short('MATICUSDT', '100', 1)
         #ret = order.Order.from_order(ret)
         #sh_log.sh_print(ret)
-        self.cancel_all_orders('MATICUSDT')
+        #self.cancel_all_orders('ETHUSDT')
         # # self.open_long('MATICUSDT', '2.22', 22)
         # # self.open_long('MATICUSDT', '2.25', 22)
         # #self.open_long('MATICUSDT', '2.305', 66)
@@ -226,15 +226,15 @@ class AutoTrader(object):
         # self.take_short('MATICUSDT', '1.55', 15)
 
         #self.take_short('MATICUSDT', '1.83', 100)
-        start = 1.8
-        for i in range(9):
-            start += 8
-            sh_log.sh_print('cur:', start)
-            self.open_short('MATICUSDT', start, '3')
+        # start = 2450
+        # for i in range(10):
+        #     start += 8
+        #     sh_log.sh_print('cur:', start)
+        #     self.open_short('ETHUSDT', start, '0.003')
 
         #self.open_long('MATICUSDT', '1.81', 10)
         #self.open_short('ETHUSDT', '2478', '0.01')
-        #self.take_short('ETHUSDT', 2546)
+        #self.take_short('ETHUSDT', 2475, '0.01')
 
         self.print_info('MATICUSDT')
         sh_log.sh_print('\n')
