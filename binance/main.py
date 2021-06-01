@@ -52,7 +52,7 @@ def main():
             for _lis in listener:
                 klines = _lis.get()
                 cmp = byte_coin_cmper[_lis.symbol]
-                send_str = f'coin[{_lis.symbol}] {klines[-1]}, cmp is:{cmp}'
+                send_str = f'{_lis.symbol}到了价位{klines[-1].end_rice}'
                 max_vol = max(i.deal_rice for i in klines)
                 for k in klines:
                     print(k, f', vol:{(k.deal_rice / max_vol):.2f}')
@@ -62,8 +62,10 @@ def main():
         except Exception as e:
             print(f'meet error:{e}')
 
-        time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-        print(f'{time_str}------------------------------------------------------\n')
+        time_t = time.localtime(time.time())
+        time_str = time.strftime("%Y-%m-%d %H:%M:%S", time_t)
+        percent = ((time_t.tm_min % 30) / 30 * 100)
+        print(f'{time_str}  {percent:.2f}%------------------------------------------------------\n')
         time.sleep(30)
 
 

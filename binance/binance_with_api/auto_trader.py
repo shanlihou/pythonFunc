@@ -88,8 +88,8 @@ class AutoTrader(object):
     def on_callback(self, mark_price, one_order):
         sh_log.sh_print('on callback', mark_price, one_order)
 
-    def do_callback(self, mark_price):
-        orders = self.get_orders('MATICUSDT')
+    def do_callback(self, symbol, mark_price):
+        orders = self.get_orders(symbol)
         id_set = set()
         for _order in orders:
             id_set.add(_order.order_id)
@@ -99,6 +99,8 @@ class AutoTrader(object):
             if order_id not in id_set:
                 ocb.do_func(mark_price)
                 self.order_dic.pop(order_id)
+
+
 
     def open_long(self, symbol, price, quantity):
         return self.post_order(
@@ -181,8 +183,8 @@ class AutoTrader(object):
         for k, v in rets[1].__dict__.items():
             sh_log.sh_print(k, v)
 
-    def get_all_orders(self):
-        orders = self.request_client.get_all_orders('MATICUSDT')
+    def get_all_orders(self, symbol):
+        orders = self.request_client.get_all_orders(symbol)
         rets = []
         for ret in orders:
             rets.append(order.Order.from_order(ret))
@@ -211,7 +213,7 @@ class AutoTrader(object):
         #ret = self.open_short('MATICUSDT', '100', 1)
         #ret = order.Order.from_order(ret)
         #sh_log.sh_print(ret)
-        #self.cancel_all_orders('ETHUSDT')
+        #self.cancel_all_orders('MATICUSDT')
         # # self.open_long('MATICUSDT', '2.22', 22)
         # # self.open_long('MATICUSDT', '2.25', 22)
         # #self.open_long('MATICUSDT', '2.305', 66)
@@ -226,16 +228,20 @@ class AutoTrader(object):
         # self.take_short('MATICUSDT', '1.55', 15)
 
         #self.take_short('MATICUSDT', '1.83', 100)
-        # start = 2450
+        # start = 2674
         # for i in range(10):
         #     start += 8
         #     sh_log.sh_print('cur:', start)
         #     self.open_short('ETHUSDT', start, '0.003')
 
-        #self.open_long('MATICUSDT', '1.81', 10)
-        #self.open_short('ETHUSDT', '2478', '0.01')
-        #self.take_short('ETHUSDT', 2475, '0.01')
-
+        #self.open_long('MATICUSDT', '1.891', 20)
+        #self.open_short('ETHUSDT', '2666', '0.12')
+        #self.open_short('MATICUSDT', '1.956', '10')
+        #self.take_short('ETHUSDT', 2551, '0.02')
+        # ret = self.get_all_orders('MATICUSDT')
+        # for _ret in ret:
+        #     sh_log.sh_print(_ret)
+        # sh_log.sh_print('\n')
         self.print_info('MATICUSDT')
         sh_log.sh_print('\n')
         self.print_info('ETHUSDT')

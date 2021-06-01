@@ -3,7 +3,7 @@
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 2325,
+            "init_val": 2622,
             "rate": 50,
             "degree": 0
         },
@@ -23,9 +23,9 @@
         },
         "MATICUSDT": {
             "name": "MATICUSDT",
-            "cmp": "down",
-            "init_val": 1.6,
-            "rate": 0.1,
+            "cmp": "double",
+            "init_val": 1.87,
+            "rate": 0.05,
             "degree": 0
         }
     }
