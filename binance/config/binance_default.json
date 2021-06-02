@@ -3,8 +3,8 @@
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 2622,
-            "rate": 50,
+            "init_val": 2625,
+            "rate": 30,
             "degree": 0
         },
         "BTCUSDT": {
@@ -24,8 +24,8 @@
         "MATICUSDT": {
             "name": "MATICUSDT",
             "cmp": "double",
-            "init_val": 1.87,
-            "rate": 0.05,
+            "init_val": 1.8,
+            "rate": 0.025,
             "degree": 0
         }
     }

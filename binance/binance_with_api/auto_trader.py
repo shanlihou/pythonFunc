@@ -234,8 +234,8 @@ class AutoTrader(object):
         #     sh_log.sh_print('cur:', start)
         #     self.open_short('ETHUSDT', start, '0.003')
 
-        #self.open_long('MATICUSDT', '1.891', 20)
-        #self.open_short('ETHUSDT', '2666', '0.12')
+        #self.open_long('MATICUSDT', '1.78', 20)
+        #self.open_short('ETHUSDT', '2677', '0.02')
         #self.open_short('MATICUSDT', '1.956', '10')
         #self.take_short('ETHUSDT', 2551, '0.02')
         # ret = self.get_all_orders('MATICUSDT')
