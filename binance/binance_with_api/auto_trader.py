@@ -213,7 +213,7 @@ class AutoTrader(object):
         #ret = self.open_short('MATICUSDT', '100', 1)
         #ret = order.Order.from_order(ret)
         #sh_log.sh_print(ret)
-        self.cancel_all_orders('ETHUSDT')
+        #self.cancel_all_orders('ETHUSDT')
         # # self.open_long('MATICUSDT', '2.22', 22)
         # # self.open_long('MATICUSDT', '2.25', 22)
         # #self.open_long('MATICUSDT', '2.305', 66)
@@ -242,10 +242,18 @@ class AutoTrader(object):
         # for _ret in ret:
         #     sh_log.sh_print(_ret)
         # sh_log.sh_print('\n')
-        self.take_short('ETHUSDT', 2800, '0.06')
+        #self.take_short('MATICUSDT', 2800, '0.06')
+        #self.open_short('DOGEUSDT', '0.36', '50')
         self.print_info('MATICUSDT')
         sh_log.sh_print('\n')
+
         self.print_info('ETHUSDT')
+        sh_log.sh_print('\n')
+
+        self.print_info('DOGEUSDT')
+        sh_log.sh_print('\n')
+
+        self.print_info('UNIUSDT')
         sh_log.sh_print('\n')
         self.print_balance()
         #self.open_long('MATICUSDT', '0.95', 9)

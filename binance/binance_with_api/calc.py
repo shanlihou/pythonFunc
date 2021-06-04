@@ -114,7 +114,7 @@ def main():
     quantity = 0.2
     print((cur_rice * curQuantity + rice * quantity) / (curQuantity + quantity))
 
-    val = 0.07 * 3777 + 100 * 0.535 + 86 * 2.18 + 78
+    val = 0.08 * 3627 + 150 * 0.454 + 50 * 1.958 + 78
     print(val)
 
 if __name__ == '__main__':
