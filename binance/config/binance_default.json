@@ -14,10 +14,10 @@
             "rate": 500,
             "degree": 0
         },
-        "DOGEUSDT": {
-            "name": "DOGEUSDT",
+        "CAKEBNB": {
+            "name": "CAKEBNB",
             "cmp": "down",
-            "init_val": 0.2,
+            "init_val": 0.001,
             "rate": 0.01,
             "degree": 0
         },
