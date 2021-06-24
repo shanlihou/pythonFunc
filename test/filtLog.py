@@ -36,18 +36,21 @@ def main():
 
 def out_test_0618():
     ori_file = r'E:\shLog\tmp\ori.log'
-    ori_base = r'C:\Users\Administrator\Documents\WXWork\1688851680425036\Cache\File\2021-06\202106211720_171363\0_9.150.94.241_202106211713_171363\9.150.94.241_data_home_user00_log_baseapp_700001.log'
+    ori_base = r'C:\Users\Administrator\Documents\WXWork\1688851680425036\Cache\File\2021-06\202106211720_171363\0_9.150.94.241_202106211713_171363\9.150.94.241_data_home_user00_log_logger_baseapp.log'
+    tmp_file = r'E:\shLog\tmp\db.8444835990201591397'
     filter_gbid = r'E:\shLog\tmp\ori.log.8444835983061208270'
     filter_avatar_id = r'E:\shLog\tmp\ori.log.96619'
-    filter_modify_failed = r'E:\shLog\tmp\base.454'
+    filter_modify_failed = r'E:\shLog\tmp\base.29626'
     #fw = open(filter_gbid, 'w')
     fw = open(filter_modify_failed, 'w')
 
 
     with open(ori_base) as fr:
         for line in fr:
-            if 'line 454' in line:
+            if 'Avatar(29626)' in line or '[Guild(28726)]' in line:
+                #print(line)
                 fw.write(line)
+
 
 if __name__ == '__main__':
     out_test_0618()
