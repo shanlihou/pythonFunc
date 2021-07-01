@@ -48,7 +48,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(20115) + '_friend_ik'
+        self.indexName = str(20217) + '_friend_ik'
         self.typeName = '_doc'
 
     def cat(self):
@@ -56,7 +56,7 @@ class FriendSearchMixin(object):
 
         def func(resp):
             print(resp.body.decode('utf-8'))
-        elasticRequest(url, func)
+        elasticRequest(url, func, headers=self.headers)
 
     def setting(self):
         data = '{"index.blocks.read_only_allow_delete": null}'
@@ -219,15 +219,15 @@ class FriendSearchMixin(object):
     def test(self):
         # self.initElastic()
         # self.setting()
-        # self.cat()
+        self.cat()
         # self.addAvatarInfo('悠然狂魔', 2299822224, 1)
         # self.initElastic()
-        self.searchAvatarName('夜作殊')
-        self.analyze()
+        self.searchAvatarName('淡淡又琴')
+        #self.analyze()
         # self.addAvatarInfo('zhang liang', 99124, 13422)
         # self.testPost('zhang san feng', 33423, 9013)
         # self.searchAvatarName('一世')
-        #self.analyze()
+        # self.analyze()
         # self.clearDB()
         print('end---')
         # self.indexObId(559108)
