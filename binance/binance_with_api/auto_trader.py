@@ -37,6 +37,10 @@ class AutoTrader(object):
         self.request_client = RequestClient(api_key=user_info['api_key'], secret_key=user_info['secret_key'])
         self.order_dic = {}
 
+    def get_klines(self):
+        now = int(time.time())
+        ret = self.request_client.get_candlestick_data('ETHUSDT', '30m', (now - 120) * 1000, now * 1000, 4)
+
     def get_positions(self, symbol, dire=None):
         result = self.request_client.get_position_v2()
         rets = []

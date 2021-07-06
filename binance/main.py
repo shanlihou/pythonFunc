@@ -8,6 +8,9 @@ import comparer
 import sys
 import config_manager
 import json
+import argparse
+
+from binance_with_api import auto_trader
 from binance_f import RequestClient
 from binance_f.constant.test import *
 from binance_f.base.printobject import *
@@ -29,12 +32,12 @@ def reset(cm, listener, byte_coin_cmper):
 
 
 def main():
-    try:
-        cm = config_manager.ConfigManager()
-    except Exception as e:
-        print(e)
-        cm = None
-
+    # try:
+    #     cm = config_manager.ConfigManager()
+    # except Exception as e:
+    #     print(e)
+    #     cm = None
+    cm = None
 
     _mail = mail.get_default_user_mail()
     listener = []
@@ -42,11 +45,11 @@ def main():
     reset(cm, listener, byte_coin_cmper)
 
     while 1:
-        try:
-            if not cm.load_config_and_check():
-                reset(cm, listener, byte_coin_cmper)
-        except Exception as e:
-            print(f'load error:{e}')
+        # try:
+        #     if not cm.load_config_and_check():
+        #         reset(cm, listener, byte_coin_cmper)
+        # except Exception as e:
+        #     print(f'load error:{e}')
 
         try:
             for _lis in listener:
@@ -75,24 +78,19 @@ def update_config():
 
 
 def test_order():
-    user_info = utils.get_binance_user_info()
-    request_client = RequestClient(api_key=user_info['api_key'], secret_key=user_info['secret_key'])
-    result = request_client.get_position_v2()
-    print(result.__class__)
-    for i in result:
-        if i.symbol != 'ETHUSDT':
-            continue
-        print('i class is:', i.__class__)
-        for k, v in i.__dict__.items():
-            print(k, v)
-        print('-' * 20)
+    at = auto_trader.AutoTrader()
+    at.get_klines()
     #PrintMix.print_data(result)
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        if sys.argv[1] == 'up':
-            update_config()
-        elif sys.argv[1] == 'test':
-            test_order()
-        else:
-            main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-u', '--update', help="update bmob config", action="store_true")
+    parser.add_argument('-t', '--test', help="test", action="store_true")
+    parser.add_argument('-r', '--run', help="run tick", action="store_true")
+    args = parser.parse_args()
+    if args.update:
+        update_config()
+    elif args.test:
+        test_order()
+    elif args.run:
+        main()

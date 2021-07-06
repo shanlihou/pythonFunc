@@ -3,7 +3,7 @@
         "ETHUSDT": {
             "name": "ETHUSDT",
             "cmp": "double",
-            "init_val": 1900,
+            "init_val": 2320,
             "rate": 50,
             "degree": 0
         },
@@ -14,18 +14,11 @@
             "rate": 500,
             "degree": 0
         },
-        "THETAUSDT": {
-            "name": "THETAUSDT",
-            "cmp": "down",
-            "init_val": 7,
-            "rate": 1,
-            "degree": 0
-        },
-        "CAKEUSDT": {
-            "name": "CAKEUSDT",
+        "BAKEUSDT": {
+            "name": "BAKEUSDT",
             "cmp": "double",
-            "init_val": 10,
-            "rate": 2,
+            "init_val": 2,
+            "rate": 0.1,
             "degree": 0
         }
     }
