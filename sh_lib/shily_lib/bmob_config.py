@@ -1,4 +1,4 @@
-from bmob import BMOB
+from .bmob import BMOB
 import json
 
 

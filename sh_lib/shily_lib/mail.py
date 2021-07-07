@@ -28,8 +28,8 @@ class Mail(object):
 
 
 @functools.lru_cache(1)
-def get_default_user_mail():
-    user_info = json.load(open('.user_info.json'))
+def get_default_user_mail(user_info_path):
+    user_info = json.load(open(user_info_path))
     for user in user_info:
         if user['email'].startswith('819'):
             mail = Mail(user['secret'], user['email'])
