@@ -36,18 +36,18 @@ def main():
 
 def out_test_0618():
     ori_file = r'E:\shLog\tmp\ori.log'
-    ori_base = r'F:\shdownload\log\9.150.94.241_data_home_user00_log_logger_cellapp.log'
+    ori_base = r'F:\shdownload\log\7.9.gua.base\logger_cellapp.log-20210709'
     tmp_file = r'E:\shLog\tmp\db.8444835990201591397'
     filter_gbid = r'E:\shLog\tmp\ori.log.8444835983061208270'
     filter_avatar_id = r'E:\shLog\tmp\ori.log.96619'
-    filter_modify_failed = r'E:\shLog\tmp\cell.20312'
+    filter_modify_failed = r'E:\shLog\tmp\cell.10694'
     #fw = open(filter_gbid, 'w')
     fw = open(filter_modify_failed, 'w')
 
 
     with open(ori_base) as fr:
         for line in fr:
-            if '[Avatar(20312)]:' in line:
+            if 'Avatar(10694)' in line:
                 fw.write(line)
 
 
