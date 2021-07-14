@@ -222,7 +222,7 @@ class FriendSearchMixin(object):
         self.cat()
         # self.addAvatarInfo('悠然狂魔', 2299822224, 1)
         # self.initElastic()
-        self.searchAvatarName('淡淡又琴')
+        #self.searchAvatarName('淡淡又琴')
         #self.analyze()
         # self.addAvatarInfo('zhang liang', 99124, 13422)
         # self.testPost('zhang san feng', 33423, 9013)
