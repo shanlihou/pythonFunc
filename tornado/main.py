@@ -151,7 +151,7 @@ class FriendSearchMixin(object):
             for data in body['hits']['hits']:
                 print(data)
         print(uri)
-        elasticRequest(uri, func, 'GET')
+        elasticRequest(uri, func, 'GET', headers=self.headers)
 
     def searchAvatarName(self, name):
         for i in name:
@@ -219,7 +219,7 @@ class FriendSearchMixin(object):
     def test(self):
         # self.initElastic()
         # self.setting()
-        self.cat()
+        #self.cat()
         # self.addAvatarInfo('悠然狂魔', 2299822224, 1)
         # self.initElastic()
         #self.searchAvatarName('淡淡又琴')
@@ -232,7 +232,7 @@ class FriendSearchMixin(object):
         print('end---')
         # self.indexObId(559108)
         # self.delete(557056)
-        # self.getAll()
+        self.getAll()
 
 
 if __name__ == "__main__":

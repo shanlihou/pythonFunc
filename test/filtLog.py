@@ -36,7 +36,7 @@ def main():
 
 def out_test_0618():
     ori_file = r'E:\shLog\tmp\ori.log'
-    ori_base = r'F:\shdownload\log\9.150.94.241_data_home_user00_log_logger_cellapp.log'
+    ori_base = r'C:\Users\Administrator\Documents\WXWork\1688851680425036\Cache\File\2021-07\11.177.94.77_data_home_user00_log_logger_cellapp.log'
     tmp_file = r'E:\shLog\tmp\db.8444835990201591397'
     filter_gbid = r'E:\shLog\tmp\ori.log.8444835983061208270'
     filter_avatar_id = r'E:\shLog\tmp\ori.log.96619'
@@ -47,7 +47,7 @@ def out_test_0618():
 
     with open(ori_base) as fr:
         for line in fr:
-            if '[Avatar(16954)]:' in line:
+            if '[Avatar(19394)]' in line:
                 fw.write(line)
 
 
