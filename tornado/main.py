@@ -168,6 +168,7 @@ class FriendSearchMixin(object):
             body = resp.body.decode('utf-8')
             jsonData = json.loads(body)
             hits = jsonData['hits']['hits']
+            print('search ret:', jsonData)
             # print(hits)
             for data in hits:
                 print('\n\n')
@@ -203,7 +204,7 @@ class FriendSearchMixin(object):
     def analyze(self, ):
         uri = self.join(self.uriBase, self.indexName, '_analyze')
         data = {'field': 'name',
-                'text': '夜作殊'}
+                'text': 'will'}
         data = json.dumps(data)
 
         def func(resp):
@@ -232,7 +233,8 @@ class FriendSearchMixin(object):
         print('end---')
         # self.indexObId(559108)
         # self.delete(557056)
-        self.getAll()
+        self.analyze()
+        # self.getAll()
 
 
 if __name__ == "__main__":
