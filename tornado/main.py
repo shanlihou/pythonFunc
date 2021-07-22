@@ -12,6 +12,7 @@ authStr = 'elastic:123456'
 authB64 = base64.b64encode(bytes(authStr, 'ascii'))
 
 
+
 @tornado.gen.coroutine
 def elasticRequest(uri, callback, method='GET', data=None, headers=None):
     http_client = tornado.httpclient.AsyncHTTPClient()
@@ -23,16 +24,17 @@ def elasticRequest(uri, callback, method='GET', data=None, headers=None):
     )
     response = yield tornado.gen.Task(http_client.fetch, req)
     if response.error:
-        print(response)
+        # print(response)
         data = response.body.decode('utf-8')
         jsonData = json.loads(data)
-        print(jsonData)
+        print(json.dumps(jsonData, sort_keys=True, indent=4, separators=(', ', ': ')))
         root_cause = jsonData.get('error', {}).get('root_cause', [])
         for cause in root_cause:
             if cause['type'] == 'resource_already_exists_exception':
                 return
+
         print('ckz: elasticRequest error:', response.error, uri)
-        print(response.body)
+        # print(response.body)
 
     else:
         callback(response)
@@ -56,6 +58,7 @@ class FriendSearchMixin(object):
 
         def func(resp):
             print(resp.body.decode('utf-8'))
+
         elasticRequest(url, func, headers=self.headers)
 
     def setting(self):
@@ -64,6 +67,7 @@ class FriendSearchMixin(object):
 
         def func(resp):
             print(resp.body)
+
         print(uri)
         elasticRequest(uri, func, 'PUT', data, self.headers)
 
@@ -73,6 +77,7 @@ class FriendSearchMixin(object):
         def func(resp):
             print('delete------------------------------------')
             print(resp.body)
+
         print(uri)
         elasticRequest(uri, func, 'DELETE')
 
@@ -85,6 +90,7 @@ class FriendSearchMixin(object):
 
         def func(response):
             print('add:', response.body)
+
         elasticRequest(uri, func, 'POST', data, self.headers)
 
     def testPost(self, name, gbId, id):
@@ -96,6 +102,7 @@ class FriendSearchMixin(object):
 
         def func(response):
             print('add:', response.body)
+
         elasticRequest(uri, func, 'POST', data, self.headers)
 
     def initElastic(self):
@@ -104,8 +111,14 @@ class FriendSearchMixin(object):
         "properties": {
             "name": {
                 "type": "text",
-                "analyzer": "smartcn",
-                "search_analyzer": "smartcn"
+                "analyzer": "ik_max_word",
+                "search_analyzer": "ik_max_word",
+                "store": "true",
+                "fields": {
+                    "raw": {
+                        "type": "keyword"
+                    }
+                }
             },
             "gbId": {
                 "type": "long"
@@ -115,7 +128,10 @@ class FriendSearchMixin(object):
 }'''
 
         def func(*args):
-            print(args)
+            data = args[0].body.decode('utf-8')
+            jsonData = json.loads(data)
+            for k, v in jsonData.items():
+                print(k, v)
 
         uri = self.join(self.uriBase, self.indexName)
         print(uri)
@@ -126,9 +142,12 @@ class FriendSearchMixin(object):
 
         def func(resp):
             print('clearDB------------------------------------')
-            print(resp.body)
+            data = resp.body.decode('utf-8')
+            jsonData = json.loads(data)
+            print(jsonData)
+
         print(uri)
-        elasticRequest(uri, func, 'DELETE')
+        elasticRequest(uri, func, 'DELETE', headers=self.headers)
 
     def indexObId(self, obId):
         uri = self.join(self.uriBase, self.indexName,
@@ -139,6 +158,7 @@ class FriendSearchMixin(object):
             jsonData = json.loads(data)
             print(jsonData)
             print(jsonData['_source'])
+
         elasticRequest(uri, _func)
 
     def getAll(self):
@@ -150,16 +170,38 @@ class FriendSearchMixin(object):
             body = json.loads(body)
             for data in body['hits']['hits']:
                 print(data)
+
         print(uri)
         elasticRequest(uri, func, 'GET', headers=self.headers)
 
     def searchAvatarName(self, name):
         for i in name:
             print(ord(i))
-        data = {'query': {'match': {'name': {'query': name,
-                                             'operator': 'and'}}},
-                'size': 100
+        data = {
+            'query': {
+                'bool': {
+                    'should': [
+                        {
+                            'match': {
+                                'name': {
+                                    'query': name,
+                                    'operator': 'and'
+                                }
+                            }
+                        },
+                        {
+                            'match': {
+                                'name.raw': {
+                                    'query': name,
+                                    'operator': 'and'
+                                }
+                            },
+                        }
+                    ]
                 }
+            },
+            'size': 100
+        }
         data = json.dumps(data)
         uri = self.join(self.uriBase, self.indexName,
                         self.typeName, '_search?explain')
@@ -201,10 +243,13 @@ class FriendSearchMixin(object):
 
         elasticRequest(uri, func, 'POST', data, self.headers)
 
-    def analyze(self, ):
+    def analyze(self,):
         uri = self.join(self.uriBase, self.indexName, '_analyze')
-        data = {'field': 'name',
-                'text': 'will'}
+        data = {
+            'field': 'name',
+            'text': 'will',
+            'tokenizer': 'standard',
+        }
         data = json.dumps(data)
 
         def func(resp):
@@ -220,20 +265,20 @@ class FriendSearchMixin(object):
     def test(self):
         # self.initElastic()
         # self.setting()
-        #self.cat()
+        # self.cat()
         # self.addAvatarInfo('悠然狂魔', 2299822224, 1)
         # self.initElastic()
-        #self.searchAvatarName('淡淡又琴')
-        #self.analyze()
-        # self.addAvatarInfo('zhang liang', 99124, 13422)
-        # self.testPost('zhang san feng', 33423, 9013)
-        # self.searchAvatarName('一世')
+        # self.searchAvatarName('淡淡又琴')
         # self.analyze()
-        # self.clearDB()
+        # self.addAvatarInfo('will', 99124, 13422)
+        # self.testPost('zhang san feng', 33423, 9013)
+        # self.searchAvatarName('will')
+        # self.analyze()
+        self.clearDB()
         print('end---')
         # self.indexObId(559108)
         # self.delete(557056)
-        self.analyze()
+        #self.analyze()
         # self.getAll()
 
 
