@@ -58,9 +58,22 @@ def parse_by_act(filt, act_id):
 
 if __name__ == '__main__':
     # whole_log = r'E:\shLog\tlog\xzj.log.LOG_GUILD_BANDIT.log'
+    print(1)
     fname = utils.filter_from_origin('RoundFlow')
+    print(2)
     f = Filter.Filter(fname, LogOne.RoundFlow)
-    parse_by_act(f, 9)
+    print(3)
+    # parse_by_act(f, 9)
+    print(4)
+    fname = f.filter_by_act(20)
+    print(5)
+    with utils.utf8_open(fname, encoding='utf-8') as fr:
+        for line in fr:
+            lo = LogOne.RoundFlow.get_log_obj_from_line(line)
+            if int(lo.round_time) > 1800:
+                print(lo.result)
+
+
     # parse_by_act(f, 32000004)
     # f = Filter.Filter(whole_log, filter_inner_name, filter_out_name)
     # f.filter_tlog(r'E:\shLog\tlog\xzj.log', 'LOG_VITALITY')

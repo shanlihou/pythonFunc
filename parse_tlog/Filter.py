@@ -108,6 +108,9 @@ class Filter(object):
     def filter_by_act(self, battle_type):
         battle_type = str(battle_type)
         fw_name = os.path.join(self.newdir, '{}.{}.log'.format(self.basename, battle_type))
+        if os.path.exists(fw_name):
+            return fw_name
+
         fw = utils.utf8_open(fw_name, 'w')
         with utils.utf8_open(self.filename, encoding='utf-8') as fr:
             for line in fr:

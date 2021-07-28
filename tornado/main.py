@@ -50,7 +50,7 @@ class FriendSearchMixin(object):
         self.ip = '192.168.16.252'
         self.port = 9200
         self.uriBase = 'http://' + self.ip + ':' + str(self.port)
-        self.indexName = str(20217) + '_friend_ik'
+        self.indexName = str(20305) + '_friend_ik'
         self.typeName = '_doc'
 
     def cat(self):
