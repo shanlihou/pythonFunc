@@ -1,8 +1,8 @@
 import utils
 import const
 
-gbid1 = '8444550313351000881'
-gbid2 = '8444550345026384689'
+gbid1 = '8444836521623263686'
+gbid2 = '8444836524119713398'
 
 if __name__ == '__main__':
     fname = utils.filter_from_origin('SecSNSGetFlow')
