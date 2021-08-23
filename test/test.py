@@ -5,6 +5,10 @@ class A(object):
         self.b = b
         self.c = c
 
+    @property
+    def abc(self):
+        return 123
+
 if __name__ == '__main__':
     a = b'\x1f\x8b\x08\x00\xdd,P`\x02\xffc` \x03\x00\x00\x0ew\xaf\x195\x00\x00\x00'
     a = gzip.decompress(a)
@@ -16,3 +20,5 @@ if __name__ == '__main__':
     q.append(A(5, 6))
     q.remove(a)
     print(q)
+    print(a.abc)
+    a.abc = 567
