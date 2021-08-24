@@ -14,10 +14,9 @@ DATA_FOLDER = r'E:\trunk_server\kbengine\assets\scripts\data'
 GUILD_TRAIN_TABLE = ''
 MAX_LEFT_LEVEL = 11
 ORI_FILE_NAME_LIST = [
-    r'F:\shdownload\log\9.150.94.241_data_home_user00_xzj_kbengine_assets_logs_xzj.log',
-    r'F:\shdownload\log\9.150.94.241_data_home_user00_xzj_kbengine_assets_logs_xzj.log.1',
-    r'F:\shdownload\log\9.150.94.241_data_home_user00_xzj_kbengine_assets_logs_xzj.log.2',
-    r'F:\shdownload\log\9.150.94.241_data_home_user00_xzj_kbengine_assets_logs_xzj.log.3',
+    r'F:\shdownload\tlog\11.152.246.106_data_home_user00_xzj_kbengine_assets_logs_xzj.log',
+    r'F:\shdownload\tlog\11.152.246.139_data_home_user00_xzj_kbengine_assets_logs_xzj.log',
+    r'F:\shdownload\tlog\11.152.246.159_data_home_user00_xzj_kbengine_assets_logs_xzj.log',
     ]
 OPEN_IDS_TXT = r'E:\shLog\tlog\openids.txt'
 # SEX_FILE = 'sex.txt'

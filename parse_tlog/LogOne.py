@@ -314,6 +314,18 @@ class LingxuAttackFlow(LogOneBase):
         self.occupy = occupy
 
 
+@log_wrapper
+class PlayerFriendsList(LogOneBase):
+    FILTER_STR = 'PlayerFriendsList'
+
+    def __init__(self, log_type, server_id, time_str, app_id, plat_id, zone_id, open_id, role_id, role_name, level, vip_level, irole_ce,
+            school, nickName, headId, headUrl, seq, friendZoneId, fOpenId, fRoleId, fRoleName, fSchool, fNickName, fHeadId, fHeadUrl, friendType):
+        super().__init__(time_str, open_id, role_id)
+        self.name = role_name
+        self.friend_gbid = fRoleId
+        self.friend_name = fRoleName
+
+
 @functools.lru_cache(1)
 def get_pat():
     pat_str = '|'.join(LOG_DIC.keys())

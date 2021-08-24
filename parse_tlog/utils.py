@@ -142,10 +142,6 @@ def filter_from_origin(filter_str):
         if not line.startswith(filter_str):
             continue
 
-        tup = line.strip().split('|')
-        time_str = tup[2]
-        day = get_day(time_str)
-
         fw.write(line)
 
     fw.close()
