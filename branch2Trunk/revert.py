@@ -82,7 +82,13 @@ if __name__ == '__main__':
         print('0--------------------------------')
         rev = Revert(r'E:\trunk_server\kbengine\assets\scripts\kbengine_lua')
         rev.test()
-        
+
+        print('0.1--------------------------------')
+        os.system(r'svn revert --depth infinity E:\trunk_server\kbengine\assets\scripts\entity_defs\METHOD_UID.txt')
+
+        print('0.2--------------------------------')
+        os.system(r'svn revert --depth infinity E:\trunk_server\kbengine\assets\scripts\entity_defs\PROPERTY_UID.txt')
+
         print('1--------------------------------')
         os.system(r'svn up E:\trunk_server')
 
