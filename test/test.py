@@ -18,7 +18,5 @@ if __name__ == '__main__':
     q.append(a)
     q.append(A(3, 4))
     q.append(A(5, 6))
-    q.remove(a)
+    q.remove(A(5, 6))
     print(q)
-    print(a.abc)
-    a.abc = 567
