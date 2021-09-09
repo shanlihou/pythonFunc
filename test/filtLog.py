@@ -36,18 +36,18 @@ def main():
 
 def out_test_0618():
     ori_file = r'E:\shLog\tmp\ori.log'
-    ori_base = r'F:\shdownload\log\9.150.94.241_data_home_user00_log_20210716_logger_baseapp.log-20210716'
+    ori_base = r'F:\shdownload\log\logger_baseapp.log.1-20210908-180010'
     tmp_file = r'E:\shLog\tmp\db.8444835990201591397'
     filter_gbid = r'E:\shLog\tmp\ori.log.8444835983061208270'
     filter_avatar_id = r'E:\shLog\tmp\ori.log.96619'
-    filter_modify_failed = r'E:\shLog\tmp\base.onUpdateGuildDiffsProxy'
+    final = r'F:\shdownload\log\1578921.log'
     #fw = open(filter_gbid, 'w')
-    fw = open(filter_modify_failed, 'w')
+    fw = open(final, 'w')
 
 
     with open(ori_base) as fr:
         for line in fr:
-            if 'onUpdateGuildDiffsProxy' in line:
+            if '1578921' in line:
                 fw.write(line)
 
 
