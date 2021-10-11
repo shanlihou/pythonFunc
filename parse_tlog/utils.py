@@ -9,6 +9,22 @@ import re
 
 
 def get_origin_line_stream():
+    for _file in os.listdir(const.ORI_FILE_DIR):
+        filename = os.path.join(const.ORI_FILE_DIR, _file)
+        with open(filename, 'r', encoding='utf-8') as fr:
+            while 1:
+                try:
+                    line = fr.readline()
+                except:
+                    continue
+
+                if not line:
+                    break
+
+                yield line
+
+
+def get_origin_line_stream_old():
     for filename in const.ORI_FILE_NAME_LIST:
         with open(filename, 'r', encoding='utf-8') as fr:
             while 1:
