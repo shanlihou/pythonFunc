@@ -11,6 +11,7 @@ import re
 def get_origin_line_stream():
     for _file in os.listdir(const.ORI_FILE_DIR):
         filename = os.path.join(const.ORI_FILE_DIR, _file)
+        print('cur file is:', filename)
         with open(filename, 'r', encoding='utf-8') as fr:
             while 1:
                 try:

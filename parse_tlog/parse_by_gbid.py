@@ -2,9 +2,9 @@ import const
 import utils
 
 
-G_AVATAR_GBID = '8726875801857469109'
-FLOW_NAME = 'LingxuRewardFlow'
-WRITE_FILE_NAME = r'E:\shtlog\out\avatar.LingxuRewardFlow.log'
+G_AVATAR_GBID = '8726031376526920939'
+FLOW_NAME = 'GuildFlow'
+WRITE_FILE_NAME = r'E:\shtlog\out\avatar.GuildFlow.log'
 
 
 def main():
