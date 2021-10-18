@@ -18,7 +18,7 @@ ORI_FILE_NAME_LIST = [
     r'F:\shdownload\tlog\11.152.246.139_data_home_user00_xzj_kbengine_assets_logs_xzj.log',
     r'F:\shdownload\tlog\11.152.246.159_data_home_user00_xzj_kbengine_assets_logs_xzj.log',
     ]
-ORI_FILE_DIR = r'F:\shdownload\log'
+ORI_FILE_DIR = r'F:\shdownload\tlog'
 OPEN_IDS_TXT = r'E:\shLog\tlog\openids.txt'
 # SEX_FILE = 'sex.txt'
 # PLAYER_11_file = r'11-11.txt'

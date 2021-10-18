@@ -4,8 +4,9 @@ import time
 
 
 G_AVATAR_GBID = '8726031376526920939'
-FLOW_NAME = 'GuildFlow'
-WRITE_FILE_NAME = r'E:\shtlog\out\avatar.GuildFlow.log'
+G_GUILD_UUID = '88113899812159490'
+FLOW_NAME = 'GuildBanditFlow'
+WRITE_FILE_NAME = r'E:\shtlog\out\avatar.GuildBanditFlow.log'
 RECORD_FILE = r'E:\shLog\tmp\records.txt'
 
 
@@ -21,7 +22,7 @@ def print_records():
             print(tups)
 
 def main():
-    with open(WRITE_FILE_NAME, 'w') as fw:
+    with open(WRITE_FILE_NAME, 'w', encoding='utf-8') as fw:
         for line in utils.get_origin_line_stream():
             if FLOW_NAME in line:
                 fw.write(line)
@@ -30,4 +31,5 @@ def main():
 
 if __name__ == '__main__':
     #main()
-    print_records()
+    # print_records()
+    main()
