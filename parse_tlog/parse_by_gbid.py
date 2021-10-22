@@ -8,6 +8,18 @@ G_GUILD_UUID = '88113899812159490'
 FLOW_NAME = 'GuildBanditFlow'
 WRITE_FILE_NAME = r'E:\shtlog\out\avatar.GuildBanditFlow.log'
 RECORD_FILE = r'E:\shLog\tmp\records.txt'
+READ_FILE = r'F:\shdownload\log\11.152.254.179_data_home_user00_log_logger_baseapp.log'
+
+
+def filter_read():
+    fw = open(READ_FILE + '.new', 'w', encoding='utf-8')
+    with open(READ_FILE) as fr:
+        for line in fr:
+            if 'Channel::handshake: kcp' in line:
+                continue
+
+            fw.write(line)
+
 
 
 def print_records():
@@ -32,4 +44,5 @@ def main():
 if __name__ == '__main__':
     #main()
     # print_records()
-    main()
+    #main()
+    filter_read()
