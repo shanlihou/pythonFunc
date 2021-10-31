@@ -16,10 +16,6 @@ def main():
         hex_list.append(ch)
 
     ret = pickle.loads(bytes(hex_list))
-    for i in ret:
-        if i['gbId'] != 8726032033583097461:
-            continue
-        print(i)
 
 
 if __name__ == '__main__':
