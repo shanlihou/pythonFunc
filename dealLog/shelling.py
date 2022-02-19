@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\1530308_avatar.txt'
+logPath = r'F:\shdownload\log\Avatar_6928482.txt'
 
 
 def main():
