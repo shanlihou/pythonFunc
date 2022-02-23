@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\not_home_box.txt'
+logPath = r'F:\shdownload\log\build_route.txt'
 
 
 def main():
