@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\build_route.txt'
+logPath = r'F:\shdownload\log\avatar_base.txt'
 
 
 def main():
