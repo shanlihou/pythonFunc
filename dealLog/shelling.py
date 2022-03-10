@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\zhenxing.txt'
+logPath = r'F:\shdownload\log\40484.txt'
 
 
 def main():
