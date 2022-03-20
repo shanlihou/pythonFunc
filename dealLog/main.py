@@ -51,14 +51,15 @@ class DealLog(object):
 
 
 class LogLine(object):
-    def __init__(self, timestamp, line):
+    def __init__(self, timestamp, line, line_no):
         self.timestamp = timestamp
         self.index = next(g_iter)
         self.line = line
+        self.line_no = line_no
 
     def __lt__(self, other):
         if self.timestamp == other.timestamp:
-            return self.index < other.index
+            return self.line_no > other.line_no
 
         return self.timestamp < other.timestamp
 
@@ -73,12 +74,14 @@ class LogStream(object):
 
     def read_file(self, filename):
         pat = re.compile(r'\[(\d+)\-(\d+)\-(\d+) (\d+)\:(\d+)\:(\d+) (\d+)\]')
+        line_no = 0
         with open(filename, encoding='utf-8') as fr:
             for line in fr:
+                line_no += 1
                 find = pat.search(line)
                 if find:
                     timestamp = self.get_timestamp(find.groups())
-                    yield LogLine(timestamp, line)
+                    yield LogLine(timestamp, line, line_no)
 
     def read_one(self, timestamp):
         if self.last_timestamp <= timestamp:
@@ -99,10 +102,6 @@ class LogStream(object):
 
 class MergeLog(object):
     def __init__(self, file_list):
-        self.filters = [
-            'Avatar(9461)',
-            'WorldLineStub'
-        ]
         self.file_list = file_list
         self.cache = []
         self.max_num = 50000
@@ -154,8 +153,8 @@ class MergeLog(object):
 
 def main():
     ml = MergeLog([
-        r'E:\trunk_server\kbengine\assets\logs\logger_baseapp.log',
-        r'E:\trunk_server\kbengine\assets\logs\logger_cellapp.log',
+        r'F:\shdownload\log\yuxue_08_cell.txt',
+        r'F:\shdownload\log\yuxue_08.txt',
     ])
     ml.test()
 
