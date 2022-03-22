@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\yuxue_08_cell.txt'
+logPath = r'F:\shdownload\log\lian_xu.txt'
 
 
 def main():
