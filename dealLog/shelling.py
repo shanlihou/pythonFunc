@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\dong_tian.txt'
+logPath = r'F:\shdownload\log\ka_xiao_shi_jie_base.txt'
 
 
 def main():
