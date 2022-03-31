@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\ka_xiao_shi_jie_base.txt'
+logPath = r'F:\shdownload\log\fn_exception.txt'
 
 
 def main():
