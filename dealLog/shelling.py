@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\bang_zhan_2.txt'
+logPath = r'F:\shdownload\log\black.txt'
 
 
 def main():
