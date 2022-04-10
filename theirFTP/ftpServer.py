@@ -28,7 +28,7 @@ def get_local_ip():
 HOST = get_local_ip()
 PORT = 9527  # command port
 #CWD  = os.getenv('HOME')
-CWD = "shgithub"
+CWD = "G:\shgame"
 
 
 def log(func, cmd):
@@ -209,9 +209,14 @@ class FtpServerProtocol(threading.Thread):
         self.LIST(dirpath)
 
     def CWD(self, dirpath):
-        pathname = dirpath.endswith(
-            os.path.sep) and dirpath or os.path.join(self.cwd, dirpath)
-        log('CWD', pathname)
+        if 'win' in sys.platform:
+            if dirpath.startswith('/'):
+                pathname = dirpath[1:]
+
+        else:
+            pathname = dirpath.endswith(
+                os.path.sep) and dirpath or os.path.join(self.cwd, dirpath)
+        log('CWD', '[{}], [{}], [{}]'.format(dirpath, os.path.sep, pathname))
         if not os.path.exists(pathname) or not os.path.isdir(pathname):
             self.commSock.send('550 CWD failed Directory not exists.\r\n')
             return
