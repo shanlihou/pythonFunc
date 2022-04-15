@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\task_failed.txt'
+logPath = r'F:\shdownload\log\leave_guild.txt'
 
 
 def main():
