@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\leave_guild.txt'
+logPath = r'F:\shdownload\log\guild_mgr.txt'
 
 
 def main():
