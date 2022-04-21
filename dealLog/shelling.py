@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\destoryFounder.txt'
+logPath = r'F:\shdownload\log\guide.txt'
 
 
 def main():
