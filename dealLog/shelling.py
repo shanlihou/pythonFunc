@@ -1,7 +1,7 @@
 import re
 import shutil
 
-logPath = r'F:\shdownload\log\destroyFounder2.txt'
+logPath = r'F:\shdownload\log\enemy_cell.txt'
 
 
 def main():
