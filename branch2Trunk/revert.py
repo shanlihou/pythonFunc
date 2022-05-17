@@ -29,7 +29,11 @@ class Revert(object):
                 else:
                     revertList.append((files[2], line))
             elif files[0] == 'R':
-                revertList.append((files[3], line))
+                if len(files) > 2:
+                    _file = files[3]
+                else:
+                    _file = files[1]
+                revertList.append((_file, line))
             elif len(files) > 3 and ''.join(files[0:3]) == 'A+C':
                 revertList.append((files[3], line))
 
