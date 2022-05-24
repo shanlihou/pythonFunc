@@ -2,7 +2,7 @@ from base64 import encodebytes
 import re
 import shutil
 
-logPath = r'E:\shLog\tmp\home.txt'
+logPath = r'F:\shdownload\log\1693342.txt'
 
 
 def main():

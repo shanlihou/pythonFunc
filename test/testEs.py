@@ -6,7 +6,7 @@ import json
 URI_BASE = 'http://{}:{}'.format('192.168.16.252', 9200)
 ori = 'elastic:123456'
 authB64 = base64.b64encode(bytes(ori, 'ascii'))
-INDEX = '20305_friend_ik'
+INDEX = '20217_friend_ik'
 # INDEX = '20104_friend_ik'
 
 HEADERS = {
@@ -47,6 +47,34 @@ class EsTest(object):
         url = '{}/{}'.format(URI_BASE, index_name)
         ret = requests.delete(url, headers=self.headers)
         print(ret.text)
+
+    def set_block_not_read_only(self):
+        data = {
+            "index": {
+                "blocks": {
+                    "read_only_allow_delete": "false"
+                }
+            }
+        }
+        data = json.dumps(data)
+        url = '{}/{}'.format(URI_BASE, '_settings')
+
+        ret = requests.put(url, data=data, headers=HEADERS)
+        print('set not read only', ret.text)
+
+    def update_flood_stage(self):
+        data = {
+            "transient": {
+                "cluster.routing.allocation.disk.watermark.low": "85%",
+                "cluster.routing.allocation.disk.watermark.high": "90%",
+                "cluster.routing.allocation.disk.watermark.flood_stage": "99%",
+            }
+        }
+
+        data = json.dumps(data)
+        url = f'{URI_BASE}/_cluster/settings'
+        ret = requests.put(url, data=data, headers=HEADERS)
+        print('update flood:', ret.text)
 
     def create_index(self, index_name):
         url = '{}/{}'.format(URI_BASE, index_name)
@@ -106,34 +134,30 @@ class EsTest(object):
     def search(self, name):
         data = {
             'query': {
-                'match': {
-                    'name': {
-                        'query': name,
-                        'analyzer': 'ik_max_word',
-                    }
+                'bool': {
+                    'should': [
+                        {
+                            'match': {
+                                'name': {
+                                    'query': name,
+                                    'operator': 'and'
+                                }
+                            }
+                        },
+                        {
+                            'match': {
+                                'name.raw': {
+                                    'query': name,
+                                    'operator': 'and'
+                                }
+                            }
+                        },
+                    ]
                 }
             },
-            'size': 6
+            'size': 50
         }
-        #         data = {
-        #             "query": {
-        #                 "match_phrase_prefix": {
-        #                     "name": name
-        #                 }
-        #             }
-        #         }
 
-#         data = {
-#             "query": {
-#                 "match_phrase": {
-#                     "name": {
-#                         'query': name,
-#                         'analyzer': 'ik_max_word',
-#                         'slop': 2,
-#                     }
-#                 }
-#             }
-#         }
         data = json.dumps(data)
         uri = self.join(URI_BASE, INDEX, '_doc', '_search')
         ret = requests.post(uri, data=data, headers=HEADERS)
@@ -156,6 +180,16 @@ class EsTest(object):
         if not self.check_index_ok(index_name):
             self.del_index(index_name)
             self.create_index(index_name)
+
+    def add_name(self, name, gbId, obId):
+        data = {'name': name,
+                'gbId': gbId}
+
+        data = json.dumps(data)
+        url = f'{URI_BASE}/{INDEX}/_doc/{obId}'
+
+        ret = requests.post(url, data=data, headers=HEADERS)
+        print(ret.text)
 
     def all_info(self):
         indexes = self.get_indexes()
@@ -183,11 +217,14 @@ class EsTest(object):
 
 def main():
     et = EsTest()
-    et.all_info()
+    #et.all_info()
     # et.check_and_create('20007_friend_ik')
     # et.del_index('20217_friend_ik')
     # et.ana('一二三四五六七')
-    # et.search('傻妞')
+    et.update_flood_stage()
+    et.set_block_not_read_only()
+    et.add_name('即墨回雪', 12345, 23456)
+    et.search('即墨回雪')
 #    et.deal_all()
 
 
