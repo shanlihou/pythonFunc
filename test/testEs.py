@@ -6,7 +6,7 @@ import json
 URI_BASE = 'http://{}:{}'.format('192.168.16.252', 9200)
 ori = 'elastic:123456'
 authB64 = base64.b64encode(bytes(ori, 'ascii'))
-INDEX = '20217_friend_ik'
+INDEX = '20308_friend_ik'
 # INDEX = '20104_friend_ik'
 
 HEADERS = {
@@ -221,10 +221,10 @@ def main():
     # et.check_and_create('20007_friend_ik')
     # et.del_index('20217_friend_ik')
     # et.ana('一二三四五六七')
-    et.update_flood_stage()
-    et.set_block_not_read_only()
-    et.add_name('即墨回雪', 12345, 23456)
-    et.search('即墨回雪')
+    #et.update_flood_stage()
+    #et.set_block_not_read_only()
+    et.add_name('乔露凝', '5716224206216101890', 203081127261407233)
+    et.search('乔露凝')
 #    et.deal_all()
 
 
