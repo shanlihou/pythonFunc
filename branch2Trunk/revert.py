@@ -1,5 +1,5 @@
 import os
-import os
+import sys
 
 
 class Revert(object):
@@ -76,7 +76,9 @@ class Revert(object):
 
 
 if __name__ == '__main__':
-    opt = 0
+    if len(sys.argv) > 1:
+        opt = int(sys.argv[1])
+
     if opt == 0:
         print('-1--------------------------------')
         rev = Revert(
@@ -134,6 +136,27 @@ if __name__ == '__main__':
 #         rev.test()
 
     elif opt == 1:
-        rev = Revert(r'E:\svn\Dev\Client')
-        rev.cpWin2Linux(r'E:\svn\Dev\Server\kbeWin\kbengine\assets\scripts',
-                        r'E:\svn\Dev\Server\kbeLinux\kbengine\assets\scripts')
+        print('0--------------------------------')
+        rev = Revert(r'G:\branch\h1_tw_trunk\Server\kbeLinux\kbengine\assets\scripts\kbengine_lua')
+        rev.test()
+
+        print('0.1--------------------------------')
+        os.system(r'svn revert --depth infinity G:\branch\h1_tw_trunk\Server\kbeLinux\kbengine\assets\scripts\entity_defs\METHOD_UID.txt')
+
+        print('0.2--------------------------------')
+        os.system(r'svn revert --depth infinity G:\branch\h1_tw_trunk\Server\kbeLinux\kbengine\assets\scripts\entity_defs\PROPERTY_UID.txt')
+
+        print('1--------------------------------')
+        os.system(r'svn up G:\branch\h1_tw_trunk\Server\kbeLinux\kbengine\assets')
+
+        print('2--------------------------------')
+        rev = Revert(
+            r'G:\branch\h1_tw_trunk\Client\Assets\Scripts\ScriptsKBE\kbengine\kbengine_unity3d_plugins')
+        rev.test()
+        
+        print('3--------------------------------')
+        rev = Revert(r'G:\branch\h1_tw_trunk\Client\Assets\StreamingAssets\Lua\KBEngine')
+        rev.test()
+
+        print('4--------------------------------')
+        os.system(r'svn up --accept tc G:\branch\h1_tw_trunk\Client')
