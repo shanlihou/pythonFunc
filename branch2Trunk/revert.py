@@ -78,6 +78,8 @@ class Revert(object):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         opt = int(sys.argv[1])
+    else:
+        opt = 0
 
     if opt == 0:
         print('-1--------------------------------')
